@@ -1,13 +1,9 @@
 # Hello!
+{:.no_toc}
 
-##### Table of Contents  
-[Headers](#headers)  
-[Emphasis](#emphasis)  
-...snip...    
-<a name="headers"/>
-## Headers
+* Will be replaced with the ToC, excluding the "Contents" header
+{:toc}
 
-## Headers 2
+# H1 header
 
-
-## Headers 3
+## H2 header
