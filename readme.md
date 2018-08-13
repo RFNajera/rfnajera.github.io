@@ -1,1 +1,3 @@
+page.title: Home
+
 # Coming soon...
