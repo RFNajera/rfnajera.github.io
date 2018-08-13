@@ -1,1 +1,3 @@
+title: Welcome
+
 # Coming soon!
