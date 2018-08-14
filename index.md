@@ -1,6 +1,6 @@
 # Hello!
 {:.no_toc}
-My name is René F. Najera, DrPH, and I am an epidemiologist. What is an epidemiologist? We're the people who study things that happen to populations. We take data from many different sources, analyze it, and come up with the conclusions necessary to determine strategies to improve public health.
+My name is René F. Najera, DrPH, and I am an epidemiologist. What is an epidemiologist? We're the people who study things that happen to populations. We take data from many different sources, analyze them, and come up with the conclusions necessary to determine strategies to improve public health.
 
 When I was working at a state health department, I did most of my data analysis with [Microsoft Excel and Microsoft Access](https://products.office.com/en-us/home). This is fine and good, but those software packages are limited. There was much more I wish I could do. Once I started working on my doctoral degree (DrPH), I was introduced to software like [STATA](https://www.stata.com/) for data analysis and biostatistical analysis. I was also introduced to [ArcGIS](https://www.arcgis.com/index.html), a software package for geographical and geostatistical analysis.
 
