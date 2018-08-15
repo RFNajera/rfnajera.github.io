@@ -22,7 +22,7 @@ This project takes you step by step through how to build a concentration curve t
 
 This whole project should take you about an hour to go through if you download all the data and code and go through it step by step. Then feel free to modify the code as you see fit and use your own data. Are homicides inequitably distributed in other cities in the United States? In the world?
 
-[Click here to go to the project](https://rfnajera.github.io/baltimore-homicide-inequity/).
+[Click here to go to the project](https://rfnajera.github.io/baltimore-homicide-inequity/){:target="_blank"}.
 
 ## Mapping Homicides and Homicide Rates in Baltimore City
 Coming soon...
