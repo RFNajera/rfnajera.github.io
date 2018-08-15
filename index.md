@@ -17,8 +17,12 @@ With that in mind, I decided to improve my skills in R programmig by creating so
 # Projects
 The projects are simple projects that can be done in about an hour. (Though it takes a few days to develop, write and test them.) If you follow along with the instructions, you should be okay.
 
-## Understanding Inequalities in Homicide Distribution in Baltimore
-Coming soon...
+## Understanding Inequities in Homicide Distribution in Baltimore
+This project takes you step by step through how to build a concentration curve that will allow you to visualize inequity in the distribution of a public health problem according to a indicator in the community. In this project, we look at the inequity in the distribution of homicides in Baltimore according to poverty (measured as the percentage of households under the poverty line) in the 55 Community Statistical Areas in Baltimore. You will learn how to explore your data in maps to begin to visualize the association between povery and homicides. Then you'll create a concentration curve that will tell you what percent of the homicides are burdening the poorest and the wealthiest neighborhoods.
+
+This whole project should take you about an hour to go through if you download all the data and code and go through it step by step. Then feel free to modify the code as you see fit and use your own data. Are homicides inequitably distributed in other cities in the United States? In the world?
+
+[Click here to go to the project](https://rfnajera.github.io/baltimore-homicide-inequality/).
 
 ## Mapping Homicides and Homicide Rates in Baltimore City
 Coming soon...
