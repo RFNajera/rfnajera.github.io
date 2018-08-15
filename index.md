@@ -1,4 +1,4 @@
-# Hello!
+# Hello
 {:.no_toc}
 My name is René F. Najera, DrPH, and I am an epidemiologist. What is an epidemiologist? We're the people who study things that happen to populations. We take data from many different sources, analyze them, and come up with the conclusions necessary to determine strategies to improve public health.
 
