@@ -31,6 +31,8 @@ Coming soon...
 Coming soon...
 
 ## Understanding How Prevalence Affects the Results of Screening Tests
-Coming soon...
+There's a mathematical relationship between prevalence (how many people are sick in a group/community) and the reliability of screening tests (like some of the tests used in physician offices or small clinics). To understand this relationship and visualize it, I coded this project over five days, about an hour each day, and here it is.
+
+[Click here to go to the project](https://rfnajera.github.io/screening_tests/).
 
 
