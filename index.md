@@ -35,4 +35,9 @@ There's a mathematical relationship between prevalence (how many people are sick
 
 [Click here to go to the project](https://rfnajera.github.io/screening_tests/).
 
+## Biostatistics Walk-Through
+Biostatistics can be a very non-intuitive to many public health students. In this project, I go through a set of questions designed to show biostatistical concepts using the [2004 North Carolina births dataset](https://schs.dph.ncdhhs.gov/data/vital.cfm). We start with a quick discussion of the Central Limit Theorem and then move through individual statistical tests and how we can apply them to public health data.
+
+[Click here to go to the project](https://rfnajera.github.io/Biostats-Walkthrough) <- UNDER CONSTRUCTION
+
 
