@@ -17,6 +17,12 @@ With that in mind, I decided to improve my skills in R programmig by creating so
 # Projects
 The projects are simple projects that can be done in about an hour. (Though it takes a few days to develop, write and test them.) If you follow along with the instructions, you should be okay.
 
-...COMING SOON
+## Analysis of Inequities and Homicides in Baltimore
+
+This project is a quick-ish overview of societal inequities in Baltimore and their association with homicides. Baltimore has historically been one of the most violent cities in the United States ([and the world](http://www.seguridadjusticiaypaz.org.mx/seguridad/1567-estudio-las-50-ciudades-mas-violentas-del-mundo-2018)).
+
+You can access the project [by clicking here](https://rfnajera.github.io/baltimore-homicide-inequity/).
+
+# More Projects Coming Soon!
 
 
