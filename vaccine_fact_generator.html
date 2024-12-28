@@ -1,0 +1,206 @@
+<html lang="en">
+
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-8780351-4"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'UA-8780351-4');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Vaccine Fact Generator by @EpiRen</title>
+  <link rel="stylesheet" href="https://unpkg.com/papercss@1.4.0/dist/paper.min.css">
+  <style>
+    header {
+      padding: 1em;
+      background-color: #ffff80;
+      margin-top: 1em;
+      text-align: center;
+    }
+
+    .quote {
+      font-size: 3em;
+    }
+
+    .btn-large {
+      margin: 0.5em;
+    }
+
+    #button:active {
+      box-shadow: 0 0 0 0;
+    }
+
+    .card {
+      text-align: center;
+      width: 45em;
+    }
+
+    .new-quote-button {
+      background-color: #8cff66;
+    }
+
+    .tweet-button {
+      background-color: #b3e0ff;
+    }
+
+
+    @media (max-width: 700px) {
+      header {
+        padding: 1em;
+        background-color: #ffff80;
+        margin-top: 1em;
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 45px;
+      }
+
+      #newQuoteSection {
+        font-size: 35px;
+      }
+
+
+    }
+  </style>
+
+</head>
+
+<body>
+  <div class="container">
+    <div class="row flex-top flex-center">
+      <header class="border shadow">
+        <h1>Vaccine Fact Generator</h1>
+        <small>v0.9 (Last Updated 28Dec2024)</small>
+      </header>
+    </div>
+    <div class="row flex-center" style="width: 80%;">
+      <main class="card">
+        <p class="quote card-body center" id="newQuoteSection">Click on "New Fact" to get a new fact!</p>
+      </main>
+    </div>
+    <div class="row flex-center">
+      <button id="button" class="btn-large new-quote-button" onClick="getQuote()">New Fact</button>
+      <button id="shareButton" class="btn-large tweet-button" onClick="shareQuote()">Share This!</button>
+    </div>
+
+    <div class="row flex-bottom flex-center">
+      <div class="card" style="width: 20rem;">
+        <div class="card-body">
+          <h4 class="card-title">The Vaccine Fact Generator</h4>
+          <p class="card-text">Brought to you by René F. Najera, DrPH.</br>Based on code by Jay.</p>
+          <a class="card-link" href="https://twitter.com/epiren">@Epiren</a><br>
+          <a class="card-link" href="https://twitter.com/mrjaypeasmith">@MrJayPeaSmith</a><br>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+
+    // Quotes
+
+
+    let quotes = [
+      "Immunization prevents 3.5-5 million deaths every year from diseases like diphtheria, tetanus, pertussis, influenza, and measles. Reference: https://www.who.int/health-topics/vaccines-and-immunization",
+      "Global immunization efforts have saved 154 million lives over the past 50 years. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
+      "For each life saved through immunization, an average of 66 years of full health were gained. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
+      "Measles vaccination alone has saved nearly 94 million lives since 1974. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
+      "Vaccination has enabled more than 20 million people to walk today who would otherwise have been paralyzed by polio. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
+      "Currently, 84% of infants globally are protected with three doses of the DTP vaccine. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
+      "The first influenza vaccine was approved for military use in 1945. Reference: https://www.who.int/news-room/spotlight/history-of-vaccination/a-brief-history-of-vaccination",
+      "The MMR combination vaccine was developed in 1971 by Dr. Maurice Hilleman. Reference: https://www.who.int/news-room/spotlight/history-of-vaccination/a-brief-history-of-vaccination",
+      "The first HPV vaccine was approved in 2006. Reference: https://www.who.int/news-room/spotlight/history-of-vaccination/a-brief-history-of-vaccination",
+      "Vaccines now help protect against more than 20 life-threatening diseases. Reference: https://www.who.int/news-room/spotlight/history-of-vaccination/a-brief-history-of-vaccination",
+      "Each dollar spent on immunization saves $52 in low- and middle-income countries. Reference: https://www.cdc.gov/global-immunization/fast-facts/index.html",
+      "It costs $18 per child to fully immunize children in low-income countries. Reference: https://www.cdc.gov/global-immunization/fast-facts/index.html",
+      "In 2023, over 14.5 million children under age 1 did not receive basic vaccines. Reference: https://www.cdc.gov/global-immunization/fast-facts/index.html",
+      "The measles vaccine requires 95% coverage with two doses to protect communities from outbreaks. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
+      "Global first-dose measles vaccine coverage is currently at 83%. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
+      "The second-dose measles vaccine coverage globally is at 74%. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
+      "UNICEF procures more than 2 billion vaccine doses annually. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
+      "Gavi has helped immunize over 1 billion children since its inception in 2000. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
+      "Vaccine preventable diseases have been reduced by more than 50% in the last 30 years. Reference: https://www.who.int/news-room/spotlight/history-of-vaccination/a-brief-history-of-vaccination",
+      "The first rotavirus vaccine was introduced in 2006. Reference: https://www.who.int/news-room/spotlight/history-of-vaccination/a-brief-history-of-vaccination",
+      "In 2019, the first malaria vaccine pilot program was launched in Ghana, Malawi, and Kenya. Reference: https://www.who.int/news-room/spotlight/history-of-vaccination/a-brief-history-of-vaccination",
+      "The hepatitis B vaccine was first developed in 1969. Reference: https://www.who.int/news-room/spotlight/history-of-vaccination/a-brief-history-of-vaccination",
+      "Vaccines train the immune system to create antibodies without causing disease. Reference: https://www.who.int/health-topics/vaccines-and-immunization",
+      "Immunization is considered a fundamental human right. Reference: https://www.who.int/health-topics/vaccines-and-immunization",
+      "The COVID-19 pandemic caused significant setbacks in global immunization coverage. Reference: https://www.who.int/health-topics/vaccines-and-immunization",
+      "In 2023, 22 million children missed their first dose of measles vaccine. Reference: https://www.who.int/health-topics/vaccines-and-immunization",
+      "Vaccines are crucial for global health security. Reference: https://www.who.int/health-topics/vaccines-and-immunization",
+      "Immunization helps combat antimicrobial resistance. Reference: https://www.who.int/health-topics/vaccines-and-immunization",
+      "The first yellow fever vaccine was developed in 1937. Reference: https://www.who.int/news-room/spotlight/history-of-vaccination/a-brief-history-of-vaccination",
+      "Over 1 million people received the yellow fever vaccine in 1938. Reference: https://www.who.int/news-room/spotlight/history-of-vaccination/a-brief-history-of-vaccination",
+      "The pertussis vaccine reduced disease rates from 15.1 to 2.3 per 100 children. Reference: https://www.who.int/news-room/spotlight/history-of-vaccination/a-brief-history-of-vaccination",
+      "Almost all zero-dose children live in low- and middle-income countries. Reference: https://www.cdc.gov/global-immunization/fast-facts/index.html",
+      "Over half of unvaccinated children live in just 10 countries. Reference: https://www.cdc.gov/global-immunization/fast-facts/index.html",
+      "Vaccines prevent both infectious diseases and several chronic diseases. Reference: https://www.who.int/health-topics/vaccines-and-immunization",
+      "Global vaccination coverage hit its lowest level since 2008 during the COVID-19 pandemic. Reference: https://data.unicef.org/topic/child-health/immunization/",
+      "DTP3 coverage increased to 84% in 2022, showing signs of recovery. Reference: https://data.unicef.org/topic/child-health/immunization/",
+      "Measles vaccination accounts for 60% of lives saved due to immunization. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
+      "The total health years gained from vaccination over five decades is 10.2 billion. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
+      "Fewer than 5% of infants globally had access to routine immunization when EPI launched. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
+      "Vaccination has helped prevent more than 17.3 million future deaths in 78 lower-income countries. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
+      "Vaccines undergo rigorous clinical trials before approval. Reference: https://unfoundation.org/blog/post/setting-the-record-straight-10-facts-you-didnt-know-about-vaccines",
+      "The whooping cough vaccine's efficacy was first demonstrated in 1939. Reference: https://www.who.int/news-room/spotlight/history-of-vaccination/a-brief-history-of-vaccination",
+      "The first genetically engineered hepatitis B vaccine was developed in 1986. Reference: https://www.who.int/news-room/spotlight/history-of-vaccination/a-brief-history-of-vaccination",
+      "Vaccination programs have contributed to halving child mortality in 78 countries. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
+      "Vaccines help prevent disease outbreaks that can disrupt economies. Reference: https://www.cdc.gov/global-immunization/fast-facts/index.html",
+      "There are more than 25 safe and effective vaccines available today. Reference: https://www.cdc.gov/global-immunization/fast-facts/index.html",
+      "The cost of fully immunizing children has decreased from $24 to $18 since 2013. Reference: https://www.cdc.gov/global-immunization/fast-facts/index.html",
+      "Vaccine side effects typically occur within two months of vaccination. Reference: https://www.ema.europa.eu/en/human-regulatory-overview/public-health-threats/coronavirus-disease-covid-19/covid-19-medicines/covid-19-vaccines-key-facts",
+      "Current global DTP3 coverage stands at 84% as of 2022. Reference: https://data.unicef.org/topic/child-health/immunization/",
+      "Immunization prevents approximately 4.4 million deaths yearly. Reference: https://data.unicef.org/topic/child-health/immunization/"
+    ];
+
+    // Get random quote and display 
+
+    function getQuote() {
+      var randomNumber = Math.floor(Math.random() * quotes.length);
+      document.getElementById('newQuoteSection').innerHTML = quotes[randomNumber];
+    }
+
+    // Tweet quote on click
+
+    function shareQuote() {
+      const generatedQuote = document.getElementById('newQuoteSection').innerHTML;
+
+      // Check if the Web Share API is available
+      if (navigator.share) {
+        navigator.share({
+          title: 'Vaccine Fact:',
+          text: generatedQuote,
+          //url: window.location.href // Optional: Share the URL of the page too
+        }).then(() => {
+          console.log('Thanks for sharing!');
+        }).catch((error) => {
+          console.error('Error sharing:', error);
+        });
+      } else {
+        // Fallback for browsers/devices that don't support the Web Share API
+        alert('Your browser does not support sharing. Please copy and paste the fact manually.');
+      }
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Fact copied to clipboard!');
+      }).catch((error) => {
+        console.error('Failed to copy:', error);
+      });
+    }
+
+
+
+  </script>
+
+</body>
+
+</html>
