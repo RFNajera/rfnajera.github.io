@@ -1,6 +1,4 @@
-# Dr. Ren's GitHub Portfolio
-
-## Welcome to My GitHub Portfolio!
+# Welcome to My GitHub Portfolio!
 
 ---
 
