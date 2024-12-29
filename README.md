@@ -15,7 +15,7 @@ This GitHub repository serves as my portfolio of coding-related projects, showca
 - **Data Analysis**: Projects that explore patterns and trends in public health and epidemiology.
 - **Geospatial Analysis**: Applications of GIS in health and disease mapping.
 - **Web Development**: Tools and websites built for public health education and outreach.
-  - For example, check out the [_Vaccine Fact Generator_](vaccine_fact_generator.html)
+  - For example, check out the [_Vaccine Fact Generator_](another-page.md)
 - **Automation and Scripting**: Solutions to streamline workflows and enhance productivity.
 
 ---
