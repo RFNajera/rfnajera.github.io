@@ -633,7 +633,7 @@
                 drawParticles();
                 updateParticles(infectionRate, infectionToInfectious, infectiousPeriod);
 
-                const elapsedTime = checkSimulationEnd(120, infectionToInfectious); // Pass infectionToInfectious time
+                const elapsedTime = checkSimulationEnd(600, infectionToInfectious); // Pass infectionToInfectious time
                 if (elapsedTime !== null) {
                     countFinalParticles(initialGreenCount);
                     resultDiv.textContent = `Simulation Ended After ${Math.floor(elapsedTime)} Days From First Case.`;
