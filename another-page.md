@@ -31,17 +31,6 @@ I tried my best to make sure all the facts were accurate. If you see anything th
     <button id="newQuoteButton" class="btn-large new-quote-button" onClick="getQuote()">New Fact</button>
     <button id="shareButton" class="btn-large tweet-button" onClick="shareQuote()">Share This!</button>
   </div>
-
-  <div class="row flex-bottom flex-center">
-    <div class="card" style="width: 20rem;">
-      <div class="card-body">
-        <h4 class="card-title">The Vaccine Fact Generator</h4>
-        <p class="card-text">Brought to you by René F. Najera, DrPH.</br>Based on code by Jay.</p>
-        <a class="card-link" href="https://twitter.com/epiren">@Epiren</a><br>
-        <a class="card-link" href="https://twitter.com/mrjaypeasmith">@MrJayPeaSmith</a><br>
-      </div>
-    </div>
-  </div>
 </div>
 
 <script>
