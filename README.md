@@ -34,4 +34,4 @@ Feel free to explore my repositories and reach out if you have questions, collab
 
 ### Still in Progress
 
-This site is very much still in progress. Check in later for more updates. *(Markdown version)*
+This site is very much still in progress. Check in later for more updates. Or check out [Another Page](another-page.md).
