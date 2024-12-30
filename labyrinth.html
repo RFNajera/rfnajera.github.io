@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Labyrinth Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        canvas {
+            border: 1px solid #000;
+            margin-top: 20px;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>Labyrinth Generator for Kids</h1>
+        <p>Click "Generate Labyrinth" to create a fun maze. Drag the green dot to the red square!</p>
+    </div>
+    <div>
+        <button id="generate">Generate Labyrinth</button>
+    </div>
+    <canvas id="labyrinthCanvas" width="600" height="600"></canvas>
+
+    <script>
+        const canvas = document.getElementById('labyrinthCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const config = {
+            cellSize: 12,
+            gridSize: Math.floor(canvas.width / 12),
+            colors: {
+                walls: '#000000',
+                path: '#FFFFFF',
+                start: 'green',
+                end: 'red',
+                player: 'blue'
+            }
+        };
+
+        let player = { x: 1, y: 1 };
+        let mazeCells = [];
+
+        function generateLabyrinth() {
+            const { gridSize } = config;
+            mazeCells = Array.from({ length: gridSize }, () => Array(gridSize).fill(false));
+
+            const directions = [
+                { dx: -1, dy: 0 }, // top
+                { dx: 1, dy: 0 }, // bottom
+                { dx: 0, dy: -1 }, // left
+                { dx: 0, dy: 1 } // right
+            ];
+
+            function isValidCell(x, y) {
+                return x >= 0 && y >= 0 && x < gridSize && y < gridSize && !mazeCells[x][y];
+            }
+
+            function carve(x, y) {
+                mazeCells[x][y] = true;
+
+                const shuffledDirections = directions.sort(() => Math.random() - 0.5);
+
+                shuffledDirections.forEach(({ dx, dy }) => {
+                    const nx = x + dx * 2;
+                    const ny = y + dy * 2;
+
+                    if (isValidCell(nx, ny)) {
+                        mazeCells[x + dx][y + dy] = true; // Remove wall
+                        carve(nx, ny);
+                    }
+                });
+            }
+
+            carve(0, 0); // Start carving from the top-left corner
+
+            player = { x: 1, y: 1 }; // Reset player position
+            drawLabyrinth();
+        }
+
+        function drawLabyrinth() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const { cellSize, colors, gridSize } = config;
+
+            mazeCells.forEach((row, x) => {
+                row.forEach((cell, y) => {
+                    ctx.fillStyle = cell ? colors.path : colors.walls;
+                    ctx.fillRect(y * cellSize, x * cellSize, cellSize, cellSize);
+                });
+            });
+
+            // Draw start and end points
+            ctx.fillStyle = colors.start;
+            ctx.fillRect(1, 1, cellSize - 2, cellSize - 2);
+
+            ctx.fillStyle = colors.end;
+            ctx.fillRect(
+                (gridSize - 1) * cellSize + 1,
+                (gridSize - 1) * cellSize + 1,
+                cellSize - 2,
+                cellSize - 2
+            );
+
+            // Draw player
+            ctx.fillStyle = colors.player;
+            ctx.beginPath();
+            ctx.arc(
+                player.y * cellSize + cellSize / 2,
+                player.x * cellSize + cellSize / 2,
+                cellSize / 3,
+                0,
+                2 * Math.PI
+            );
+            ctx.fill();
+        }
+
+        function movePlayer(dx, dy) {
+            const { cellSize, gridSize } = config;
+            const newX = player.x + dx;
+            const newY = player.y + dy;
+
+            if (
+                newX >= 0 &&
+                newY >= 0 &&
+                newX < gridSize &&
+                newY < gridSize &&
+                mazeCells[newX][newY]
+            ) {
+                player.x = newX;
+                player.y = newY;
+                drawLabyrinth();
+
+                // Check if player reaches the end
+                if (newX === gridSize - 1 && newY === gridSize - 1) {
+                    alert('Congratulations! You solved the labyrinth!');
+                }
+            }
+        }
+
+        document.addEventListener('keydown', (event) => {
+            switch (event.key) {
+                case 'ArrowUp':
+                    movePlayer(-1, 0);
+                    break;
+                case 'ArrowDown':
+                    movePlayer(1, 0);
+                    break;
+                case 'ArrowLeft':
+                    movePlayer(0, -1);
+                    break;
+                case 'ArrowRight':
+                    movePlayer(0, 1);
+                    break;
+            }
+        });
+
+        document.getElementById('generate').addEventListener('click', generateLabyrinth);
+
+        // Generate the first labyrinth on load
+        generateLabyrinth();
+    </script>
+</body>
+</html>
