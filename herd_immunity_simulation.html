@@ -66,7 +66,7 @@
 </head>
 
 <body>
-    <h1>Herd Immunity Simulation (v0.4)</h1>
+    <h1>Herd Immunity Simulation (v0.5)</h1>
     <div id="instructions"
         style="max-width: 800px; text-align: left; margin-top: 20px; margin-bottom: 20px; font-size: 16px; line-height: 1.5;">
         <h2>Background Information</h2>
@@ -139,14 +139,15 @@
             </math>
         </div>
         <p>
-            Notice how different the number of cases in the vaccinated and unvaccinated are, depending on the value of "Percent Vaccinated" versus the threshold. And notice the speed at which the outbreak happens.
+            Notice how different the number of cases in the vaccinated and unvaccinated are, depending on the value of
+            "Percent Vaccinated" versus the threshold. And notice the speed at which the outbreak happens.
         </p>
     </div>
 
     </div>
     <div id="controls">
         <div class="input-container">
-            <label for="population">Population Size (50-1000):</label><br>
+            <label for="population">Population Size (50-2000):</label><br>
             <input type="number" id="population" min="50" max="2000" step="10" value="1000">
         </div>
         <div class="input-container">
@@ -184,11 +185,11 @@
         </div>
         <button onclick="startSimulation()">Start Simulation</button>
     </div>
-    <canvas id="simulationCanvas" width="600" height="600"></canvas>
+    <canvas id="simulationCanvas" width="800" height="800"></canvas>
     <div id="legend" style="margin-top: 10px; font-size: 14px;">
         <span
             style="display: inline-block; width: 20px; height: 20px; background-color: green; border: 1px solid black; margin-right: 5px;"></span>
-        Vaccinated and Immune
+        Vaccinated and/or Immune
         <span
             style="display: inline-block; width: 20px; height: 20px; background-color: blue; border: 1px solid black; margin-left: 15px; margin-right: 5px;"></span>
         Vaccinated and Non-Immune
@@ -197,7 +198,7 @@
         Unvaccinated
         <span
             style="display: inline-block; width: 20px; height: 20px; background-color: red; border: 1px solid black; margin-left: 15px; margin-right: 5px;"></span>
-        Infectious
+        Infected
     </div>
     <div id="simulation-timer" style="font-size: 30px; margin-bottom: 10px; margin-top: 20px">0 Days From First Case
     </div>
@@ -212,7 +213,7 @@
         </thead>
         <tbody>
             <tr>
-                <td>Vaccinated and Immune (Green)</td>
+                <td>Vaccinated and/or Immune (Green)</td>
                 <td id="initial-immune-count">0</td>
                 <td id="final-immune-count">0</td>
             </tr>
@@ -286,6 +287,7 @@
         let particles = [];
         let simulationStartTime;
         let simulationRunning = true;
+        let animationFrameId; // Track the animation frame ID
 
         function createParticles(populationSize, vaccinatedPercentage, initialInfected, vaccineEffectiveness) {
             particles = [];
@@ -307,8 +309,8 @@
                 particles.push({
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height,
-                    dx: (Math.random() - 0.5) * 2,
-                    dy: (Math.random() - 0.5) * 2,
+                    dx: (Math.random() - 0.5) * 2, // Random speed in x direction
+                    dy: (Math.random() - 0.5) * 2, // Random speed in y direction
                     infected: false,
                     immune: true,
                     vaccinated: true,
@@ -597,9 +599,16 @@
             ctx.font = '12px Arial';
             ctx.fillText('Days', 600 / 2 - 20, canvasHeight - 5);
         }
-
         function startSimulation() {
             resetUI(); // Reset the UI before starting
+
+            // Cancel any ongoing animation loop
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+
+            // Reset particles array
+            particles = [];
 
             const populationSize = parseInt(populationInput.value);
             const vaccinatedPercentage = parseFloat(vaccinatedInput.value);
@@ -618,8 +627,7 @@
             simulationStartTime = Date.now();
             simulationRunning = true;
 
-            // Initialize timer
-            const timerElement = document.getElementById("simulation-timer");
+            // Define a function to update the timer
             function updateTimer() {
                 const currentTime = Date.now();
                 const elapsedSeconds = Math.floor((currentTime - simulationStartTime) / 1000);
@@ -629,23 +637,24 @@
             function animate() {
                 if (!simulationRunning) return;
 
-                updateTimer(); // Update the timer
+                updateTimer(); // Call the timer update function
                 drawParticles();
                 updateParticles(infectionRate, infectionToInfectious, infectiousPeriod);
 
-                const elapsedTime = checkSimulationEnd(600, infectionToInfectious); // Pass infectionToInfectious time
+                const elapsedTime = checkSimulationEnd(120, infectionToInfectious); // Pass infectionToInfectious time
                 if (elapsedTime !== null) {
                     countFinalParticles(initialGreenCount);
                     resultDiv.textContent = `Simulation Ended After ${Math.floor(elapsedTime)} Days From First Case.`;
                 } else {
-                    requestAnimationFrame(animate);
+                    animationFrameId = requestAnimationFrame(animate); // Save the animation frame ID
                 }
             }
 
             resultDiv.textContent = "";
-            animate();
+            animationFrameId = requestAnimationFrame(animate); // Save the animation frame ID
         }
+
+
     </script>
 </body>
-
 </html>
