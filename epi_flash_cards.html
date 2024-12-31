@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,9 +19,18 @@
 
         .title {
             font-size: 3em;
-            margin: 20px 0;
+            margin: 20px auto;
+            /* Ensures auto margin for horizontal centering */
             text-align: center;
-            width: 50%;
+            /* Center-aligns text */
+            width: 100%;
+            /* Ensures the title spans the full width of the container */
+            display: flex;
+            /* Allows for flexible alignment */
+            justify-content: center;
+            /* Horizontally centers content within the flex container */
+            align-items: center;
+            /* Vertically aligns content if needed */
         }
 
         .subtitle {
@@ -48,7 +58,8 @@
             display: block;
         }
 
-        .question, .answer {
+        .question,
+        .answer {
             font-size: 1.5em;
             text-align: center;
         }
@@ -95,15 +106,7 @@
         }
     </style>
 </head>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZYB4JCXS5Z"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
 
-  gtag('config', 'G-ZYB4JCXS5Z');
-</script>
 <body>
     <div class="title">Epidemiology Study Flashcards (v0.1)</div>
     <div class="subtitle">Brought to you by René F. Najera, MPH, DrPH</div>
@@ -114,7 +117,8 @@
                 <p>What is the definition of epidemiology?</p>
             </div>
             <div class="answer">
-                <p>Epidemiology is the study of the distribution and determinants of health-related states or events in specified populations, and the application of this study to control health problems.</p>
+                <p>Epidemiology is the study of the distribution and determinants of health-related states or events in
+                    specified populations, and the application of this study to control health problems.</p>
                 <p class="reference">Source: CDC Principles of Epidemiology</p>
             </div>
         </div>
@@ -124,7 +128,8 @@
                 <p>What is the natural history of a disease?</p>
             </div>
             <div class="answer">
-                <p>The natural history of a disease refers to the progression of a disease process in an individual over time, from the onset to resolution or chronicity.</p>
+                <p>The natural history of a disease refers to the progression of a disease process in an individual over
+                    time, from the onset to resolution or chronicity.</p>
                 <p class="reference">Source: Merck Veterinary Manual</p>
             </div>
         </div>
@@ -144,7 +149,8 @@
                 <p>What is an epidemic?</p>
             </div>
             <div class="answer">
-                <p>An epidemic is the occurrence of more cases of a disease than expected in a given area or among a specific group of people over a particular period of time.</p>
+                <p>An epidemic is the occurrence of more cases of a disease than expected in a given area or among a
+                    specific group of people over a particular period of time.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
@@ -154,7 +160,9 @@
                 <p>What is the difference between incidence and prevalence?</p>
             </div>
             <div class="answer">
-                <p>Incidence refers to the number of new cases of a disease in a population during a specific time, while prevalence refers to the total number of cases, both new and existing, in a population at a specific time.</p>
+                <p>Incidence refers to the number of new cases of a disease in a population during a specific time,
+                    while prevalence refers to the total number of cases, both new and existing, in a population at a
+                    specific time.</p>
                 <p class="reference">Source: Merck Veterinary Manual</p>
             </div>
         </div>
@@ -164,7 +172,8 @@
                 <p>What is a case-control study?</p>
             </div>
             <div class="answer">
-                <p>A case-control study is a type of observational study that compares individuals with a specific condition (cases) to those without the condition (controls) to identify risk factors.</p>
+                <p>A case-control study is a type of observational study that compares individuals with a specific
+                    condition (cases) to those without the condition (controls) to identify risk factors.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
@@ -174,7 +183,8 @@
                 <p>What is herd immunity?</p>
             </div>
             <div class="answer">
-                <p>Herd immunity occurs when a large portion of a population becomes immune to a disease, making its spread unlikely.</p>
+                <p>Herd immunity occurs when a large portion of a population becomes immune to a disease, making its
+                    spread unlikely.</p>
                 <p class="reference">Source: CDC Principles of Epidemiology</p>
             </div>
         </div>
@@ -184,7 +194,8 @@
                 <p>What is the primary purpose of descriptive epidemiology?</p>
             </div>
             <div class="answer">
-                <p>The primary purpose of descriptive epidemiology is to describe the distribution of diseases and health outcomes in terms of person, place, and time.</p>
+                <p>The primary purpose of descriptive epidemiology is to describe the distribution of diseases and
+                    health outcomes in terms of person, place, and time.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
@@ -194,7 +205,8 @@
                 <p>What is the role of an epidemiologist?</p>
             </div>
             <div class="answer">
-                <p>An epidemiologist studies the distribution and determinants of health-related states or events and applies this knowledge to control health problems.</p>
+                <p>An epidemiologist studies the distribution and determinants of health-related states or events and
+                    applies this knowledge to control health problems.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
@@ -204,7 +216,8 @@
                 <p>What is a cohort study?</p>
             </div>
             <div class="answer">
-                <p>A cohort study is a type of observational study where a group of individuals who share a common characteristic is followed over time to observe outcomes.</p>
+                <p>A cohort study is a type of observational study where a group of individuals who share a common
+                    characteristic is followed over time to observe outcomes.</p>
                 <p class="reference">Source: Merck Veterinary Manual</p>
             </div>
         </div>
@@ -214,111 +227,123 @@
                 <p>What is a pandemic?</p>
             </div>
             <div class="answer">
-                <p>A pandemic is an epidemic that has spread over several countries or continents, usually affecting a large number of people.</p>
+                <p>A pandemic is an epidemic that has spread over several countries or continents, usually affecting a
+                    large number of people.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is the difference between a retrospective and a prospective study?</p>
             </div>
             <div class="answer">
-                <p>A retrospective study looks backward in time to examine exposure to risk factors, while a prospective study follows participants forward in time to observe outcomes.</p>
+                <p>A retrospective study looks backward in time to examine exposure to risk factors, while a prospective
+                    study follows participants forward in time to observe outcomes.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is a cross-sectional study?</p>
             </div>
             <div class="answer">
-                <p>A cross-sectional study examines data on exposure and outcome at the same point in time in a population.</p>
+                <p>A cross-sectional study examines data on exposure and outcome at the same point in time in a
+                    population.</p>
                 <p class="reference">Source: Merck Veterinary Manual</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What are the steps of an outbreak investigation?</p>
             </div>
             <div class="answer">
-                <p>Key steps include: establish a case definition, confirm the outbreak, identify cases, describe and orient data in terms of time, place, and person, develop hypotheses, test hypotheses, refine hypotheses, and implement control measures.</p>
+                <p>Key steps include: establish a case definition, confirm the outbreak, identify cases, describe and
+                    orient data in terms of time, place, and person, develop hypotheses, test hypotheses, refine
+                    hypotheses, and implement control measures.</p>
                 <p class="reference">Source: CDC Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is an endemic?</p>
             </div>
             <div class="answer">
-                <p>An endemic is the constant presence of a disease or infectious agent within a given geographic area or population group.</p>
+                <p>An endemic is the constant presence of a disease or infectious agent within a given geographic area
+                    or population group.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is the purpose of analytical epidemiology?</p>
             </div>
             <div class="answer">
-                <p>Analytical epidemiology seeks to identify causes or risk factors for diseases and health-related events by testing specific hypotheses.</p>
+                <p>Analytical epidemiology seeks to identify causes or risk factors for diseases and health-related
+                    events by testing specific hypotheses.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is attributable risk?</p>
             </div>
             <div class="answer">
-                <p>Attributable risk is the difference in disease risk between exposed and unexposed groups, showing the amount of disease risk that can be attributed to a specific exposure.</p>
+                <p>Attributable risk is the difference in disease risk between exposed and unexposed groups, showing the
+                    amount of disease risk that can be attributed to a specific exposure.</p>
                 <p class="reference">Source: Merck Veterinary Manual</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is the incubation period?</p>
             </div>
             <div class="answer">
-                <p>The incubation period is the time interval between exposure to an infectious agent and the appearance of the first signs or symptoms of the disease.</p>
+                <p>The incubation period is the time interval between exposure to an infectious agent and the appearance
+                    of the first signs or symptoms of the disease.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is the purpose of a case definition?</p>
             </div>
             <div class="answer">
-                <p>A case definition provides a set of standard criteria for classifying whether an individual has a particular disease or health condition.</p>
+                <p>A case definition provides a set of standard criteria for classifying whether an individual has a
+                    particular disease or health condition.</p>
                 <p class="reference">Source: CDC Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is a confounding variable?</p>
             </div>
             <div class="answer">
-                <p>A confounding variable is an extraneous factor that can distort the observed relationship between an exposure and an outcome.</p>
+                <p>A confounding variable is an extraneous factor that can distort the observed relationship between an
+                    exposure and an outcome.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is a point source epidemic?</p>
             </div>
             <div class="answer">
-                <p>A point source epidemic occurs when a group of people is exposed to the same source of infection at the same time.</p>
+                <p>A point source epidemic occurs when a group of people is exposed to the same source of infection at
+                    the same time.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is a propagating epidemic?</p>
@@ -328,77 +353,84 @@
                 <p class="reference">Source: CDC Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is a secondary attack rate?</p>
             </div>
             <div class="answer">
-                <p>The secondary attack rate is the proportion of susceptible individuals who develop the disease after exposure to a primary case.</p>
+                <p>The secondary attack rate is the proportion of susceptible individuals who develop the disease after
+                    exposure to a primary case.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is the iceberg concept of disease?</p>
             </div>
             <div class="answer">
-                <p>The iceberg concept refers to the idea that for every clinically apparent case of disease, there are many subclinical, undiagnosed, or asymptomatic cases.</p>
+                <p>The iceberg concept refers to the idea that for every clinically apparent case of disease, there are
+                    many subclinical, undiagnosed, or asymptomatic cases.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is surveillance in epidemiology?</p>
             </div>
             <div class="answer">
-                <p>Surveillance is the ongoing systematic collection, analysis, and interpretation of health data for planning, implementation, and evaluation of public health practice.</p>
+                <p>Surveillance is the ongoing systematic collection, analysis, and interpretation of health data for
+                    planning, implementation, and evaluation of public health practice.</p>
                 <p class="reference">Source: CDC Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is the difference between active and passive surveillance?</p>
             </div>
             <div class="answer">
-                <p>Active surveillance involves proactive data collection by health authorities, while passive surveillance relies on reports submitted by health providers.</p>
+                <p>Active surveillance involves proactive data collection by health authorities, while passive
+                    surveillance relies on reports submitted by health providers.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is the basic reproductive number (R0)?</p>
             </div>
             <div class="answer">
-                <p>The basic reproductive number (R0) is the average number of secondary cases produced by one primary case in a completely susceptible population.</p>
+                <p>The basic reproductive number (R0) is the average number of secondary cases produced by one primary
+                    case in a completely susceptible population.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is an odds ratio?</p>
             </div>
             <div class="answer">
-                <p>An odds ratio is a measure of association that quantifies the odds of exposure among cases relative to the odds of exposure among controls.</p>
+                <p>An odds ratio is a measure of association that quantifies the odds of exposure among cases relative
+                    to the odds of exposure among controls.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is a confidence interval?</p>
             </div>
             <div class="answer">
-                <p>A confidence interval is a range of values that likely contain the true value of a parameter, calculated from sample data.</p>
+                <p>A confidence interval is a range of values that likely contain the true value of a parameter,
+                    calculated from sample data.</p>
                 <p class="reference">Source: Merck Veterinary Manual</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is the null hypothesis in epidemiology?</p>
@@ -408,27 +440,29 @@
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is the role of randomization in a clinical trial?</p>
             </div>
             <div class="answer">
-                <p>Randomization helps ensure that treatment groups are comparable and eliminates bias in the allocation of treatments.</p>
+                <p>Randomization helps ensure that treatment groups are comparable and eliminates bias in the allocation
+                    of treatments.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is a p-value in epidemiology?</p>
             </div>
             <div class="answer">
-                <p>A p-value indicates the probability of observing the study results, or something more extreme, if the null hypothesis is true.</p>
+                <p>A p-value indicates the probability of observing the study results, or something more extreme, if the
+                    null hypothesis is true.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is a Type I error?</p>
@@ -438,7 +472,7 @@
                 <p class="reference">Source: Merck Veterinary Manual</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is a Type II error?</p>
@@ -448,197 +482,216 @@
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is recall bias?</p>
             </div>
             <div class="answer">
-                <p>Recall bias occurs when there are differences in the accuracy or completeness of the information recalled by study participants.</p>
+                <p>Recall bias occurs when there are differences in the accuracy or completeness of the information
+                    recalled by study participants.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is selection bias?</p>
             </div>
             <div class="answer">
-                <p>Selection bias occurs when the sample selected for a study is not representative of the target population.</p>
+                <p>Selection bias occurs when the sample selected for a study is not representative of the target
+                    population.</p>
                 <p class="reference">Source: Merck Veterinary Manual</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is effect modification?</p>
             </div>
             <div class="answer">
-                <p>Effect modification occurs when the effect of an exposure on an outcome differs depending on the level of another variable.</p>
+                <p>Effect modification occurs when the effect of an exposure on an outcome differs depending on the
+                    level of another variable.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is the purpose of matching in a case-control study?</p>
             </div>
             <div class="answer">
-                <p>Matching is used to control confounding by ensuring cases and controls are comparable for specific variables.</p>
+                <p>Matching is used to control confounding by ensuring cases and controls are comparable for specific
+                    variables.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is lead-time bias?</p>
             </div>
             <div class="answer">
-                <p>Lead-time bias occurs when earlier detection of a disease falsely appears to improve survival rates without actual improvements in outcomes.</p>
+                <p>Lead-time bias occurs when earlier detection of a disease falsely appears to improve survival rates
+                    without actual improvements in outcomes.</p>
                 <p class="reference">Source: Merck Veterinary Manual</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is length-time bias?</p>
             </div>
             <div class="answer">
-                <p>Length-time bias occurs when slower-progressing, less aggressive cases of a disease are more likely to be detected by screening than fast-progressing cases.</p>
+                <p>Length-time bias occurs when slower-progressing, less aggressive cases of a disease are more likely
+                    to be detected by screening than fast-progressing cases.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is primary prevention?</p>
             </div>
             <div class="answer">
-                <p>Primary prevention involves measures taken to prevent the occurrence of disease, such as vaccination or lifestyle modifications.</p>
+                <p>Primary prevention involves measures taken to prevent the occurrence of disease, such as vaccination
+                    or lifestyle modifications.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is secondary prevention?</p>
             </div>
             <div class="answer">
-                <p>Secondary prevention focuses on early detection and intervention to stop the progression of a disease.</p>
+                <p>Secondary prevention focuses on early detection and intervention to stop the progression of a
+                    disease.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is tertiary prevention?</p>
             </div>
             <div class="answer">
-                <p>Tertiary prevention involves measures to reduce complications and improve quality of life for people with a disease.</p>
+                <p>Tertiary prevention involves measures to reduce complications and improve quality of life for people
+                    with a disease.</p>
                 <p class="reference">Source: Merck Veterinary Manual</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is the difference between sensitivity and specificity?</p>
             </div>
             <div class="answer">
-                <p>Sensitivity is the ability of a test to correctly identify those with the disease, while specificity is the ability to correctly identify those without the disease.</p>
+                <p>Sensitivity is the ability of a test to correctly identify those with the disease, while specificity
+                    is the ability to correctly identify those without the disease.</p>
                 <p class="reference">Source: CDC Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is the purpose of a control group in a study?</p>
             </div>
             <div class="answer">
-                <p>The control group provides a baseline for comparison to determine the effect of an exposure or intervention.</p>
+                <p>The control group provides a baseline for comparison to determine the effect of an exposure or
+                    intervention.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is a risk ratio?</p>
             </div>
             <div class="answer">
-                <p>A risk ratio compares the risk of a health outcome in an exposed group to the risk in an unexposed group.</p>
+                <p>A risk ratio compares the risk of a health outcome in an exposed group to the risk in an unexposed
+                    group.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is a case-fatality rate?</p>
             </div>
             <div class="answer">
-                <p>The case-fatality rate is the proportion of individuals with a specific condition who die from that condition within a specified time.</p>
+                <p>The case-fatality rate is the proportion of individuals with a specific condition who die from that
+                    condition within a specified time.</p>
                 <p class="reference">Source: Merck Veterinary Manual</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is a p-value?</p>
             </div>
             <div class="answer">
-                <p>A p-value is the probability of obtaining the observed results, or more extreme ones, assuming the null hypothesis is true.</p>
+                <p>A p-value is the probability of obtaining the observed results, or more extreme ones, assuming the
+                    null hypothesis is true.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is confounding in epidemiology?</p>
             </div>
             <div class="answer">
-                <p>Confounding occurs when an extraneous variable is associated with both the exposure and the outcome, distorting the true relationship.</p>
+                <p>Confounding occurs when an extraneous variable is associated with both the exposure and the outcome,
+                    distorting the true relationship.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is an attributable fraction?</p>
             </div>
             <div class="answer">
-                <p>The attributable fraction is the proportion of cases in the population that can be attributed to a specific exposure.</p>
+                <p>The attributable fraction is the proportion of cases in the population that can be attributed to a
+                    specific exposure.</p>
                 <p class="reference">Source: Merck Veterinary Manual</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is a standard error?</p>
             </div>
             <div class="answer">
-                <p>The standard error is the standard deviation of the sampling distribution of a statistic, measuring its precision.</p>
+                <p>The standard error is the standard deviation of the sampling distribution of a statistic, measuring
+                    its precision.</p>
                 <p class="reference">Source: CDC Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is the difference between absolute risk reduction and relative risk reduction?</p>
             </div>
             <div class="answer">
-                <p>Absolute risk reduction is the difference in risk between two groups, while relative risk reduction is the proportionate reduction in risk.</p>
+                <p>Absolute risk reduction is the difference in risk between two groups, while relative risk reduction
+                    is the proportionate reduction in risk.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is an ecological study?</p>
             </div>
             <div class="answer">
-                <p>An ecological study analyzes data at the population or group level rather than the individual level.</p>
+                <p>An ecological study analyzes data at the population or group level rather than the individual level.
+                </p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is statistical power?</p>
@@ -648,127 +701,139 @@
                 <p class="reference">Source: Merck Veterinary Manual</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is the Kaplan-Meier method?</p>
             </div>
             <div class="answer">
-                <p>The Kaplan-Meier method is a statistical technique used to estimate survival probabilities over time.</p>
+                <p>The Kaplan-Meier method is a statistical technique used to estimate survival probabilities over time.
+                </p>
                 <p class="reference">Source: CDC Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is a hazard ratio?</p>
             </div>
             <div class="answer">
-                <p>A hazard ratio is a measure of how often a particular event happens in one group compared to another over time.</p>
+                <p>A hazard ratio is a measure of how often a particular event happens in one group compared to another
+                    over time.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is the difference between correlation and causation?</p>
             </div>
             <div class="answer">
-                <p>Correlation is a statistical association between two variables, while causation indicates one variable directly affects the other.</p>
+                <p>Correlation is a statistical association between two variables, while causation indicates one
+                    variable directly affects the other.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
-        </div>     
-        
+        </div>
+
         <div class="flashcard">
             <div class="question">
                 <p>What is a cohort study?</p>
             </div>
             <div class="answer">
-                <p>A cohort study follows a group of individuals over time to determine the incidence of disease and its association with exposures.</p>
+                <p>A cohort study follows a group of individuals over time to determine the incidence of disease and its
+                    association with exposures.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is a case definition in an outbreak investigation?</p>
             </div>
             <div class="answer">
-                <p>A case definition is a set of standard criteria used to classify whether an individual has a specific disease or condition.</p>
+                <p>A case definition is a set of standard criteria used to classify whether an individual has a specific
+                    disease or condition.</p>
                 <p class="reference">Source: CDC Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is the difference between a pandemic and an epidemic?</p>
             </div>
             <div class="answer">
-                <p>An epidemic is localized to a specific region or population, while a pandemic spans multiple countries or continents.</p>
+                <p>An epidemic is localized to a specific region or population, while a pandemic spans multiple
+                    countries or continents.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is the role of surveillance in public health?</p>
             </div>
             <div class="answer">
-                <p>Surveillance monitors disease trends and provides data for planning, implementing, and evaluating public health interventions.</p>
+                <p>Surveillance monitors disease trends and provides data for planning, implementing, and evaluating
+                    public health interventions.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is the attack rate in epidemiology?</p>
             </div>
             <div class="answer">
-                <p>The attack rate is the proportion of people who develop a disease among those at risk during a specific time.</p>
+                <p>The attack rate is the proportion of people who develop a disease among those at risk during a
+                    specific time.</p>
                 <p class="reference">Source: Merck Veterinary Manual</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is the difference between cross-sectional and longitudinal studies?</p>
             </div>
             <div class="answer">
-                <p>Cross-sectional studies assess data at one point in time, while longitudinal studies collect data over a period of time.</p>
+                <p>Cross-sectional studies assess data at one point in time, while longitudinal studies collect data
+                    over a period of time.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is a confounding variable?</p>
             </div>
             <div class="answer">
-                <p>A confounding variable is an external factor that distorts the observed relationship between exposure and outcome.</p>
+                <p>A confounding variable is an external factor that distorts the observed relationship between exposure
+                    and outcome.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is a null hypothesis?</p>
             </div>
             <div class="answer">
-                <p>The null hypothesis assumes no association between exposure and outcome, serving as a baseline for testing.</p>
+                <p>The null hypothesis assumes no association between exposure and outcome, serving as a baseline for
+                    testing.</p>
                 <p class="reference">Source: CDC Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is lead-time bias?</p>
             </div>
             <div class="answer">
-                <p>Lead-time bias occurs when earlier detection of a disease falsely appears to improve survival rates without affecting outcomes.</p>
+                <p>Lead-time bias occurs when earlier detection of a disease falsely appears to improve survival rates
+                    without affecting outcomes.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is ecological fallacy?</p>
@@ -778,37 +843,40 @@
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is an odds ratio?</p>
             </div>
             <div class="answer">
-                <p>An odds ratio quantifies the odds of exposure among cases relative to controls, used in case-control studies.</p>
+                <p>An odds ratio quantifies the odds of exposure among cases relative to controls, used in case-control
+                    studies.</p>
                 <p class="reference">Source: Merck Veterinary Manual</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is statistical significance?</p>
             </div>
             <div class="answer">
-                <p>Statistical significance indicates the likelihood that observed results are not due to chance, typically assessed with a p-value.</p>
+                <p>Statistical significance indicates the likelihood that observed results are not due to chance,
+                    typically assessed with a p-value.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is herd immunity?</p>
             </div>
             <div class="answer">
-                <p>Herd immunity occurs when enough people in a population are immune to a disease, reducing its spread.</p>
+                <p>Herd immunity occurs when enough people in a population are immune to a disease, reducing its spread.
+                </p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is the purpose of randomization in clinical trials?</p>
@@ -818,7 +886,7 @@
                 <p class="reference">Source: CDC Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is bias in epidemiological studies?</p>
@@ -828,27 +896,29 @@
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is length-time bias?</p>
             </div>
             <div class="answer">
-                <p>Length-time bias occurs when slower-progressing diseases are more likely to be detected by screening, giving a false impression of improved survival.</p>
+                <p>Length-time bias occurs when slower-progressing diseases are more likely to be detected by screening,
+                    giving a false impression of improved survival.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is a p-value?</p>
             </div>
             <div class="answer">
-                <p>A p-value is the probability of obtaining results as extreme as those observed, assuming the null hypothesis is true.</p>
+                <p>A p-value is the probability of obtaining results as extreme as those observed, assuming the null
+                    hypothesis is true.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is a Kaplan-Meier curve?</p>
@@ -858,27 +928,29 @@
                 <p class="reference">Source: CDC Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is the purpose of blinding in a study?</p>
             </div>
             <div class="answer">
-                <p>Blinding prevents bias by ensuring that participants and/or researchers do not know who is receiving the treatment or placebo.</p>
+                <p>Blinding prevents bias by ensuring that participants and/or researchers do not know who is receiving
+                    the treatment or placebo.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is an attributable risk percent?</p>
             </div>
             <div class="answer">
-                <p>An attributable risk percent quantifies the proportion of the risk of a disease in the exposed group that is due to the exposure.</p>
+                <p>An attributable risk percent quantifies the proportion of the risk of a disease in the exposed group
+                    that is due to the exposure.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is an epidemic curve?</p>
@@ -888,27 +960,29 @@
                 <p class="reference">Source: Merck Veterinary Manual</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is a secondary attack rate?</p>
             </div>
             <div class="answer">
-                <p>The secondary attack rate measures the spread of disease in a specific group, typically among contacts of primary cases.</p>
+                <p>The secondary attack rate measures the spread of disease in a specific group, typically among
+                    contacts of primary cases.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is a confidence interval?</p>
             </div>
             <div class="answer">
-                <p>A confidence interval is a range of values that is likely to contain the true population parameter.</p>
+                <p>A confidence interval is a range of values that is likely to contain the true population parameter.
+                </p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is incidence density?</p>
@@ -918,27 +992,29 @@
                 <p class="reference">Source: Merck Veterinary Manual</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is a proportional mortality ratio?</p>
             </div>
             <div class="answer">
-                <p>A proportional mortality ratio compares the number of deaths from a specific cause to the total number of deaths in a population.</p>
+                <p>A proportional mortality ratio compares the number of deaths from a specific cause to the total
+                    number of deaths in a population.</p>
                 <p class="reference">Source: CDC Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is relative risk reduction?</p>
             </div>
             <div class="answer">
-                <p>Relative risk reduction is the proportional decrease in risk between the control group and the experimental group.</p>
+                <p>Relative risk reduction is the proportional decrease in risk between the control group and the
+                    experimental group.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is the purpose of matching in case-control studies?</p>
@@ -948,7 +1024,7 @@
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is a cross-sectional study?</p>
@@ -958,147 +1034,162 @@
                 <p class="reference">Source: Merck Veterinary Manual</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What is a propagating epidemic?</p>
             </div>
             <div class="answer">
-                <p>A propagating epidemic is characterized by person-to-person transmission, resulting in a series of progressively taller peaks in cases.</p>
+                <p>A propagating epidemic is characterized by person-to-person transmission, resulting in a series of
+                    progressively taller peaks in cases.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
 
         <div class="flashcard">
             <div class="question">
-                <p>If a town reports 50 new cases of a disease in a population of 5,000 during a single month, what is the incidence rate?</p>
+                <p>If a town reports 50 new cases of a disease in a population of 5,000 during a single month, what is
+                    the incidence rate?</p>
             </div>
             <div class="answer">
                 <p>The incidence rate is 50/5,000 = 1%, or 10 cases per 1,000 population per month.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
-                <p>A study finds that smokers have a lung cancer risk 10 times higher than non-smokers. What measure does this ratio represent?</p>
+                <p>A study finds that smokers have a lung cancer risk 10 times higher than non-smokers. What measure
+                    does this ratio represent?</p>
             </div>
             <div class="answer">
                 <p>This represents the relative risk of lung cancer among smokers compared to non-smokers.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
-                <p>In a recent outbreak, most cases occurred within 24 hours of a wedding banquet. What type of epidemic does this suggest?</p>
+                <p>In a recent outbreak, most cases occurred within 24 hours of a wedding banquet. What type of epidemic
+                    does this suggest?</p>
             </div>
             <div class="answer">
                 <p>This suggests a point-source epidemic, where all cases result from a single exposure event.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What if a diagnostic test has a sensitivity of 90%? What does this mean for disease detection?</p>
             </div>
             <div class="answer">
-                <p>A sensitivity of 90% means the test correctly identifies 90% of individuals with the disease, but 10% may be false negatives.</p>
+                <p>A sensitivity of 90% means the test correctly identifies 90% of individuals with the disease, but 10%
+                    may be false negatives.</p>
                 <p class="reference">Source: Merck Veterinary Manual</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
-                <p>If a screening program detects many asymptomatic cases of a disease, what type of bias might this introduce?</p>
+                <p>If a screening program detects many asymptomatic cases of a disease, what type of bias might this
+                    introduce?</p>
             </div>
             <div class="answer">
-                <p>This could introduce length-time bias, as slower-progressing cases are more likely to be detected.</p>
+                <p>This could introduce length-time bias, as slower-progressing cases are more likely to be detected.
+                </p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
-                <p>During an outbreak, 20 cases are reported in a group of 100 exposed people. What is the attack rate?</p>
+                <p>During an outbreak, 20 cases are reported in a group of 100 exposed people. What is the attack rate?
+                </p>
             </div>
             <div class="answer">
                 <p>The attack rate is 20/100 = 20%.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>If an odds ratio is calculated as 2.5 in a case-control study, what does this indicate?</p>
             </div>
             <div class="answer">
-                <p>An odds ratio of 2.5 indicates that the odds of exposure are 2.5 times higher in cases than in controls.</p>
+                <p>An odds ratio of 2.5 indicates that the odds of exposure are 2.5 times higher in cases than in
+                    controls.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>A vaccine trial shows a relative risk reduction of 80%. What does this imply?</p>
             </div>
             <div class="answer">
-                <p>An 80% relative risk reduction means that the vaccinated group has 80% fewer cases compared to the unvaccinated group.</p>
+                <p>An 80% relative risk reduction means that the vaccinated group has 80% fewer cases compared to the
+                    unvaccinated group.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>If a disease is highly prevalent but has low incidence, what does this suggest about its nature?</p>
             </div>
             <div class="answer">
-                <p>This suggests the disease is chronic, with many existing cases but few new cases developing over time.</p>
+                <p>This suggests the disease is chronic, with many existing cases but few new cases developing over
+                    time.</p>
                 <p class="reference">Source: Merck Veterinary Manual</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What if a p-value is reported as 0.03? How should this result be interpreted?</p>
             </div>
             <div class="answer">
-                <p>A p-value of 0.03 indicates a 3% probability that the observed results occurred by chance, often considered statistically significant.</p>
+                <p>A p-value of 0.03 indicates a 3% probability that the observed results occurred by chance, often
+                    considered statistically significant.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What if an epidemic curve shows multiple peaks? What could this indicate?</p>
             </div>
             <div class="answer">
-                <p>Multiple peaks in an epidemic curve often indicate a propagating epidemic with person-to-person transmission.</p>
+                <p>Multiple peaks in an epidemic curve often indicate a propagating epidemic with person-to-person
+                    transmission.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>If a test has a specificity of 95%, what does this mean for non-disease detection?</p>
             </div>
             <div class="answer">
-                <p>A specificity of 95% means the test correctly identifies 95% of people without the disease, with a 5% false-positive rate.</p>
+                <p>A specificity of 95% means the test correctly identifies 95% of people without the disease, with a 5%
+                    false-positive rate.</p>
                 <p class="reference">Source: Merck Veterinary Manual</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
-                <p>A city implements a flu vaccine program, and the incidence of flu decreases significantly. What is this an example of?</p>
+                <p>A city implements a flu vaccine program, and the incidence of flu decreases significantly. What is
+                    this an example of?</p>
             </div>
             <div class="answer">
                 <p>This is an example of primary prevention, reducing the occurrence of disease through vaccination.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What if a study finds a relative risk of 1.0 between two groups? What does this imply?</p>
@@ -1108,166 +1199,189 @@
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>If a population has high herd immunity, what would you expect to happen to disease transmission?</p>
             </div>
             <div class="answer">
-                <p>High herd immunity reduces disease transmission, as there are fewer susceptible individuals for the pathogen to infect.</p>
+                <p>High herd immunity reduces disease transmission, as there are fewer susceptible individuals for the
+                    pathogen to infect.</p>
                 <p class="reference">Source: CDC Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>A study reports a confidence interval of 1.5 to 3.0 for an odds ratio. What does this mean?</p>
             </div>
             <div class="answer">
-                <p>This indicates that the true odds ratio is likely between 1.5 and 3.0, with a given confidence level (e.g., 95%).</p>
+                <p>This indicates that the true odds ratio is likely between 1.5 and 3.0, with a given confidence level
+                    (e.g., 95%).</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
-                <p>If a screening test detects more cases in one population than another, what factors could explain this?</p>
+                <p>If a screening test detects more cases in one population than another, what factors could explain
+                    this?</p>
             </div>
             <div class="answer">
-                <p>Factors could include differences in disease prevalence, access to healthcare, or the sensitivity and specificity of the test.</p>
+                <p>Factors could include differences in disease prevalence, access to healthcare, or the sensitivity and
+                    specificity of the test.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
-                <p>If a disease has an incubation period of 2-4 days, what does this suggest about its control measures?</p>
+                <p>If a disease has an incubation period of 2-4 days, what does this suggest about its control measures?
+                </p>
             </div>
             <div class="answer">
                 <p>Control measures need to be rapid to identify and isolate cases before they become infectious.</p>
                 <p class="reference">Source: Merck Veterinary Manual</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
-                <p>What if a new diagnostic test identifies all cases but also many false positives? How could this impact its use?</p>
+                <p>What if a new diagnostic test identifies all cases but also many false positives? How could this
+                    impact its use?</p>
             </div>
             <div class="answer">
-                <p>The test has high sensitivity but low specificity, leading to overdiagnosis and possibly unnecessary treatments.</p>
+                <p>The test has high sensitivity but low specificity, leading to overdiagnosis and possibly unnecessary
+                    treatments.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
-                <p>A researcher notes that areas with more hospitals have higher mortality rates. What type of bias could explain this?</p>
+                <p>A researcher notes that areas with more hospitals have higher mortality rates. What type of bias
+                    could explain this?</p>
             </div>
             <div class="answer">
-                <p>This could be an example of ecological fallacy, assuming a group-level association applies to individuals.</p>
+                <p>This could be an example of ecological fallacy, assuming a group-level association applies to
+                    individuals.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
-                <p>What if an outbreak investigation identifies a food item as the source of infection? What should happen next?</p>
+                <p>What if an outbreak investigation identifies a food item as the source of infection? What should
+                    happen next?</p>
             </div>
             <div class="answer">
                 <p>The food item should be recalled, and public warnings issued to prevent further exposure.</p>
                 <p class="reference">Source: CDC Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>If a vaccine has an efficacy of 70%, what does this mean?</p>
             </div>
             <div class="answer">
-                <p>Vaccine efficacy of 70% means a 70% reduction in disease incidence among the vaccinated group compared to the unvaccinated group.</p>
+                <p>Vaccine efficacy of 70% means a 70% reduction in disease incidence among the vaccinated group
+                    compared to the unvaccinated group.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>If a disease cluster is identified in a workplace, what steps should investigators take?</p>
             </div>
             <div class="answer">
-                <p>Investigators should define cases, collect exposure histories, and test hypotheses about the source and transmission route.</p>
+                <p>Investigators should define cases, collect exposure histories, and test hypotheses about the source
+                    and transmission route.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>What if a study only recruits participants from hospitals? What type of bias might occur?</p>
             </div>
             <div class="answer">
-                <p>This could result in selection bias, as hospital patients may not represent the general population.</p>
+                <p>This could result in selection bias, as hospital patients may not represent the general population.
+                </p>
                 <p class="reference">Source: Merck Veterinary Manual</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
-                <p>What if a screening test for cancer improves survival time without reducing mortality? What bias might this indicate?</p>
+                <p>What if a screening test for cancer improves survival time without reducing mortality? What bias
+                    might this indicate?</p>
             </div>
             <div class="answer">
-                <p>This suggests lead-time bias, where early detection does not change the natural history of the disease.</p>
+                <p>This suggests lead-time bias, where early detection does not change the natural history of the
+                    disease.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
-                <p>A rural village reports a sudden spike in diarrheal disease after a festival. What type of epidemic does this suggest?</p>
+                <p>A rural village reports a sudden spike in diarrheal disease after a festival. What type of epidemic
+                    does this suggest?</p>
             </div>
             <div class="answer">
-                <p>This suggests a point-source epidemic, likely linked to contaminated food or water at the festival.</p>
+                <p>This suggests a point-source epidemic, likely linked to contaminated food or water at the festival.
+                </p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
-                <p>What if a study’s confidence interval for an odds ratio includes 1.0? How should this result be interpreted?</p>
+                <p>What if a study’s confidence interval for an odds ratio includes 1.0? How should this result be
+                    interpreted?</p>
             </div>
             <div class="answer">
-                <p>If the confidence interval includes 1.0, the result is not statistically significant, as the null hypothesis cannot be rejected.</p>
+                <p>If the confidence interval includes 1.0, the result is not statistically significant, as the null
+                    hypothesis cannot be rejected.</p>
                 <p class="reference">Source: Merck Veterinary Manual</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>If a disease has a high basic reproductive number (R0), what does this imply about its spread?</p>
             </div>
             <div class="answer">
-                <p>A high R0 indicates the disease is highly transmissible and likely to spread widely without intervention.</p>
+                <p>A high R0 indicates the disease is highly transmissible and likely to spread widely without
+                    intervention.</p>
                 <p class="reference">Source: Gordis Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
-                <p>If a study finds a new intervention significantly reduces mortality, what should researchers consider next?</p>
+                <p>If a study finds a new intervention significantly reduces mortality, what should researchers consider
+                    next?</p>
             </div>
             <div class="answer">
-                <p>Researchers should evaluate the intervention’s feasibility, cost-effectiveness, and potential side effects before widespread implementation.</p>
+                <p>Researchers should evaluate the intervention’s feasibility, cost-effectiveness, and potential side
+                    effects before widespread implementation.</p>
                 <p class="reference">Source: Principles of Epidemiology</p>
             </div>
         </div>
-        
+
         <div class="flashcard">
             <div class="question">
                 <p>If a disease is endemic in a region, what does this mean about its occurrence?</p>
             </div>
             <div class="answer">
-                <p>An endemic disease is consistently present in a population or region, often at predictable levels.</p>
+                <p>An endemic disease is consistently present in a population or region, often at predictable levels.
+                </p>
                 <p class="reference">Source: CDC Principles of Epidemiology</p>
             </div>
-        </div>        
+        </div>
 
         <div>
             <button onclick="showRandomCard()">Choose A New Card</button>
@@ -1278,9 +1392,12 @@
             <ul>
                 <li>Gordis, L. (2014). <i>Epidemiology</i> (4th ed.). Elsevier.</li>
                 <li>Merck Veterinary Manual. Merck & Co., Inc. Updated December 2024. Accessed December 31, 2024.</li>
-                <li>Center for Disease Control. Bureau of Training, & Center for Disease Control. Bureau of Training. (1980). <i>Principles of Epidemiology : 3030-G</i>. Department of Health, Education, and Welfare, Public Health Service, Center for Disease Control.</li>
+                <li>Center for Disease Control. Bureau of Training, & Center for Disease Control. Bureau of Training.
+                    (1980). <i>Principles of Epidemiology : 3030-G</i>. Department of Health, Education, and Welfare,
+                    Public Health Service, Center for Disease Control.</li>
                 <li>H. Giovanni Antunez. (2024). <i>Principles of Epidemiology</i>. LibreTexts.</li>
-                <li>Broeck, J. V. den, & Brestoff, J. R. (2013). <i>Epidemiology : principles and practical guidelines</i> (1st ed. 2013.). Springer. https://doi.org/10.1007/978-94-007-5989-3</li>
+                <li>Broeck, J. V. den, & Brestoff, J. R. (2013). <i>Epidemiology : principles and practical
+                        guidelines</i> (1st ed. 2013.). Springer. https://doi.org/10.1007/978-94-007-5989-3</li>
             </ul>
         </div>
     </div>
@@ -1322,4 +1439,5 @@
         showRandomCard();
     </script>
 </body>
+
 </html>
