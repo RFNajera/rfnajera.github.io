@@ -17,6 +17,7 @@ This GitHub repository serves as my portfolio of coding-related projects, showca
 - **Web Development**: Tools and websites built for public health education and outreach.
   - Check out the [_Vaccine Fact Generator_](vaccine_fact_generator.html){:target="_blank"}.
   - Or check out [how _Herd Immunity_ works in a mathematical simulation](herd_immunity_simulation.html){:target="_blank"}.
+  - You can even study for your epidemiology intro course [with these flash cards!](epi_flash_cards.html){:target="_blank"}.
 - **Automation and Scripting**: Solutions to streamline workflows and enhance productivity.
 
 ---
