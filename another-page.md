@@ -1,6 +1,3 @@
----
-layout: default
----
 # Vaccine Fact Generator
 
 Welcome to the Vaccine Fact Generator. This is a work in progress. The functioning version can be found [here](https://rfnajera.github.io/vaccine_fact_generator.html). But you can try new functionalities on this page as I continue to develop it.
