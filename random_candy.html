@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +14,7 @@
             margin: 20px;
             padding: 20px;
         }
+
         h1 {
             font-family: 'Comic Neue', 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
             color: #ffffff;
@@ -22,6 +24,7 @@
             border-radius: 10px;
             box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
         }
+
         .instructions {
             background-color: #fff8dc;
             padding: 15px;
@@ -29,6 +32,7 @@
             margin-bottom: 20px;
             box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
         }
+
         button {
             background-color: #90ee90;
             border: none;
@@ -40,18 +44,23 @@
             margin: 10px 0;
             box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
         }
+
         button:hover {
             background-color: #76c776;
         }
+
         #results {
             background-color: #f0f8ff;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
         }
-        #results h2, #results h3 {
+
+        #results h2,
+        #results h3 {
             color: #4682b4;
         }
+
         table {
             border-collapse: collapse;
             width: 100%;
@@ -61,13 +70,19 @@
             border-radius: 10px;
             overflow: hidden;
         }
-        table, th, td {
+
+        table,
+        th,
+        td {
             border: 1px solid #ddd;
         }
-        th, td {
+
+        th,
+        td {
             padding: 10px;
             text-align: center;
         }
+
         ul {
             padding: 10px;
             background-color: #fffacd;
@@ -76,13 +91,18 @@
         }
     </style>
 </head>
+
 <body>
     <h1>Candy Proportion Simulator (v0.1)</h1>
 
     <div class="instructions">
-        <p><strong>Instructions:</strong> This is a fun game for a child and a parent to play together! Here's what to do:</p>
-        <p><strong>Child:</strong> Enter the number of Hershey's Kisses and Werther's Originals in the bag. Then click the "Hide Your Numbers" button to keep your numbers a secret from the parent.</p>
-        <p><strong>Parent:</strong> Choose the number of candies to sample and click the "Parent Sample" button to draw random samples from the bag. Use the results to estimate the proportions of each candy type. When you're ready, click "Reveal The Truth" to see how close your estimates were to the actual numbers.</p>
+        <p><strong>Instructions:</strong> This is a fun game for a child and a parent to play together! Here's what to
+            do:</p>
+        <p><strong>Child:</strong> Enter the number of Hershey's Kisses and Werther's Originals in the bag. Then click
+            the "Hide Your Numbers" button to keep your numbers a secret from the parent.</p>
+        <p><strong>Parent:</strong> Choose the number of candies to sample and click the "Parent Sample" button to draw
+            random samples from the bag. You can click it as many times as you wish to draw multiple samples. Use the results to estimate the proportions of each candy type. When you're
+            ready, click "Reveal The Truth" to see how close your estimates were to the actual numbers.</p>
     </div>
 
     <div id="child-input">
@@ -125,9 +145,11 @@
         <button onclick="revealTruth()">Reveal The Truth</button>
         <h3>Discussion Questions</h3>
         <ul>
-            <li>How did the 95% confidence interval change as the parent picked a bigger sample size? Did the margin of error change because of the sample size?</li>
+            <li>How did the 95% confidence interval change as the parent picked a bigger sample size? Did the margin of
+                error change because of the sample size?</li>
             <li>How did the margin of error change with the number of samples taken?</li>
-            <li>Can you give some examples where you might want to only sample a big group instead of asking the whole group the same question or take the same measurement?</li>
+            <li>Can you give some examples where you might want to only sample a big group instead of asking the whole
+                group the same question or take the same measurement?</li>
         </ul>
     </div>
 
@@ -178,7 +200,7 @@
 
             sampleResults.push({ hersheysCount, werthersCount, sampleSize });
             updateResultsTable();
-            calculateEstimates();
+            calculateEstimates(); // Ensure estimates are updated for every new sample
         }
 
         function updateResultsTable() {
@@ -207,6 +229,12 @@
         }
 
         function calculateEstimates() {
+            if (sampleResults.length === 0) {
+                document.getElementById('estimates').textContent = '';
+                document.getElementById('translated-estimates').textContent = '';
+                return;
+            }
+
             const totalSamples = sampleResults.reduce((sum, result) => sum + result.sampleSize, 0);
             const totalHersheys = sampleResults.reduce((sum, result) => sum + result.hersheysCount, 0);
             const proportionHersheys = totalHersheys / totalSamples;
@@ -215,14 +243,15 @@
             const lowerBound = (proportionHersheys - marginOfError).toFixed(3);
             const upperBound = (proportionHersheys + marginOfError).toFixed(3);
 
-            const estimatedCount = Math.round(proportionHersheys * totalCandy);
-            const lowerCount = Math.round(lowerBound * totalCandy);
-            const upperCount = Math.round(upperBound * totalCandy);
+            const estimatedCountHersheys = Math.round(proportionHersheys * totalCandy);
+            const lowerCountHersheys = Math.round(lowerBound * totalCandy);
+            const upperCountHersheys = Math.round(upperBound * totalCandy);
             const marginOfErrorCount = Math.round(marginOfError * totalCandy);
+            const estimatedCountWerthers = totalCandy - estimatedCountHersheys;
 
             document.getElementById('estimates').textContent = `Proportion of Hershey's Kisses: ${proportionHersheys.toFixed(3)}
             (95% CI: ${lowerBound} to ${upperBound}), Margin of Error: ${marginOfError.toFixed(3)}`;
-            document.getElementById('translated-estimates').textContent = `There are about ${estimatedCount} Hershey's Kisses. We are 95% confident the true number of Hershey's Kisses is between ${lowerCount} and ${upperCount} in your total of ${totalCandy} candies. The margin of error is ±${marginOfErrorCount} candies.`;
+            document.getElementById('translated-estimates').textContent = `There are about ${estimatedCountHersheys} Hershey's Kisses and ${estimatedCountWerthers} Werther's Originals in the bag. We are 95% confident the true number of Hershey's Kisses is between ${lowerCountHersheys} and ${upperCountHersheys} in your total of ${totalCandy} candies. The margin of error is ±${marginOfErrorCount} candies.`;
         }
 
         function revealTruth() {
@@ -247,8 +276,25 @@
             document.getElementById('werthers').value = '';
             document.getElementById('sample-size').value = '';
 
+            // Reset variables
+            originalHersheys = null;
+            originalWerthers = null;
+            totalCandy = null;
+
+            // Clear sample results
             sampleResults = [];
+
+            // Clear results and truth sections
+            document.getElementById('results-table').innerHTML = '';
+            document.getElementById('estimates').textContent = '';
+            document.getElementById('translated-estimates').textContent = '';
+
+            // Remove the dynamically appended "The Original Numbers" section
+            const truthDivs = document.querySelectorAll('#results > div:not(#summary)');
+            truthDivs.forEach(div => div.remove());
         }
+
     </script>
 </body>
+
 </html>
