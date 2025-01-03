@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candy Proportion Simulator</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #f9f9f9;
+            margin: 20px;
+            padding: 20px;
+        }
+        h1 {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            color: #ffffff;
+            background-color: #ffcc00;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .instructions {
+            background-color: #fff8dc;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            background-color: #90ee90;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 10px;
+            margin: 10px 0;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        button:hover {
+            background-color: #76c776;
+        }
+        #results {
+            background-color: #f0f8ff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        #results h2, #results h3 {
+            color: #4682b4;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+            background-color: white;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        ul {
+            padding: 10px;
+            background-color: #fffacd;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>Candy Proportion Simulator (v0.1)</h1>
+
+    <div class="instructions">
+        <p><strong>Instructions:</strong> This is a fun game for a child and a parent to play together! Here's what to do:</p>
+        <p><strong>Child:</strong> Enter the number of Hershey's Kisses and Werther's Originals in the bag. Then click the "Hide Your Numbers" button to keep your numbers a secret from the parent.</p>
+        <p><strong>Parent:</strong> Choose the number of candies to sample and click the "Parent Sample" button to draw random samples from the bag. Use the results to estimate the proportions of each candy type. When you're ready, click "Reveal The Truth" to see how close your estimates were to the actual numbers.</p>
+    </div>
+
+    <div id="child-input">
+        <label for="hersheys">Number of Hershey's Kisses:</label>
+        <input type="number" id="hersheys" min="0">
+        <br>
+        <label for="werthers">Number of Werther's Originals:</label>
+        <input type="number" id="werthers" min="0">
+        <br>
+        <button onclick="hideNumbers()">Step 1: Hide Your Numbers</button>
+    </div>
+
+    <div id="parent-sampling" style="display: none;">
+        <p>Total candies in the bag: <span id="total-candies"></span></p>
+        <label for="sample-size">Number of candies to sample:</label>
+        <input type="number" id="sample-size" min="1">
+        <br>
+        <button onclick="drawSample()">Step 2: Parent Sample</button>
+    </div>
+
+    <div id="results" style="display: none;">
+        <h2>Step 3: Results</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Sample #</th>
+                    <th>Hershey's Kisses</th>
+                    <th>Werther's Originals</th>
+                </tr>
+            </thead>
+            <tbody id="results-table"></tbody>
+        </table>
+
+        <div id="summary">
+            <h3>Point Estimate and 95% Confidence Interval</h3>
+            <p id="estimates"></p>
+            <p id="translated-estimates"></p>
+        </div>
+
+        <button onclick="revealTruth()">Reveal The Truth</button>
+        <h3>Discussion Questions</h3>
+        <ul>
+            <li>How did the 95% confidence interval change as the parent picked a bigger sample size? Did the margin of error change because of the sample size?</li>
+            <li>How did the margin of error change with the number of samples taken?</li>
+            <li>Can you give some examples where you might want to only sample a big group instead of asking the whole group the same question or take the same measurement?</li>
+        </ul>
+    </div>
+
+    <div id="reset" style="display: none;">
+        <button onclick="resetSimulation()">Reset</button>
+    </div>
+
+    <script>
+        let originalHersheys, originalWerthers, totalCandy;
+        let sampleResults = [];
+
+        function hideNumbers() {
+            originalHersheys = parseInt(document.getElementById('hersheys').value);
+            originalWerthers = parseInt(document.getElementById('werthers').value);
+
+            if (isNaN(originalHersheys) || isNaN(originalWerthers) || originalHersheys < 0 || originalWerthers < 0) {
+                alert('Please enter valid non-negative numbers for both candies.');
+                return;
+            }
+
+            totalCandy = originalHersheys + originalWerthers;
+
+            if (totalCandy === 0) {
+                alert('The total number of candies must be greater than zero.');
+                return;
+            }
+
+            document.getElementById('child-input').style.display = 'none';
+            document.getElementById('parent-sampling').style.display = 'block';
+            document.getElementById('total-candies').textContent = totalCandy;
+        }
+
+        function drawSample() {
+            const sampleSize = parseInt(document.getElementById('sample-size').value);
+
+            if (isNaN(sampleSize) || sampleSize <= 0) {
+                alert('Please enter a valid sample size.');
+                return;
+            }
+
+            let sample = [];
+            for (let i = 0; i < sampleSize; i++) {
+                sample.push(Math.random() < originalHersheys / totalCandy ? 'H' : 'W');
+            }
+
+            const hersheysCount = sample.filter(c => c === 'H').length;
+            const werthersCount = sampleSize - hersheysCount;
+
+            sampleResults.push({ hersheysCount, werthersCount, sampleSize });
+            updateResultsTable();
+            calculateEstimates();
+        }
+
+        function updateResultsTable() {
+            const tableBody = document.getElementById('results-table');
+            tableBody.innerHTML = '';
+
+            sampleResults.forEach((result, index) => {
+                const row = document.createElement('tr');
+
+                const sampleCell = document.createElement('td');
+                sampleCell.textContent = index + 1;
+                row.appendChild(sampleCell);
+
+                const hersheysCell = document.createElement('td');
+                hersheysCell.textContent = `${result.hersheysCount} (${((result.hersheysCount / result.sampleSize) * 100).toFixed(1)}%)`;
+                row.appendChild(hersheysCell);
+
+                const werthersCell = document.createElement('td');
+                werthersCell.textContent = `${result.werthersCount} (${((result.werthersCount / result.sampleSize) * 100).toFixed(1)}%)`;
+                row.appendChild(werthersCell);
+
+                tableBody.appendChild(row);
+            });
+
+            document.getElementById('results').style.display = 'block';
+        }
+
+        function calculateEstimates() {
+            const totalSamples = sampleResults.reduce((sum, result) => sum + result.sampleSize, 0);
+            const totalHersheys = sampleResults.reduce((sum, result) => sum + result.hersheysCount, 0);
+            const proportionHersheys = totalHersheys / totalSamples;
+
+            const marginOfError = 1.96 * Math.sqrt((proportionHersheys * (1 - proportionHersheys)) / totalSamples);
+            const lowerBound = (proportionHersheys - marginOfError).toFixed(3);
+            const upperBound = (proportionHersheys + marginOfError).toFixed(3);
+
+            const estimatedCount = Math.round(proportionHersheys * totalCandy);
+            const lowerCount = Math.round(lowerBound * totalCandy);
+            const upperCount = Math.round(upperBound * totalCandy);
+            const marginOfErrorCount = Math.round(marginOfError * totalCandy);
+
+            document.getElementById('estimates').textContent = `Proportion of Hershey's Kisses: ${proportionHersheys.toFixed(3)}
+            (95% CI: ${lowerBound} to ${upperBound}), Margin of Error: ${marginOfError.toFixed(3)}`;
+            document.getElementById('translated-estimates').textContent = `There are about ${estimatedCount} Hershey's Kisses. We are 95% confident the true number of Hershey's Kisses is between ${lowerCount} and ${upperCount} in your total of ${totalCandy} candies. The margin of error is ±${marginOfErrorCount} candies.`;
+        }
+
+        function revealTruth() {
+            const hersheysProportion = ((originalHersheys / totalCandy) * 100).toFixed(1);
+            const werthersProportion = ((originalWerthers / totalCandy) * 100).toFixed(1);
+
+            const truthDiv = document.createElement('div');
+            truthDiv.innerHTML = `<h3>The Original Numbers</h3>
+                                  <p>Hershey's Kisses: ${originalHersheys} (${hersheysProportion}%)</p>
+                                  <p>Werther's Originals: ${originalWerthers} (${werthersProportion}%)</p>`;
+            document.getElementById('results').appendChild(truthDiv);
+            document.getElementById('reset').style.display = 'block';
+        }
+
+        function resetSimulation() {
+            document.getElementById('child-input').style.display = 'block';
+            document.getElementById('parent-sampling').style.display = 'none';
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('reset').style.display = 'none';
+
+            document.getElementById('hersheys').value = '';
+            document.getElementById('werthers').value = '';
+            document.getElementById('sample-size').value = '';
+
+            sampleResults = [];
+        }
+    </script>
+</body>
+</html>
