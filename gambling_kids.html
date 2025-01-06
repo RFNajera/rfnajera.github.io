@@ -14,8 +14,9 @@
     <meta name="twitter:description"
         content="Play this electronic version of roulette and learn how games of chance work. Understand why the house always wins in the long run.">
     <meta name="twitter:image" content="https://rfnajera.github.io/assets/images/gambling_image.jpg">
-    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+
     <title>Roulette Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Comic Neue', 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
@@ -34,13 +35,11 @@
         }
 
         h1 {
-            font-family: 'Comic Neue', 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
             font-size: 2em;
             margin-bottom: 10px;
         }
 
         #instructions {
-            font-family: 'Comic Neue', 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
             font-size: 1.2em;
             margin-bottom: 20px;
             color: #555;
@@ -61,7 +60,7 @@
         #roulette-table {
             margin: 20px auto;
             display: grid;
-            grid-template-columns: repeat(12, minmax(40px, 1fr));
+            grid-template-columns: repeat(6, minmax(40px, 1fr));
             gap: 5px;
             justify-content: center;
             overflow-x: auto;
@@ -70,9 +69,8 @@
             box-sizing: border-box;
         }
 
-
         .roulette-cell {
-            width: 50px;
+            width: 100%;
             height: 50px;
             display: flex;
             justify-content: center;
@@ -274,14 +272,14 @@
             <div class="roulette-cell black" data-number="8">8</div>
             <div class="roulette-cell red" data-number="9">9</div>
             <div class="roulette-cell black" data-number="10">10</div>
-            <div class="roulette-cell black" data-number="11">11</div>
-            <div class="roulette-cell red" data-number="12">12</div>
-            <div class="roulette-cell black" data-number="13">13</div>
-            <div class="roulette-cell red" data-number="14">14</div>
-            <div class="roulette-cell black" data-number="15">15</div>
-            <div class="roulette-cell red" data-number="16">16</div>
-            <div class="roulette-cell black" data-number="17">17</div>
-            <div class="roulette-cell red" data-number="18">18</div>
+            <div class="roulette-cell red" data-number="11">11</div>
+            <div class="roulette-cell black" data-number="12">12</div>
+            <div class="roulette-cell red" data-number="13">13</div>
+            <div class="roulette-cell black" data-number="14">14</div>
+            <div class="roulette-cell red" data-number="15">15</div>
+            <div class="roulette-cell black" data-number="16">16</div>
+            <div class="roulette-cell red" data-number="17">17</div>
+            <div class="roulette-cell black" data-number="18">18</div>
             <div class="roulette-cell red" data-number="19">19</div>
             <div class="roulette-cell black" data-number="20">20</div>
             <div class="roulette-cell red" data-number="21">21</div>
@@ -393,69 +391,71 @@
             betPlaced = true;
         });
 
-        playGameButton.addEventListener('click', () => {
-            if (!betPlaced) {
-                alert('Please place a bet first.');
-                return;
-            }
-
-            const betAmount = parseInt(betAmountInput.value);
-            let possibleNumbers = Array.from({ length: 37 }, (_, i) => i);
-            let index = 0;
-            const interval = setInterval(() => {
-                flashingBox.textContent = possibleNumbers[index];
-                index = (index + 1) % possibleNumbers.length;
-            }, 100);
-
-            setTimeout(() => {
-                clearInterval(interval);
-                const winningNumber = possibleNumbers[Math.floor(Math.random() * possibleNumbers.length)];
-                flashingBox.textContent = winningNumber;
-
-                let result = 'LOSE';
-                let resultClass = 'lose';
-                let payout = 0;
-                const winningColor = getColor(winningNumber);
-
-                if (selectedBet === winningNumber.toString()) {
-                    result = 'WIN';
-                    resultClass = 'win';
-                    payout = betAmount * 35;
-                } else if (
-                    (selectedBet === 'red' && winningColor === 'red') ||
-                    (selectedBet === 'black' && winningColor === 'black') ||
-                    (selectedBet === 'odd' && winningNumber % 2 === 1) ||
-                    (selectedBet === 'even' && winningNumber % 2 === 0 && winningNumber !== 0)
-                ) {
-                    result = 'WIN';
-                    resultClass = 'win';
-                    payout = betAmount * 2;
+        playGameButton.addEventListener
+            ('click', () => {
+                if (!betPlaced) {
+                    alert('Please place a bet first.');
+                    return;
                 }
 
-                credit += payout;
-                creditDisplay.textContent = credit;
+                const betAmount = parseInt(betAmountInput.value);
+                const possibleNumbers = Array.from({ length: 37 }, (_, i) => i);
+                let index = 0;
+                const interval = setInterval(() => {
+                    flashingBox.textContent = possibleNumbers[index];
+                    index = (index + 1) % possibleNumbers.length;
+                }, 100);
 
-                const probability = getProbability(selectedBet).toFixed(2);
+                setTimeout(() => {
+                    clearInterval(interval);
+                    const winningNumber = possibleNumbers[Math.floor(Math.random() * possibleNumbers.length)];
+                    flashingBox.textContent = winningNumber;
 
-                const listItem = document.createElement('li');
-                listItem.innerHTML = `Bet: ${selectedBet}, Probability of winning: ${probability}%, Winning Number: ${winningNumber}, <span class="${resultClass}">${result}</span>, Remaining Credit: ${credit}`;
-                summaryList.appendChild(listItem);
+                    let result = 'LOSE';
+                    let resultClass = 'loser';
+                    let payout = 0;
+                    const winningColor = getColor(winningNumber);
 
-                resultMessage.textContent = result;
-                resultMessage.className = resultClass;
-                playGameButton.disabled = true;
-                betPlaced = false;
-            }, 3000);
-        });
+                    if (selectedBet === winningNumber.toString()) {
+                        result = 'WIN';
+                        resultClass = 'winner';
+                        payout = betAmount * 35;
+                    } else if (
+                        (selectedBet === 'red' && winningColor === 'red') ||
+                        (selectedBet === 'black' && winningColor === 'black') ||
+                        (selectedBet === 'odd' && winningNumber % 2 === 1) ||
+                        (selectedBet === 'even' && winningNumber % 2 === 0 && winningNumber !== 0)
+                    ) {
+                        result = 'WIN';
+                        resultClass = 'winner';
+                        payout = betAmount * 2;
+                    }
+
+                    credit += payout;
+                    creditDisplay.textContent = credit;
+
+                    const probability = getProbability(selectedBet).toFixed(2);
+
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `Bet: ${selectedBet}, Probability: ${probability}%, Winning Number: ${winningNumber}, <span class="${resultClass}">${result}</span>, Remaining Credit: ${credit}`;
+                    summaryList.appendChild(listItem);
+
+                    resultMessage.textContent = result;
+                    resultMessage.className = resultClass;
+                    playGameButton.disabled = true;
+                    betPlaced = false;
+                }, 3000);
+            });
+
+        // Copy link button functionality
         document.getElementById('copy-url-button').addEventListener('click', () => {
-            const url = 'URL_TO_YOUR_GAME_PAGE';
+            const url = 'https://rfnajera.github.io/gambling_kids.html';
             navigator.clipboard.writeText(url).then(() => {
-                alert('Game link copied to clipboard! Share it on Threads or Bluesky.');
+                alert('Game link copied to clipboard! Share it on your favorite platform.');
             }).catch(err => {
                 console.error('Failed to copy text: ', err);
             });
         });
-
     </script>
 </body>
 
