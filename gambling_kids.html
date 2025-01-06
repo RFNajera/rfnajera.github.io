@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Roulette Game - Learn the Odds!">
+    <meta property="og:description"
+        content="Play this electronic version of roulette and learn how games of chance work. Understand why the house always wins in the long run.">
+    <meta property="og:image" content="assets/images/gambling_image.jpg">
+    <meta property="og:url" content="https://rfnajera.github.io/gambling_kids.html">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Roulette Game - Learn the Odds!">
+    <meta name="twitter:description"
+        content="Play this electronic version of roulette and learn how games of chance work. Understand why the house always wins in the long run.">
+    <meta name="twitter:image" content="https://rfnajera.github.io/assets/images/gambling_image.jpg">
+
+    <title>Roulette Game</title>
+    <style>
+        body {
+            font-family: 'Comic Neue', 'Comic Sans MS', cursive;
+            background-color: #f9f9f9;
+            text-align: center;
+            margin: 20px;
+        }
+
+        #game-container {
+            max-width: 800px;
+            margin: auto;
+            background-color: #fffbe6;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        #instructions {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            color: #555;
+            text-align: left;
+        }
+
+        #credit-card {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #fff;
+            background-color: #28a745;
+            padding: 10px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        #roulette-table {
+            margin: 20px auto;
+            display: grid;
+            grid-template-columns: repeat(12, 50px);
+            gap: 5px;
+            justify-content: center;
+        }
+
+        .roulette-cell {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1em;
+            font-weight: bold;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .red {
+            background-color: red;
+        }
+
+        .black {
+            background-color: black;
+        }
+
+        .green {
+            background-color: green;
+        }
+
+        .roulette-cell:hover {
+            transform: scale(1.1);
+            transition: transform 0.2s;
+        }
+
+        #bet-options {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 10px auto;
+        }
+
+        .bet-option {
+            padding: 10px 20px;
+            background-color: #e6ffe6;
+            border: 2px solid #333;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .bet-option:hover {
+            background-color: #b3ffb3;
+        }
+
+        .selected {
+            border-color: #0000ff;
+        }
+
+        #flashing-box {
+            font-size: 2em;
+            margin: 20px auto;
+            width: 150px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #000;
+            border-radius: 10px;
+            background-color: #fff;
+            color: #333;
+        }
+
+        label {
+            font-size: 1.2em;
+        }
+
+        input {
+            font-size: 1.1em;
+            padding: 5px;
+            margin: 10px 0;
+        }
+
+        button {
+            font-size: 1.2em;
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        #play-button {
+            background-color: #b3ffb3;
+            color: #333;
+        }
+
+        #play-game-button {
+            background-color: #ffcccb;
+            color: #333;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        #result-message {
+            margin: 10px 0;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .winner {
+            color: green;
+        }
+
+        .loser {
+            color: red;
+        }
+
+        #game-summary {
+            margin-top: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+
+        .win {
+            color: green;
+        }
+
+        .lose {
+            color: red;
+        }
+
+        #player-choice {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            background-color: #fff;
+            width: 200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="game-container">
+        <h1>Roulette Game</h1>
+        <div id="instructions">
+            <p>Roulette is a popular casino game that has been played for centuries. Originating in France in the 18th
+                century, the game involves a spinning wheel divided into numbered slots, alternating between red, black,
+                and green. Players place bets on where they think a ball, spun in the opposite direction of the wheel,
+                will land. The thrill of the game comes from its blend of strategy and luck.</p>
+            <p>In a traditional casino, players can bet on a specific number, a color (red or black), or even/odd
+                numbers. Each bet has a different probability of winning and payout, making it an exciting game of
+                chance. While roulette is entertaining, it is important to remember that the house always has an edge,
+                meaning that over time, players are more likely to lose money than win.</p>
+            <p><strong>About This Version:</strong> This electronic version of roulette is designed to help you
+                understand how games of chance work and how, in the long run, they are more likely to take more of your
+                money than they return. It's a fun way to learn the odds and see why casinos are profitable!</p>
+            <p><strong>Payouts and Odds:</strong></p>
+            <ul>
+                <li>Bet on a specific number: <strong>Payout 35x</strong>, <strong>Odds: 2.70%</strong></li>
+                <li>Bet on red or black: <strong>Payout 2x</strong>, <strong>Odds: 48.65%</strong></li>
+                <li>Bet on odd or even: <strong>Payout 2x</strong>, <strong>Odds: 48.65%</strong></li>
+            </ul>
+        </div>
+        <div id="credit-card">Credit: <span id="credit">100</span> Dollarbucks</div>
+        <div id="bet-options">
+            <div class="bet-option" data-bet="red">Red</div>
+            <div class="bet-option" data-bet="black">Black</div>
+            <div class="bet-option" data-bet="odd">Odd</div>
+            <div class="bet-option" data-bet="even">Even</div>
+        </div>
+        <div id="roulette-table">
+            <div class="roulette-cell green" data-number="0">0</div>
+            <div class="roulette-cell red" data-number="1">1</div>
+            <div class="roulette-cell black" data-number="2">2</div>
+            <div class="roulette-cell red" data-number="3">3</div>
+            <div class="roulette-cell black" data-number="4">4</div>
+            <div class="roulette-cell red" data-number="5">5</div>
+            <div class="roulette-cell black" data-number="6">6</div>
+            <div class="roulette-cell red" data-number="7">7</div>
+            <div class="roulette-cell black" data-number="8">8</div>
+            <div class="roulette-cell red" data-number="9">9</div>
+            <div class="roulette-cell black" data-number="10">10</div>
+            <div class="roulette-cell black" data-number="11">11</div>
+            <div class="roulette-cell red" data-number="12">12</div>
+            <div class="roulette-cell black" data-number="13">13</div>
+            <div class="roulette-cell red" data-number="14">14</div>
+            <div class="roulette-cell black" data-number="15">15</div>
+            <div class="roulette-cell red" data-number="16">16</div>
+            <div class="roulette-cell black" data-number="17">17</div>
+            <div class="roulette-cell red" data-number="18">18</div>
+            <div class="roulette-cell red" data-number="19">19</div>
+            <div class="roulette-cell black" data-number="20">20</div>
+            <div class="roulette-cell red" data-number="21">21</div>
+            <div class="roulette-cell black" data-number="22">22</div>
+            <div class="roulette-cell red" data-number="23">23</div>
+            <div class="roulette-cell black" data-number="24">24</div>
+            <div class="roulette-cell red" data-number="25">25</div>
+            <div class="roulette-cell black" data-number="26">26</div>
+            <div class="roulette-cell red" data-number="27">27</div>
+            <div class="roulette-cell black" data-number="28">28</div>
+            <div class="roulette-cell red" data-number="29">29</div>
+            <div class="roulette-cell black" data-number="30">30</div>
+            <div class="roulette-cell black" data-number="31">31</div>
+            <div class="roulette-cell red" data-number="32">32</div>
+            <div class="roulette-cell black" data-number="33">33</div>
+            <div class="roulette-cell red" data-number="34">34</div>
+            <div class="roulette-cell black" data-number="35">35</div>
+            <div class="roulette-cell red" data-number="36">36</div>
+        </div>
+        <div id="player-choice">Your Choice: None</div>
+        <div>
+            <label for="bet-amount">Enter your bet amount:</label>
+            <input type="number" id="bet-amount" min="1" step="1">
+        </div>
+        <button id="play-button">Place Bet</button>
+        <button id="play-game-button" disabled>Play The Game!</button>
+        <div id="flashing-box">?</div>
+        <div id="result-message"></div>
+        <div id="game-summary">
+            <h2>Game Summary</h2>
+            <ul id="summary-list"></ul>
+        </div>
+        <div id="share-buttons" style="margin-top: 20px;">
+            <p>Share this game:</p>
+            <a href="https://www.facebook.com/sharer/sharer.php?u=URL_TO_YOUR_GAME_PAGE" target="_blank">
+                <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" width="30">
+            </a>
+            <a href="https://twitter.com/intent/tweet?url=URL_TO_YOUR_GAME_PAGE&text=Play%20this%20Roulette%20Game%20and%20Learn%20the%20Odds!" target="_blank">
+                <img src="https://cdn-icons-png.flaticon.com/512/733/733579.png" alt="Twitter" width="30">
+            </a>
+            <a href="https://www.linkedin.com/sharing/share-offsite/?url=URL_TO_YOUR_GAME_PAGE" target="_blank">
+                <img src="https://cdn-icons-png.flaticon.com/512/733/733561.png" alt="LinkedIn" width="30">
+            </a>
+            <button id="copy-url-button">Copy Game Link</button>
+        </div>        
+    </div>
+    <script>
+        let credit = 100;
+        let selectedBet = null;
+        let betPlaced = false;
+        const playButton = document.getElementById('play-button');
+        const playGameButton = document.getElementById('play-game-button');
+        const flashingBox = document.getElementById('flashing-box');
+        const resultMessage = document.getElementById('result-message');
+        const creditDisplay = document.getElementById('credit');
+        const betAmountInput = document.getElementById('bet-amount');
+        const summaryList = document.getElementById('summary-list');
+        const playerChoiceDisplay = document.getElementById('player-choice');
+
+        const getProbability = (bet) => {
+            if (!isNaN(parseInt(bet))) {
+                return (1 / 37) * 100; // Probability for a single number
+            } else if (['red', 'black', 'odd', 'even'].includes(bet)) {
+                return (18 / 37) * 100; // Probability for red, black, odd, or even
+            } else {
+                return 0;
+            }
+        };
+
+        const getColor = (number) => {
+            if (number === 0) return 'green';
+            const redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+            return redNumbers.includes(number) ? 'red' : 'black';
+        };
+
+        document.querySelectorAll('.bet-option, .roulette-cell').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.bet-option, .roulette-cell').forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+                selectedBet = option.getAttribute('data-bet') || option.getAttribute('data-number');
+                playerChoiceDisplay.textContent = `Your Choice: ${selectedBet}`;
+            });
+        });
+
+        playButton.addEventListener('click', () => {
+            if (betPlaced) {
+                alert('You have already placed a bet. Please play the game first.');
+                return;
+            }
+
+            const betAmount = parseInt(betAmountInput.value);
+            if (isNaN(betAmount) || betAmount <= 0) {
+                alert('Please enter a valid bet amount.');
+                return;
+            }
+            if (betAmount > credit) {
+                alert('You do not have enough credits.');
+                return;
+            }
+            if (!selectedBet) {
+                alert('Please select a bet option or a number.');
+                return;
+            }
+
+            credit -= betAmount;
+            creditDisplay.textContent = credit;
+            playGameButton.disabled = false;
+            betPlaced = true;
+        });
+
+        playGameButton.addEventListener('click', () => {
+            if (!betPlaced) {
+                alert('Please place a bet first.');
+                return;
+            }
+
+            const betAmount = parseInt(betAmountInput.value);
+            let possibleNumbers = Array.from({ length: 37 }, (_, i) => i);
+            let index = 0;
+            const interval = setInterval(() => {
+                flashingBox.textContent = possibleNumbers[index];
+                index = (index + 1) % possibleNumbers.length;
+            }, 100);
+
+            setTimeout(() => {
+                clearInterval(interval);
+                const winningNumber = possibleNumbers[Math.floor(Math.random() * possibleNumbers.length)];
+                flashingBox.textContent = winningNumber;
+
+                let result = 'LOSE';
+                let resultClass = 'lose';
+                let payout = 0;
+                const winningColor = getColor(winningNumber);
+
+                if (selectedBet === winningNumber.toString()) {
+                    result = 'WIN';
+                    resultClass = 'win';
+                    payout = betAmount * 35;
+                } else if (
+                    (selectedBet === 'red' && winningColor === 'red') ||
+                    (selectedBet === 'black' && winningColor === 'black') ||
+                    (selectedBet === 'odd' && winningNumber % 2 === 1) ||
+                    (selectedBet === 'even' && winningNumber % 2 === 0 && winningNumber !== 0)
+                ) {
+                    result = 'WIN';
+                    resultClass = 'win';
+                    payout = betAmount * 2;
+                }
+
+                credit += payout;
+                creditDisplay.textContent = credit;
+
+                const probability = getProbability(selectedBet).toFixed(2);
+
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `Bet: ${selectedBet}, Probability of winning: ${probability}%, Winning Number: ${winningNumber}, <span class="${resultClass}">${result}</span>, Remaining Credit: ${credit}`;
+                summaryList.appendChild(listItem);
+
+                resultMessage.textContent = result;
+                resultMessage.className = resultClass;
+                playGameButton.disabled = true;
+                betPlaced = false;
+            }, 3000);
+        });
+        document.getElementById('copy-url-button').addEventListener('click', () => {
+            const url = 'URL_TO_YOUR_GAME_PAGE';
+            navigator.clipboard.writeText(url).then(() => {
+                alert('Game link copied to clipboard! Share it on Threads or Bluesky.');
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        });
+
+    </script>
+</body>
+
+</html>
