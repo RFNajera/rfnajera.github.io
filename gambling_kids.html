@@ -14,13 +14,11 @@
     <meta name="twitter:description"
         content="Play this electronic version of roulette and learn how games of chance work. Understand why the house always wins in the long run.">
     <meta name="twitter:image" content="https://rfnajera.github.io/assets/images/gambling_image.jpg">
-    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
-    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
 
     <title>Roulette Game</title>
     <style>
         body {
-            font-family: 'Comic Neue', 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
+            font-family: 'Comic Neue', 'Comic Sans MS', cursive;
             background-color: #f9f9f9;
             text-align: center;
             margin: 20px;
@@ -36,13 +34,11 @@
         }
 
         h1 {
-            font-family: 'Comic Neue', 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
             font-size: 2em;
             margin-bottom: 10px;
         }
 
         #instructions {
-            font-family: 'Comic Neue', 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
             font-size: 1.2em;
             margin-bottom: 20px;
             color: #555;
@@ -63,10 +59,15 @@
         #roulette-table {
             margin: 20px auto;
             display: grid;
-            grid-template-columns: repeat(12, 50px);
+            grid-template-columns: repeat(12, minmax(40px, 1fr));
             gap: 5px;
             justify-content: center;
+            overflow-x: auto;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
+
 
         .roulette-cell {
             width: 50px;
@@ -188,7 +189,6 @@
         }
 
         #game-summary {
-            font-family: 'Comic Neue', 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
             margin-top: 20px;
             background-color: #fff;
             border-radius: 10px;
@@ -245,12 +245,12 @@
                 meaning that over time, players are more likely to lose money than win.</p>
             <p><strong>About This Version:</strong> This electronic version of roulette is designed to help you
                 understand how games of chance work and how, in the long run, they are more likely to take more of your
-                money than they return. It's a fun way to learn the probabilities and see why casinos are profitable!</p>
-            <p><strong>Payouts and Probabilities:</strong></p>
+                money than they return. It's a fun way to learn the odds and see why casinos are profitable!</p>
+            <p><strong>Payouts and Odds:</strong></p>
             <ul>
-                <li>Bet on a specific number: <strong>Payout 35x</strong>, <strong>Probability: 2.70%</strong></li>
-                <li>Bet on red or black: <strong>Payout 2x</strong>, <strong>Probability: 48.65%</strong></li>
-                <li>Bet on odd or even: <strong>Payout 2x</strong>, <strong>Probability: 48.65%</strong></li>
+                <li>Bet on a specific number: <strong>Payout 35x</strong>, <strong>Odds: 2.70%</strong></li>
+                <li>Bet on red or black: <strong>Payout 2x</strong>, <strong>Odds: 48.65%</strong></li>
+                <li>Bet on odd or even: <strong>Payout 2x</strong>, <strong>Odds: 48.65%</strong></li>
             </ul>
         </div>
         <div id="credit-card">Credit: <span id="credit">100</span> Dollarbucks</div>
@@ -317,14 +317,15 @@
             <a href="https://www.facebook.com/sharer/sharer.php?u=URL_TO_YOUR_GAME_PAGE" target="_blank">
                 <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" width="30">
             </a>
-            <a href="https://twitter.com/intent/tweet?url=URL_TO_YOUR_GAME_PAGE&text=Play%20this%20Roulette%20Game%20and%20Learn%20the%20Odds!" target="_blank">
+            <a href="https://twitter.com/intent/tweet?url=URL_TO_YOUR_GAME_PAGE&text=Play%20this%20Roulette%20Game%20and%20Learn%20the%20Odds!"
+                target="_blank">
                 <img src="https://cdn-icons-png.flaticon.com/512/733/733579.png" alt="Twitter" width="30">
             </a>
             <a href="https://www.linkedin.com/sharing/share-offsite/?url=URL_TO_YOUR_GAME_PAGE" target="_blank">
                 <img src="https://cdn-icons-png.flaticon.com/512/733/733561.png" alt="LinkedIn" width="30">
             </a>
             <button id="copy-url-button">Copy Game Link</button>
-        </div>        
+        </div>
     </div>
     <script>
         let credit = 100;
