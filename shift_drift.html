@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+    <meta property="og:title" content="Shift and Drift Examples" />
+    <meta property="og:description" content="Look at how small changes and big changes can change the meaning of a gene." />
+    <meta property="og:image" content="https://rfnajera.github.io/assets/images/genetic_shift_drift.jpg" />
+    <meta property="og:url" content="https://rfnajera.github.io/shift_drift.html" />
+    <meta property="og:type" content="website" />
+    <title>Genetic Drift and Shift</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #f5f5dc;
+        }
+        canvas {
+            border: 1px solid black;
+            display: block;
+            margin: 20px auto;
+        }
+        button {
+            font-size: 1em;
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+        }
+        #introduction {
+            max-width: 800px;
+            margin: 20px auto;
+            text-align: left;
+        }
+        #followup {
+            max-width: 800px;
+            margin: 20px auto;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Genetic Drift and Shift</h1>
+    <div id="introduction">
+        <p>Influenza viruses are masters of adaptation. They undergo two key processes known as <strong>genetic drift</strong> and <strong>genetic shift</strong>. Genetic drift refers to the small, gradual changes in the virus's genetic material that happen over time. These changes can slightly alter the virus's surface proteins, helping it evade the immune system. On the other hand, genetic shift is a more dramatic process where two different influenza viruses combine their genetic material, resulting in a completely new virus. This is how pandemics like the 2009 H1N1 flu can occur.</p>
+        <p>These processes explain why the flu vaccine needs to be updated every year. The continuous changes in the virus mean that last year's vaccine might not provide full protection against this year's circulating strains. Understanding genetic drift and shift helps us appreciate the complexity of flu viruses and the importance of annual flu vaccination.</p>
+        <p>Press a button to see how a "drift" or "shift" in sentences can change their meaning, much like a shift or drift in genes can change the appearance of the virus to our immune system.</p>
+    </div>
+    <canvas id="quoteCanvas" width="400" height="200"></canvas>
+    <button onclick="applyDrift()" aria-label="Apply genetic drift">Drift</button>
+    <button onclick="applyShift()" aria-label="Apply genetic shift">Shift</button>
+    <button onclick="pickNewSentence()" aria-label="Pick a new random sentence">New Sentence</button>
+    <div id="followup">
+    <p>As you can see, a slight change in the sentence changes its meaning, but not too drastically. But a shift in the sentence can change the sentence to something completely else. This happens with the genes inside the flu virus. A drift confuses our immune system, while a shift really throws it for a loop!</p>
+    <p>Read more about this phenomenon in viruses (and some bacteria) on this page: <a href="https://www.cdc.gov/flu/php/viruses/change.html" target="_blank">https://www.cdc.gov/flu/php/viruses/change.html</a></p>
+    </div>
+    <script>
+        const canvas = document.getElementById('quoteCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const quotes = [
+            "Jack and Jill ran up a hill.",
+            "The cat in the hat sat on the mat.",
+            "Winnie the Pooh loved honey.",
+            "Peter Pan flew to Neverland.",
+            "Alice fell down the rabbit hole.",
+            "Mary had a little lamb.",
+            "Humpty Dumpty sat on a wall.",
+            "Twinkle, twinkle, little star.",
+            "The wheels on the bus go round and round.",
+            "Old MacDonald had a farm.",
+            "Row, row, row your boat.",
+            "Hickory dickory dock, the mouse ran up the clock.",
+            "Little Bo Peep lost her sheep.",
+            "Baa, baa, black sheep, have you any wool?",
+            "Itsy bitsy spider climbed up the water spout."
+        ];
+
+        const drifts = [
+            "Jack and Jill ran up a bill.",
+            "The cat in the hat sat on a rat.",
+            "Winnie the Pooh loved money.",
+            "Peter Pan flew to Disneyland.",
+            "Alice fell down a rabbit toll.",
+            "Mary had a little jam.",
+            "Humpty Dumpty sat on a ball.",
+            "Twinkle, twinkle, bright star.",
+            "The wheels on the bus go up and down.",
+            "Old MacDonald had a barn.",
+            "Row, row, tow your boat.",
+            "Hickory dickory dock, the cat ran up the clock.",
+            "Little Bo Peep found her sheep.",
+            "Baa, baa, black sheep, have you some wool?",
+            "Itsy bitsy spider crawled up the water spout."
+        ];
+
+        const shifts = [
+            "Jack and Jill frantically still.",
+            "The bat and the gnat met on a mat.",
+            "Winnie the Bear wore something sunny.",
+            "Peter Pan danced to a band.",
+            "Alice rose from a gravel hole.",
+            "Larry fed a little ram.",
+            "Humpty Dumpty built a small mall.",
+            "Flicker, flicker, distant car.",
+            "The sails on the ship go back and forth.",
+            "Old MacDonald ran a charm.",
+            "Tow, tow, row your cart.",
+            "Tick tock, tick tock, the mouse ran from the flock.",
+            "Bo Peep danced with her sheep.",
+            "Baa, baa, lost sheep, have you found gold?",
+            "Great big spider climbed up a stormy route."
+        ];
+
+        let currentIndex = 0;
+
+        function drawTextWithEffect(text) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.font = '20px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = 'black';
+
+            let opacity = 1.0;
+
+            const dissolveOut = setInterval(() => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.globalAlpha = opacity;
+                ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+                opacity -= 0.1;
+                if (opacity <= 0) {
+                    clearInterval(dissolveOut);
+                    drawFinalText(text);
+                }
+            }, 50);
+        }
+
+        function drawFinalText(text) {
+            let opacity = 0.0;
+
+            const dissolveIn = setInterval(() => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.globalAlpha = opacity;
+                ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+                opacity += 0.1;
+                if (opacity >= 1) {
+                    clearInterval(dissolveIn);
+                }
+            }, 50);
+        }
+
+        function applyDrift() {
+            const currentQuote = quotes[currentIndex];
+            const driftedQuote = drifts[currentIndex];
+            drawTextWithEffect(driftedQuote);
+        }
+
+        function applyShift() {
+            const currentQuote = quotes[currentIndex];
+            const shiftedQuote = shifts[currentIndex];
+            drawTextWithEffect(shiftedQuote);
+        }
+
+        function pickNewSentence() {
+            currentIndex = Math.floor(Math.random() * quotes.length);
+            const newQuote = quotes[currentIndex];
+            drawTextWithEffect(newQuote);
+        }
+
+        // Initialize with the first quote
+        drawTextWithEffect(quotes[currentIndex]);
+    </script>
+</body>
+</html>
