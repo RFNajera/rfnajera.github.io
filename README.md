@@ -22,6 +22,7 @@ This GitHub repository serves as my portfolio of coding-related projects, showca
   - You can even study for your epidemiology intro course [with these flash cards!](epi_flash_cards.html){:target="_blank"}.
   - Want to teach your kid about inferential statistics? Start with the [random candy game](random_candy.html){:target="_blank"}.
   - Want to teach your kid about probability and gambling? Start with the [roulette game simulator](gambling_kids.html){:target="_blank"}.
+  - Show your kid how genetic shift and drift happens, using examples from literature with [this quick simulation](shift_drift.html){:target="_blank"}.
 - **Automation and Scripting**: Solutions to streamline workflows and enhance productivity.
 
 ---
