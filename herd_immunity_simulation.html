@@ -93,7 +93,7 @@
             </li>
             <li>
                 The percent vaccinated remains what you picked. Often times, people who are not vaccinated will get
-                vaccinated during an outbreak
+                vaccinated during an outbreak.
             </li>
             <li>
                 The R-naught (R<sub>0</sub>, which is the number of people one case infects) remains the same throughout
@@ -137,6 +137,7 @@
                 <mo>-</mo>
                 <mfrac>
                     <mn>1</mn>
+                    <mo>/</mo>
                     <mi>R</mi>
                     <sub>
                         <mn>0</mn>
@@ -148,9 +149,19 @@
             Notice how different the number of cases in the vaccinated and unvaccinated are, depending on the value of
             "Percent Vaccinated" versus the threshold. And notice the speed at which the outbreak happens.
         </p>
+        <h2>Common R<sub>0</sub> Values for Diseases</h2>
+        <ul>
+            <li>Seasonal Flu: 2</li>
+            <li>Ebola: 2.5</li>
+            <li>Diphtheria: 2.6</li>
+            <li>Common Cold: 3</li>
+            <li>Mumps: 7</li>
+            <li>COVID-19 (Delta): 8</li>
+            <li>Chickenpox: 12</li>
+            <li>Measles: 18</li>
+        </ul>
     </div>
 
-    </div>
     <div id="controls">
         <div class="input-container">
             <label for="population">Population Size (50-2000):</label><br>
@@ -161,17 +172,8 @@
             <input type="number" id="vaccinated" min="0" max="100" step="1" value="95">
         </div>
         <div class="input-container">
-            <label for="infection-rate">R<sub>0</sub>:</label><br>
-            <select id="infection-rate">
-                <option value="2">Seasonal Flu: 2</option>
-                <option value="2.5">Ebola: 2.5</option>
-                <option value="2.6">Diphtheria: 2.6</option>
-                <option value="3">Common Cold: 3</option>
-                <option value="7">Mumps: 7</option>
-                <option value="8">COVID-19 (Delta): 8</option>
-                <option value="12">Chickenpox: 12</option>
-                <option value="18" selected>Measles: 18</option>
-            </select>
+            <label for="r0">R<sub>0</sub> (Enter a value):</label><br>
+            <input type="number" id="r0" min="0" step="0.1" value="18">
         </div>
         <div class="input-container">
             <label for="initial-infected">Number of Initial Infections (1-50):</label><br>
@@ -274,7 +276,7 @@
         const ctx = canvas.getContext('2d');
         const populationInput = document.getElementById('population');
         const vaccinatedInput = document.getElementById('vaccinated');
-        const infectionRateInput = document.getElementById('infection-rate');
+        const r0Input = document.getElementById('r0');
         const initialInfectedInput = document.getElementById('initial-infected');
         const vaccineEffectivenessInput = document.getElementById('vaccine-effectiveness');
         const infectionToInfectiousInput = document.getElementById('infection-to-infectious');
@@ -315,8 +317,8 @@
                 particles.push({
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height,
-                    dx: (Math.random() - 0.5) * 2, // Random speed in x direction
-                    dy: (Math.random() - 0.5) * 2, // Random speed in y direction
+                    dx: (Math.random() - 0.5) * 2,
+                    dy: (Math.random() - 0.5) * 2,
                     infected: false,
                     immune: true,
                     vaccinated: true,
@@ -366,31 +368,24 @@
         }
 
         function updateAttackRatesFromTable() {
-            // Get values from the table
             const initialGreenCount = parseInt(document.getElementById('initial-immune-count').textContent);
             const initialBlueCount = parseInt(document.getElementById('initial-non-immune-vaccinated-count').textContent);
             const finalBlueCount = parseInt(document.getElementById('final-non-immune-vaccinated-count').textContent);
             const initialGrayCount = parseInt(document.getElementById('initial-unvaccinated-count').textContent);
             const finalGrayCount = parseInt(document.getElementById('final-unvaccinated-count').textContent);
 
-            // Calculate numerator and denominator for attack rates
             const vaccinatedInfected = initialBlueCount - finalBlueCount;
             const unvaccinatedInfected = initialGrayCount - finalGrayCount;
             const initialVaccinatedTotal = initialGreenCount + initialBlueCount;
 
-            // Calculate attack rates
             const attackRateVaccinated = initialVaccinatedTotal > 0 ? (vaccinatedInfected / initialVaccinatedTotal) : 0;
             const attackRateUnvaccinated = initialGrayCount > 0 ? (unvaccinatedInfected / initialGrayCount) : 0;
-
-            // Calculate rate ratio
             const rateRatio = attackRateUnvaccinated > 0 ? (attackRateVaccinated / attackRateUnvaccinated) : 0;
 
-            // Update the table
             document.getElementById('attack-rate-vaccinated').textContent = attackRateVaccinated.toFixed(8);
             document.getElementById('attack-rate-unvaccinated').textContent = attackRateUnvaccinated.toFixed(8);
             document.getElementById('rate-ratio').textContent = rateRatio.toFixed(8);
 
-            // Debugging logs
             console.log('Vaccinated Infected:', vaccinatedInfected);
             console.log('Unvaccinated Infected:', unvaccinatedInfected);
             console.log('Attack Rate Vaccinated:', attackRateVaccinated);
@@ -402,26 +397,27 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             particles.forEach(p => {
+                let radius = 5;
+                if (p.color === 'red') {
+                    // Active cases appear larger until recovery
+                    radius = 7;
+                }
                 ctx.beginPath();
-                ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+                ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
                 ctx.fillStyle = p.color;
                 ctx.fill();
                 ctx.closePath();
 
-                p.x += p.dx
+                p.x += p.dx;
                 if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
                 if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
-                // Update movement with randomness
                 p.dx += (Math.random() - 0.5) * 0.2;
                 p.dy += (Math.random() - 0.5) * 0.2;
-                // Limit speed to prevent excessive movement
                 const maxSpeed = 2;
                 p.dx = Math.max(-maxSpeed, Math.min(maxSpeed, p.dx));
                 p.dy = Math.max(-maxSpeed, Math.min(maxSpeed, p.dy));
-                // Update positions
                 p.x += p.dx;
                 p.y += p.dy;
-                // Bounce off walls
                 if (p.x < 0) {
                     p.x = 0;
                     p.dx *= -1;
@@ -439,25 +435,23 @@
                 }
             });
         }
-        let totalInfections = 0; // Track total infections during simulation
-        const newInfectionsPerSecond = []; // Track new infections per second
-        let timerInterval; // To manage timer display
+
+        let totalInfections = 0;
+        const newInfectionsPerSecond = [];
+        let timerInterval;
 
         function resetUI() {
-            // Reset the table counts
             finalImmuneCountCell.textContent = "0";
             finalNonImmuneVaccinatedCountCell.textContent = "0";
             finalUnvaccinatedCountCell.textContent = "0";
             finalInfectedCountCell.textContent = "0";
             finalRecoveredCountCell.textContent = "0";
 
-            // Remove any existing histogram
             const existingCanvas = document.querySelector("canvas[style]");
             if (existingCanvas) {
                 existingCanvas.remove();
             }
 
-            // Reset timer
             const timerElement = document.getElementById("simulation-timer");
             if (timerElement) {
                 timerElement.textContent = "0 Days From First Case";
@@ -488,7 +482,7 @@
                                     p2.color = 'red';
                                     p2.infectionTime = currentTime;
                                     p1.infectionsCaused++;
-                                    totalInfections++; // Increment total infections
+                                    totalInfections++;
                                     newInfectionsPerSecond[elapsedSeconds]++;
                                 }
                             }
@@ -506,28 +500,23 @@
             const currentTime = Date.now();
             const elapsedTime = (currentTime - simulationStartTime) / 1000;
 
-            // Check if all reds have recovered
             const noMoreRed = particles.every(p => p.color !== 'red');
 
-            // Check if two incubation periods have passed since the last red particle
             if (noMoreRed) {
                 if (!checkSimulationEnd.lastRedTime) {
-                    checkSimulationEnd.lastRedTime = currentTime; // Record the time when reds became zero
+                    checkSimulationEnd.lastRedTime = currentTime;
                 }
 
                 const timeSinceLastRed = (currentTime - checkSimulationEnd.lastRedTime) / 1000;
                 if (timeSinceLastRed >= 2 * infectionToInfectiousTime) {
-                    // Stop the simulation if two incubation periods have passed
                     simulationRunning = false;
                     clearInterval(timerInterval);
                     return elapsedTime;
                 }
             } else {
-                // Reset the lastRedTime if there are still red particles
                 checkSimulationEnd.lastRedTime = null;
             }
 
-            // Stop simulation if maxTime is reached
             if (elapsedTime >= maxTime) {
                 simulationRunning = false;
                 clearInterval(timerInterval);
@@ -564,13 +553,12 @@
                 }
             });
 
-            // Maintain the initial green count for vaccinated and immune
             finalCounts.green = initialGreenCount;
 
-            finalImmuneCountCell.textContent = initialGreenCount; // Display the initial count unchanged
+            finalImmuneCountCell.textContent = initialGreenCount;
             finalNonImmuneVaccinatedCountCell.textContent = finalCounts.blue;
             finalUnvaccinatedCountCell.textContent = finalCounts.gray;
-            finalInfectedCountCell.textContent = totalInfections; // Use total infections for final red count
+            finalInfectedCountCell.textContent = totalInfections;
             finalRecoveredCountCell.textContent = Math.min(finalCounts.recovered, totalInfections);
 
             drawHistogram();
@@ -581,8 +569,8 @@
             const histogramCanvas = document.createElement('canvas');
             const maxInfections = Math.max(...newInfectionsPerSecond);
             const barWidth = 600 / newInfectionsPerSecond.length;
-            const barHeightMultiplier = 20; // Adjusts the histogram height scaling
-            const canvasHeight = Math.min(600, maxInfections * barHeightMultiplier + 50); // Dynamic height
+            const barHeightMultiplier = 20;
+            const canvasHeight = Math.min(600, maxInfections * barHeightMultiplier + 50);
 
             histogramCanvas.width = 600;
             histogramCanvas.height = canvasHeight;
@@ -592,7 +580,7 @@
             const ctx = histogramCanvas.getContext('2d');
 
             newInfectionsPerSecond.forEach((count, index) => {
-                const barHeight = (count / maxInfections) * (canvasHeight - 50); // Leave space for labels
+                const barHeight = (count / maxInfections) * (canvasHeight - 50);
                 ctx.fillStyle = 'blue';
                 ctx.fillRect(index * barWidth, canvasHeight - barHeight - 20, barWidth - 2, barHeight);
 
@@ -605,27 +593,26 @@
             ctx.font = '12px Arial';
             ctx.fillText('Days', 600 / 2 - 20, canvasHeight - 5);
         }
-        function startSimulation() {
-            resetUI(); // Reset the UI before starting
 
-            // Cancel any ongoing animation loop
+        function startSimulation() {
+            resetUI();
+
             if (animationFrameId) {
                 cancelAnimationFrame(animationFrameId);
             }
 
-            // Reset particles array
             particles = [];
 
             const populationSize = parseInt(populationInput.value);
             const vaccinatedPercentage = parseFloat(vaccinatedInput.value);
-            const infectionRate = parseFloat(infectionRateInput.options[infectionRateInput.selectedIndex].value);
+            const infectionRate = parseFloat(r0Input.value);
             const initialInfected = parseInt(initialInfectedInput.value);
             const vaccineEffectiveness = parseFloat(vaccineEffectivenessInput.value);
             const infectionToInfectious = parseFloat(infectionToInfectiousInput.value);
             const infectiousPeriod = parseFloat(infectiousPeriodInput.value);
 
-            totalInfections = initialInfected; // Initialize with initial infected count
-            newInfectionsPerSecond.length = 0; // Reset histogram data
+            totalInfections = initialInfected;
+            newInfectionsPerSecond.length = 0;
 
             const initialGreenCount = Math.floor(populationSize * (vaccinatedPercentage / 100) * (vaccineEffectiveness / 100));
 
@@ -633,7 +620,6 @@
             simulationStartTime = Date.now();
             simulationRunning = true;
 
-            // Define a function to update the timer
             function updateTimer() {
                 const currentTime = Date.now();
                 const elapsedSeconds = Math.floor((currentTime - simulationStartTime) / 1000);
@@ -643,24 +629,22 @@
             function animate() {
                 if (!simulationRunning) return;
 
-                updateTimer(); // Call the timer update function
+                updateTimer();
                 drawParticles();
                 updateParticles(infectionRate, infectionToInfectious, infectiousPeriod);
 
-                const elapsedTime = checkSimulationEnd(120, infectionToInfectious); // Pass infectionToInfectious time
+                const elapsedTime = checkSimulationEnd(120, infectionToInfectious);
                 if (elapsedTime !== null) {
                     countFinalParticles(initialGreenCount);
                     resultDiv.textContent = `Simulation Ended After ${Math.floor(elapsedTime)} Days From First Case.`;
                 } else {
-                    animationFrameId = requestAnimationFrame(animate); // Save the animation frame ID
+                    animationFrameId = requestAnimationFrame(animate);
                 }
             }
 
             resultDiv.textContent = "";
-            animationFrameId = requestAnimationFrame(animate); // Save the animation frame ID
+            animationFrameId = requestAnimationFrame(animate);
         }
-
-
     </script>
 </body>
 </html>
