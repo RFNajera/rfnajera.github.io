@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:title" content="Vaccine News Fetcher" />
+  <meta property="og:description" content="News and information on vaccine-preventable-diseases from the last 7 days." />
+  <meta property="og:image" content="https://rfnajera.github.io/assets/images/vaccines_header.jpg" />
+  <meta property="og:url" content="https://rfnajera.github.io/vaccine_news_fetcher.html" />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+  <title>Vaccine News Fetcher</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+    header {
+      background: #333;
+      color: #fff;
+      padding: 1rem;
+      text-align: center;
+    }
+    main {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+    section {
+      background: #fff;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .news-item {
+      border-bottom: 1px solid #ddd;
+      padding: 10px 0;
+    }
+    .news-item:last-child {
+      border-bottom: none;
+    }
+    .news-item h3 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background: #333;
+      color: #fff;
+    }
+    select {
+        text-align: center;
+        text-align-last: center; /* Ensures text is centered in modern browsers */
+        display: block;
+        margin: 0 auto;
+        width: 200px; /* Adjust width as needed */
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Vaccine News Fetcher</h1>
+    <div style="text-align:center; margin-top:10px;">
+      <label for="disease-select">Select a Disease:</label>
+      <select id="disease-select" onchange="fetchNews()">
+        <option value="vaccines">Vaccines</option>
+        <option value="cholera">Cholera</option>
+        <option value="covid-19">COVID-19 (coronavirus)</option>
+        <option value="dengue">Dengue</option>
+        <option value="diphtheria">Diphtheria</option>
+        <option value="hepatitis">Hepatitis</option>
+        <option value="hib">Haemophilus influenzae type b (Hib)</option>
+        <option value="hpv">Human papillomavirus (HPV)</option>
+        <option value="influenza">Influenza</option>
+        <option value="japanese encephalitis">Japanese encephalitis</option>
+        <option value="malaria">Malaria</option>
+        <option value="measles">Measles</option>
+        <option value="meningococcal meningitis">Meningococcal meningitis</option>
+        <option value="mumps">Mumps</option>
+        <option value="pertussis">Pertussis</option>
+        <option value="pneumococcal disease">Pneumococcal disease</option>
+        <option value="poliomyelitis">Poliomyelitis</option>
+        <option value="rabies">Rabies</option>
+        <option value="rotavirus">Rotavirus</option>
+        <option value="rubella">Rubella</option>
+        <option value="tetanus">Tetanus</option>
+        <option value="tick-borne encephalitis">Tick-borne encephalitis</option>
+        <option value="tuberculosis">Tuberculosis</option>
+        <option value="typhoid">Typhoid</option>
+        <option value="varicella">Varicella</option>
+        <option value="yellow fever">Yellow Fever</option>
+      </select>
+    </div>
+  </header>
+  <main>
+    <section id="news">
+      <h2 style="text-align: center;">Latest News on Vaccine Preventable Diseases</h2>
+      <div id="news-container">
+        <p>Loading news...</p>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <p xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/"><a property="dct:title" rel="cc:attributionURL" href="https://rfnajera.github.io/measles_news_fetcher.html">Measles News Fetcher</a> by <a rel="cc:attributionURL dct:creator" property="cc:attributionName" href="https://rfnajera.github.io/">René F. Najera</a> is licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">CC BY-NC-SA 4.0<img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/nc.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/sa.svg?ref=chooser-v1" alt=""></a></p>
+  </footer>
+
+  <script>
+    async function fetchNews() {
+      document.getElementById("news-container").innerHTML = "<p>Fetching latest news...</p>";
+      const disease = document.getElementById("disease-select").value;
+      const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(disease)}&hl=en-US&gl=US&ceid=US:en`;
+      const proxyUrl = "https://api.allorigins.win/get?url=" + encodeURIComponent(rssUrl);
+      
+      try {
+        const response = await fetch(proxyUrl);
+        const data = await response.json();
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(data.contents, "text/xml");
+        const items = xmlDoc.getElementsByTagName("item");
+        
+        let html = "";
+        const now = new Date();
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(now.getDate() - 7);
+        for (let i = 0; i < items.length; i++) {
+          const pubDate = new Date(items[i].getElementsByTagName("pubDate")[0].textContent);
+          if (pubDate < sevenDaysAgo) { continue; }
+          const fullTitle = items[i].getElementsByTagName("title")[0].textContent;
+          const title = fullTitle.split(' - ')[0];
+          const link = items[i].getElementsByTagName("link")[0].textContent;
+          const description = items[i].getElementsByTagName("description")[0]?.textContent.replace(/<[^>]*>?/gm, '').substring(0, 300) + "...";
+          const sourceElement = items[i].getElementsByTagName("source")[0];
+          const source = sourceElement ? sourceElement.textContent : "Unknown Source";
+          
+          html += `
+            <div class="news-item">
+              <h3><a href="${link}" target="_blank" rel="noopener noreferrer">${title}</a></h3>
+              <p><strong><em>${source}</em></strong></p>
+              <p>${pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+              <p>${description}</p>
+            </div>
+          `;
+        }
+        
+        document.getElementById("news-container").innerHTML = html || "<p>No recent news found.</p>";
+      } catch (error) {
+        console.error("Error fetching news:", error);
+        document.getElementById("news-container").innerHTML = "<p>Sorry, we couldn't load the news at this time.</p>";
+      }
+    }
+    
+    window.addEventListener("DOMContentLoaded", fetchNews);
+  </script>
+</body>
+</html>
