@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:title" content="Measles News Fetcher" />
+    <meta property="og:description" content="Interactive flashcards to study epidemiology concepts and scenarios." />
+    <meta property="og:image" content="https://rfnajera.github.io/assets/images/measles_header.jpg" />
+    <meta property="og:url" content="https://rfnajera.github.io/measles_news_fetcher.html" />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+  <title>Measles News Fetcher</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+    header {
+      background: #333;
+      color: #fff;
+      padding: 1rem;
+      text-align: center;
+    }
+    nav {
+      background: #444;
+      text-align: center;
+    }
+    nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+    }
+    nav ul li {
+      margin: 0;
+    }
+    nav ul li a {
+      display: block;
+      padding: 1rem;
+      color: #fff;
+      text-decoration: none;
+    }
+    nav ul li a:hover {
+      background: #555;
+    }
+    main {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+    section {
+      background: #fff;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .news-item {
+      border-bottom: 1px solid #ddd;
+      padding: 10px 0;
+    }
+    .news-item:last-child {
+      border-bottom: none;
+    }
+    .news-item h3 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background: #333;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Measles News Fetcher</h1>
+    <div id="measles-image-placeholder" style="text-align:center; margin-top:10px;">
+      <img src="[IMAGE_PATH_HERE]" alt="Illustration of a sick child with measles" style="max-width:100%; height:auto;">
+    </div>
+  </header>
+  <nav>
+    <ul>
+      <li><a href="#news" aria-label="Latest News">Latest News</a></li>
+      <li><a href="#about" aria-label="About Measles">About Measles</a></li>
+    </ul>
+  </nav>
+  <main>
+    <section id="news">
+      <h2 style="text-align: center;">Latest Measles News</h2>
+      <div id="news-container">
+        <p>Loading news...</p>
+      </div>
+    </section>
+    <section id="about">
+        <h2>About Measles</h2>
+        <p>
+          Measles is a highly contagious viral disease caused by the measles virus, a member of the paramyxovirus family. It spreads through respiratory droplets and direct contact, with an incubation period of about 10-12 days before symptoms appear. The disease is characterized by high fever, cough, runny nose, conjunctivitis, and a distinct rash that starts at the hairline and spreads downward.
+        </p>
+        <p>
+          Measles can lead to severe complications, particularly in young children, pregnant women, and immunocompromised individuals. Common complications include pneumonia, encephalitis (brain inflammation), and severe diarrhea. In rare cases, measles can cause subacute sclerosing panencephalitis (SSPE), a fatal degenerative brain disorder that develops years after infection.
+        </p>
+        <p>
+          Before the introduction of the measles vaccine in 1963, nearly every child contracted measles by age 15, and outbreaks were common. Since widespread vaccination efforts, measles cases have significantly declined, though outbreaks still occur in areas with low vaccination coverage. The MMR vaccine (measles, mumps, rubella) is the most effective way to prevent measles, offering lifelong immunity in most individuals.
+        </p>
+        <p>
+          For more detailed information, visit the following resources:
+          <ul>
+            <li><a href="https://www.cdc.gov/pinkbook/hcp/table-of-contents/chapter-13-measles.html" target="_blank">CDC Pink Book on Measles</a></li>
+            <li><a href="https://www.who.int/news-room/fact-sheets/detail/measles" target="_blank">WHO Measles Fact Sheet</a></li>
+            <li><a href="https://historyofvaccines.org/history/measles/timeline" target="_blank">History of Measles</a></li>
+          </ul>
+        </p>
+    </section>
+  </main>
+  <footer>
+    <p xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/"><a property="dct:title" rel="cc:attributionURL" href="https://rfnajera.github.io/measles_news_fetcher.html">Measles News Fetcher</a> by <a rel="cc:attributionURL dct:creator" property="cc:attributionName" href="https://rfnajera.github.io/">René F. Najera</a> is licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">CC BY-NC-SA 4.0<img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/nc.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/sa.svg?ref=chooser-v1" alt=""></a></p>
+  </footer>
+
+  <script>
+    async function fetchNews() {
+      const rssUrl = "https://news.google.com/rss/search?q=measles&hl=en-US&gl=US&ceid=US:en";
+      const proxyUrl = "https://api.allorigins.win/get?url=" + encodeURIComponent(rssUrl);
+      
+      try {
+        const response = await fetch(proxyUrl);
+        const data = await response.json();
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(data.contents, "text/xml");
+        const items = xmlDoc.getElementsByTagName("item");
+        const now = new Date();
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(now.getDate() - 7);
+        
+        let html = "";
+        for (let i = 0; i < items.length; i++) {
+          const fullTitle = items[i].getElementsByTagName("title")[0].textContent;
+          const title = fullTitle.split(' - ')[0];
+          const link = items[i].getElementsByTagName("link")[0].textContent;
+          const pubDate = new Date(items[i].getElementsByTagName("pubDate")[0].textContent);
+          const description = items[i].getElementsByTagName("description")[0]?.textContent.replace(/<[^>]*>?/gm, '').substring(0, 300) + "...";
+          const sourceElement = items[i].getElementsByTagName("source")[0];
+          const source = sourceElement ? sourceElement.textContent : "Unknown Source";
+          
+          if (pubDate >= sevenDaysAgo && link.includes(".com") && sourceElement && sourceElement.getAttribute('url').includes('.com')) {
+            html += `
+              <div class="news-item">
+                <h3><a href="${link}" target="_blank" rel="noopener noreferrer">${title}</a></h3>
+                <p><strong><em>${source}</em></strong></p>
+                <p>${pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                <p>${description}</p>
+              </div>
+            `;
+          }
+        }
+        
+        document.getElementById("news-container").innerHTML = html || "<p>No recent news found.</p>";
+      } catch (error) {
+        console.error("Error fetching news:", error);
+        document.getElementById("news-container").innerHTML = "<p>Sorry, we couldn't load the news at this time.</p>";
+      }
+    }
+    
+    window.addEventListener("DOMContentLoaded", fetchNews);
+  </script>
+</body>
+</html>
