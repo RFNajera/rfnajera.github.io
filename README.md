@@ -17,6 +17,7 @@ This GitHub repository serves as my portfolio of coding-related projects, showca
   - Here is how I counted [how many gun crimes happened within 1,000 ft of Baltimore schools in 2018](one-thousand-guns.md){:target="_blank"}.
   - This is how I looked at [hot spots and cold spots of homicides in Philadelphia](hot-spot-philly.md){:target="_blank"}.
 - **Web Development**: Tools and websites built for public health education and outreach.
+  - Check out the [_Measles News Fetcher_](measles_news_fetcher.html){:target="_blank"}.
   - Check out the [_Vaccine Fact Generator_](vaccine_fact_generator.html){:target="_blank"}.
   - Or check out [how _Herd Immunity_ works in a mathematical simulation](herd_immunity_simulation.html){:target="_blank"}.
   - You can even study for your epidemiology intro course [with these flash cards!](epi_flash_cards.html){:target="_blank"}.
