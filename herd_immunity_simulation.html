@@ -21,6 +21,7 @@
             align-items: center;
             justify-content: center;
             background-color: #f0f8ff;
+            padding-bottom: 50px; /* Add padding at the bottom */
         }
 
         canvas {
@@ -68,11 +69,17 @@
             padding: 5px 10px;
             text-align: center;
         }
+        
+        #histogram-container {
+            margin-top: 20px;
+            padding-bottom: 50px; /* Add padding at the bottom */
+            display: block;
+        }
     </style>
 </head>
 
 <body>
-    <h1>Herd Immunity Simulation (v0.6)</h1>
+    <h1>Herd Immunity Simulation (v0.7)</h1>
     <div id="instructions"
         style="max-width: 800px; text-align: left; margin-top: 20px; margin-bottom: 20px; font-size: 16px; line-height: 1.5;">
         <h2>Background Information</h2>
@@ -208,9 +215,21 @@
             style="display: inline-block; width: 20px; height: 20px; background-color: red; border: 1px solid black; margin-left: 15px; margin-right: 5px;"></span>
         Infected
     </div>
-    <div id="simulation-timer" style="font-size: 30px; margin-bottom: 10px; margin-top: 20px">0 Days From First Case
-    </div>
-    <div id="result" style="font-size: 30px"></div>
+    <table id="status-table" style="margin-top: 20px; font-size: 30px; text-align: center; border-collapse: collapse;">
+        <tr>
+            <td>Currently Infected:</td>
+            <td id="currently-infected">0</td>
+        </tr>
+        <tr>
+            <td>Days From First Case:</td>
+            <td id="simulation-timer">0</td>
+        </tr>
+        <tr>
+            <td>Days Since Last Case:</td>
+            <td id="days-since-last-case">0</td>
+        </tr>
+    </table>
+    <div id="result" style="font-size: 30px; margin-top: 20px;"></div>
     <table id="summary-table">
         <thead>
             <tr>
@@ -271,6 +290,11 @@
         </tbody>
     </table>
 
+    <div id="histogram-container">
+        <h2>Epidemic Curve</h2>
+        <canvas id="histogramCanvas" width="800" height="400" style="border: 1px solid black;"></canvas>
+    </div>
+
     <script>
         const canvas = document.getElementById('simulationCanvas');
         const ctx = canvas.getContext('2d');
@@ -296,6 +320,7 @@
         let simulationStartTime;
         let simulationRunning = true;
         let animationFrameId; // Track the animation frame ID
+        let lastCaseTime = null;
 
         function createParticles(populationSize, vaccinatedPercentage, initialInfected, vaccineEffectiveness) {
             particles = [];
@@ -368,19 +393,19 @@
         }
 
         function updateAttackRatesFromTable() {
-            const initialGreenCount = parseInt(document.getElementById('initial-immune-count').textContent);
-            const initialBlueCount = parseInt(document.getElementById('initial-non-immune-vaccinated-count').textContent);
-            const finalBlueCount = parseInt(document.getElementById('final-non-immune-vaccinated-count').textContent);
-            const initialGrayCount = parseInt(document.getElementById('initial-unvaccinated-count').textContent);
-            const finalGrayCount = parseInt(document.getElementById('final-unvaccinated-count').textContent);
+            const initialVaccinatedCount = parseInt(document.getElementById('initial-immune-count').textContent) +
+                parseInt(document.getElementById('initial-non-immune-vaccinated-count').textContent);
+            const finalVaccinatedCount = parseInt(document.getElementById('final-immune-count').textContent) +
+                parseInt(document.getElementById('final-non-immune-vaccinated-count').textContent);
+            const initialUnvaccinatedCount = parseInt(document.getElementById('initial-unvaccinated-count').textContent);
+            const finalUnvaccinatedCount = parseInt(document.getElementById('final-unvaccinated-count').textContent);
 
-            const vaccinatedInfected = initialBlueCount - finalBlueCount;
-            const unvaccinatedInfected = initialGrayCount - finalGrayCount;
-            const initialVaccinatedTotal = initialGreenCount + initialBlueCount;
+            const vaccinatedInfected = initialVaccinatedCount - finalVaccinatedCount;
+            const unvaccinatedInfected = initialUnvaccinatedCount - finalUnvaccinatedCount;
 
-            const attackRateVaccinated = initialVaccinatedTotal > 0 ? (vaccinatedInfected / initialVaccinatedTotal) : 0;
-            const attackRateUnvaccinated = initialGrayCount > 0 ? (unvaccinatedInfected / initialGrayCount) : 0;
-            const rateRatio = attackRateUnvaccinated > 0 ? (attackRateVaccinated / attackRateUnvaccinated) : 0;
+            const attackRateVaccinated = initialVaccinatedCount > 0 ? (vaccinatedInfected / initialVaccinatedCount) : 0;
+            const attackRateUnvaccinated = initialUnvaccinatedCount > 0 ? (unvaccinatedInfected / initialUnvaccinatedCount) : 0;
+            const rateRatio = attackRateVaccinated > 0 ? (attackRateUnvaccinated / attackRateVaccinated) : 0;
 
             document.getElementById('attack-rate-vaccinated').textContent = attackRateVaccinated.toFixed(8);
             document.getElementById('attack-rate-unvaccinated').textContent = attackRateUnvaccinated.toFixed(8);
@@ -447,15 +472,13 @@
             finalInfectedCountCell.textContent = "0";
             finalRecoveredCountCell.textContent = "0";
 
-            const existingCanvas = document.querySelector("canvas[style]");
-            if (existingCanvas) {
-                existingCanvas.remove();
-            }
-
             const timerElement = document.getElementById("simulation-timer");
             if (timerElement) {
                 timerElement.textContent = "0 Days From First Case";
             }
+
+            const histogramContainer = document.getElementById("histogram-container");
+            histogramContainer.style.display = "none"; // Hide histogram container initially
         }
 
         function updateParticles(infectionRate, infectionToInfectious, infectiousPeriod) {
@@ -561,37 +584,39 @@
             finalInfectedCountCell.textContent = totalInfections;
             finalRecoveredCountCell.textContent = Math.min(finalCounts.recovered, totalInfections);
 
-            drawHistogram();
+            // Ensure attack rates and rate ratio are updated
             updateAttackRatesFromTable();
+            console.log("New infections per second:", newInfectionsPerSecond);
+            drawHistogram(); // Ensure the histogram is drawn at the end of the simulation
         }
 
         function drawHistogram() {
-            const histogramCanvas = document.createElement('canvas');
-            const maxInfections = Math.max(...newInfectionsPerSecond);
-            const barWidth = 600 / newInfectionsPerSecond.length;
-            const barHeightMultiplier = 20;
-            const canvasHeight = Math.min(600, maxInfections * barHeightMultiplier + 50);
+            const histogramContainer = document.getElementById("histogram-container");
+            const histogramCanvas = document.getElementById("histogramCanvas");
+            const ctx = histogramCanvas.getContext("2d");
+            const maxInfections = Math.max(1, ...newInfectionsPerSecond);
+            const barWidth = histogramCanvas.width / newInfectionsPerSecond.length;
+            const canvasHeight = histogramCanvas.height;
 
-            histogramCanvas.width = 600;
-            histogramCanvas.height = canvasHeight;
-            histogramCanvas.style.border = '1px solid black';
-            document.body.appendChild(histogramCanvas);
+            histogramContainer.style.display = "block"; // Ensure histogram container is visible
 
-            const ctx = histogramCanvas.getContext('2d');
+            ctx.clearRect(0, 0, histogramCanvas.width, histogramCanvas.height);
 
+            // Draw bars for new infections per second
             newInfectionsPerSecond.forEach((count, index) => {
                 const barHeight = (count / maxInfections) * (canvasHeight - 50);
-                ctx.fillStyle = 'blue';
+                ctx.fillStyle = "blue";
                 ctx.fillRect(index * barWidth, canvasHeight - barHeight - 20, barWidth - 2, barHeight);
 
-                ctx.fillStyle = 'black';
-                ctx.font = '10px Arial';
+                ctx.fillStyle = "black";
+                ctx.font = "10px Arial";
                 ctx.fillText(count, index * barWidth + 2, canvasHeight - barHeight - 25);
             });
 
-            ctx.fillStyle = 'black';
-            ctx.font = '12px Arial';
-            ctx.fillText('Days', 600 / 2 - 20, canvasHeight - 5);
+            ctx.fillStyle = "black";
+            ctx.font = "12px Arial";
+            ctx.fillText("Seconds", histogramCanvas.width / 2 - 20, canvasHeight - 5);
+            console.log("Drawing histogram...");
         }
 
         function startSimulation() {
@@ -623,7 +648,18 @@
             function updateTimer() {
                 const currentTime = Date.now();
                 const elapsedSeconds = Math.floor((currentTime - simulationStartTime) / 1000);
-                document.getElementById("simulation-timer").textContent = `${elapsedSeconds} Days From First Case`;
+                document.getElementById("simulation-timer").textContent = `${elapsedSeconds}`;
+
+                // Update the currently infected count
+                const currentlyInfectedCount = particles.filter(p => p.color === 'red').length;
+                document.getElementById("currently-infected").textContent = `${currentlyInfectedCount}`;
+
+                // Update the days since the last case
+                if (currentlyInfectedCount > 0) {
+                    lastCaseTime = currentTime;
+                }
+                const daysSinceLastCase = lastCaseTime ? Math.floor((currentTime - lastCaseTime) / 1000) : 0;
+                document.getElementById("days-since-last-case").textContent = `${daysSinceLastCase}`;
             }
 
             function animate() {
