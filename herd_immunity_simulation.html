@@ -36,15 +36,21 @@
 
         .input-container {
             margin: 10px 0;
+            width: 800px; /* Match the width of the simulation box */
+        }
+
+        input[type="range"] {
+            width: 100%; /* Make the slider fill the container */
+            margin-top: 5px;
         }
 
         label {
             font-size: 14px;
         }
 
-        input[type="number"] {
-            margin-top: 5px;
-            width: 60px;
+        span {
+            font-size: 14px;
+            margin-left: 10px;
         }
 
         #result {
@@ -79,7 +85,7 @@
 </head>
 
 <body>
-    <h1>Herd Immunity Simulation (v0.7)</h1>
+    <h1>Herd Immunity Simulation (v0.9)</h1>
     <div id="instructions"
         style="max-width: 800px; text-align: left; margin-top: 20px; margin-bottom: 20px; font-size: 16px; line-height: 1.5;">
         <h2>Background Information</h2>
@@ -173,31 +179,38 @@
     <div id="controls">
         <div class="input-container">
             <label for="population">Population Size (50-2000):</label><br>
-            <input type="number" id="population" min="50" max="2000" step="10" value="1000">
+            <input type="range" id="population" min="50" max="2000" step="10" value="1000" oninput="updateSliderValue('population', this.value)">
+            <span id="population-value">1000</span>
         </div>
         <div class="input-container">
             <label for="vaccinated">Percent Vaccinated:</label><br>
-            <input type="number" id="vaccinated" min="0" max="100" step="1" value="95">
+            <input type="range" id="vaccinated" min="0" max="100" step="1" value="95" oninput="updateSliderValue('vaccinated', this.value)">
+            <span id="vaccinated-value">95</span>
         </div>
         <div class="input-container">
             <label for="r0">R<sub>0</sub> (Enter a value):</label><br>
-            <input type="number" id="r0" min="0" step="0.1" value="18">
+            <input type="range" id="r0" min="0" max="20" step="0.1" value="18" oninput="updateSliderValue('r0', this.value)">
+            <span id="r0-value">18</span>
         </div>
         <div class="input-container">
             <label for="initial-infected">Number of Initial Infections (1-50):</label><br>
-            <input type="number" id="initial-infected" min="1" max="50" step="1" value="1">
+            <input type="range" id="initial-infected" min="1" max="50" step="1" value="1" oninput="updateSliderValue('initial-infected', this.value)">
+            <span id="initial-infected-value">1</span>
         </div>
         <div class="input-container">
             <label for="vaccine-effectiveness">Vaccine Effectiveness (0-100%):</label><br>
-            <input type="number" id="vaccine-effectiveness" min="0" max="100" step="1" value="98">
+            <input type="range" id="vaccine-effectiveness" min="0" max="100" step="1" value="98" oninput="updateSliderValue('vaccine-effectiveness', this.value)">
+            <span id="vaccine-effectiveness-value">98</span>
         </div>
         <div class="input-container">
             <label for="infection-to-infectious">Infection to Infectious Time (1-30 days):</label><br>
-            <input type="number" id="infection-to-infectious" min="1" max="30" step="1" value="8">
+            <input type="range" id="infection-to-infectious" min="1" max="30" step="1" value="8" oninput="updateSliderValue('infection-to-infectious', this.value)">
+            <span id="infection-to-infectious-value">8</span>
         </div>
         <div class="input-container">
             <label for="infectious-period">Infectious Period (1-30 days):</label><br>
-            <input type="number" id="infectious-period" min="1" max="30" step="1" value="8">
+            <input type="range" id="infectious-period" min="1" max="30" step="1" value="8" oninput="updateSliderValue('infectious-period', this.value)">
+            <span id="infectious-period-value">8</span>
         </div>
         <button onclick="startSimulation()">Start Simulation</button>
     </div>
@@ -733,6 +746,10 @@
 
             resultDiv.textContent = "";
             animationFrameId = requestAnimationFrame(animate);
+        }
+
+        function updateSliderValue(id, value) {
+            document.getElementById(`${id}-value`).textContent = value;
         }
     </script>
 </body>
