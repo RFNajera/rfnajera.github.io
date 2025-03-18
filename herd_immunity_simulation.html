@@ -79,7 +79,7 @@
 </head>
 
 <body>
-    <h1>Herd Immunity Simulation (v0.8)</h1>
+    <h1>Herd Immunity Simulation (v0.7)</h1>
     <div id="instructions"
         style="max-width: 800px; text-align: left; margin-top: 20px; margin-bottom: 20px; font-size: 16px; line-height: 1.5;">
         <h2>Background Information</h2>
@@ -291,7 +291,7 @@
             </tr>
         </tbody>
     </table>
-    <h2>Complications</h2>
+    <h2>Complications (If Measles)</h2>
     <table id="complications-table">
         <thead>
             <tr>
@@ -668,7 +668,7 @@
 
             ctx.fillStyle = "black";
             ctx.font = "12px Arial";
-            ctx.fillText("Seconds", histogramCanvas.width / 2 - 20, canvasHeight - 5);
+            ctx.fillText("Days", histogramCanvas.width / 2 - 20, canvasHeight - 5);
             console.log("Drawing histogram...");
         }
 
