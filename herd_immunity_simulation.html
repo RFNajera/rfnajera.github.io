@@ -79,7 +79,7 @@
 </head>
 
 <body>
-    <h1>Herd Immunity Simulation (v0.7)</h1>
+    <h1>Herd Immunity Simulation (v0.8)</h1>
     <div id="instructions"
         style="max-width: 800px; text-align: left; margin-top: 20px; margin-bottom: 20px; font-size: 16px; line-height: 1.5;">
         <h2>Background Information</h2>
@@ -160,12 +160,13 @@
         <ul>
             <li>Seasonal Flu: 2</li>
             <li>Ebola: 2.5</li>
-            <li>Diphtheria: 2.6</li>
+            <li>Diphtheria: 2 to 4</li>
             <li>Common Cold: 3</li>
+            <li>COVID-19 Delta: 5</li>
             <li>Mumps: 7</li>
             <li>COVID-19 (Delta): 8</li>
-            <li>Chickenpox: 12</li>
-            <li>Measles: 18</li>
+            <li>Chickenpox: 10 to 12</li>
+            <li>Measles: 12 to 18</li>
         </ul>
     </div>
 
@@ -230,6 +231,7 @@
         </tr>
     </table>
     <div id="result" style="font-size: 30px; margin-top: 20px;"></div>
+    <h2>Pre- and Post-Epidemic Summary</h2>
     <table id="summary-table">
         <thead>
             <tr>
@@ -266,7 +268,7 @@
             </tr>
         </tbody>
     </table>
-
+    <h2>Attack Rates and Rate Ratio</h2>
     <table id="attack-rate-table">
         <thead>
             <tr>
@@ -286,6 +288,41 @@
             <tr>
                 <td>Rate Ratio</td>
                 <td id="rate-ratio">0.00</td>
+            </tr>
+        </tbody>
+    </table>
+    <h2>Complications</h2>
+    <table id="complications-table">
+        <thead>
+            <tr>
+                <th>Complication</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Ear Infections</td>
+                <td id="ear-infections">0</td>
+            </tr>
+            <tr>
+                <td>Diarrhea</td>
+                <td id="diarrhea">0</td>
+            </tr>
+            <tr>
+                <td>Hospitalization</td>
+                <td id="hospitalization">0</td>
+            </tr>
+            <tr>
+                <td>Pneumonia</td>
+                <td id="pneumonia">0</td>
+            </tr>
+            <tr>
+                <td>Encephalitis</td>
+                <td id="encephalitis">0</td>
+            </tr>
+            <tr>
+                <td>Death</td>
+                <td id="death">0</td>
             </tr>
         </tbody>
     </table>
@@ -583,6 +620,22 @@
             finalUnvaccinatedCountCell.textContent = finalCounts.gray;
             finalInfectedCountCell.textContent = totalInfections;
             finalRecoveredCountCell.textContent = Math.min(finalCounts.recovered, totalInfections);
+
+            // Calculate complications
+            const earInfections = Math.ceil(totalInfections / 10);
+            const diarrhea = Math.ceil(totalInfections / 10);
+            const hospitalization = Math.ceil(finalCounts.gray / 5);
+            const pneumonia = Math.ceil(totalInfections / 20);
+            const encephalitis = Math.ceil(totalInfections / 1000);
+            const death = Math.ceil(totalInfections / 333);
+
+            // Update complications table
+            document.getElementById('ear-infections').textContent = earInfections;
+            document.getElementById('diarrhea').textContent = diarrhea;
+            document.getElementById('hospitalization').textContent = hospitalization;
+            document.getElementById('pneumonia').textContent = pneumonia;
+            document.getElementById('encephalitis').textContent = encephalitis;
+            document.getElementById('death').textContent = death;
 
             // Ensure attack rates and rate ratio are updated
             updateAttackRatesFromTable();
