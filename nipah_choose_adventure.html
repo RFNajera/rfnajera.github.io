@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Nipah Outbreak: 2042" />
+    <meta property="og:description" content="A choose-your-own-adventure outbreak investigation game." />
+    <meta property="og:image" content="https://rfnajera.github.io/assets/images/nipah.jpg" />
+    <meta property="og:url" content="https://rfnajera.github.io/nipah.html" />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+    <meta charset="UTF-8" />
+    <title>Nipah Outbreak: 2042</title>
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Special Elite', 'Courier New', Courier, monospace;
+            background: #f5f5f5;
+            padding: 2em;
+            color: #000;
+        }
+        h1 {
+            text-align: center;
+        }
+        h2 {
+            text-align:  left;
+            font-size: 1.5em;
+            margin-top: 1em;
+        }
+        footer {
+            text-align: center;
+            margin-top: 2em;
+            font-size: 0.8em;
+            color: #555;
+        }
+        .header-image {
+            display: block;
+            margin: 0 auto 2em auto;
+            max-width: 60%;
+            height: auto;
+            border: 1px solid #333;
+        }
+        #story {
+            margin-bottom: 1em;
+        }
+        #choices button {
+            display: block;
+            margin: 0.5em auto;
+            padding: 0.5em 1em;
+            font-family: inherit;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        #story p {
+            margin: 0.7em 0;
+            line-height: 1.5;
+        }
+        #gameUI { display: none; }
+    </style>
+</head>
+
+<body>
+    <h1>Nipah Outbreak: 2042</h1>
+    <div id="name-entry">
+        <label for="playerNameInput">To start the game, please give us your name:</label>
+        <input type="text" id="playerNameInput" />
+        <button onclick="startGame()">Start</button>
+    </div>
+    <div id="gameUI">
+        <img src="image_1.png" alt="Opening image" id="story-image" class="header-image">
+        <h2 id="title"></h2> <!-- This is the title line -->
+        <div id="story"></div>
+        <div id="choices"></div>
+        <footer>
+            <p><small>© 2025 Rene F. Najera, DrPH. All rights reserved.</small></p>
+        </footer>
+    </div>
+
+    <script>
+        let playerName = "";
+        let gameState = { trust: 0, spread: 0, deaths: 0, fatigue: 0 };
+
+        function startGame() {
+            const input = document.getElementById('playerNameInput');
+            playerName = input.value.trim() || "Player";
+            document.getElementById('name-entry').style.display = 'none';
+            document.getElementById('gameUI').style.display = 'block';
+            showNode('start');
+        }
+
+        function applyEffects(effects = {}) {
+            if ('trust' in effects) gameState.trust = Math.max(0, gameState.trust + effects.trust);
+            if ('spread' in effects) gameState.spread = Math.max(0, gameState.spread + effects.spread);
+            if ('deaths' in effects) gameState.deaths = Math.max(0, gameState.deaths + effects.deaths);
+            if ('fatigue' in effects) gameState.fatigue = Math.max(0, gameState.fatigue + effects.fatigue);
+        }
+
+        function formatParagraphs(text) {
+    text = text.replace(/\${playerName}/g, playerName);
+    return text
+        .split(/\n\s*\n/) // Only split on intentional paragraph breaks
+        .map(p => `<p>${p.trim()}</p>`)
+        .join('');
+}
+
+
+        function showNode(id) {
+            const node = storyNodes[id];
+            if (!node) {
+                alert("Error: Node '" + id + "' is not defined.");
+                return;
+            }
+            if (node.effects) applyEffects(node.effects);
+            document.getElementById('title').innerText = node.title || '';
+
+            document.getElementById('story').innerHTML = formatParagraphs(node.text);
+            const choices = document.getElementById('choices');
+            const image = document.getElementById('story-image');
+            if (node.image) image.src = node.image;
+            choices.innerHTML = '';
+
+            if (!node.choices || node.choices.length === 0) {
+                const restartBtn = document.createElement('button');
+                restartBtn.innerText = "Play Again";
+                restartBtn.onclick = () => location.reload();
+                choices.appendChild(restartBtn);
+                return;
+            }
+
+            node.choices.forEach(c => {
+                const btn = document.createElement('button');
+                btn.innerText = c.text;
+                btn.onclick = () => showNode(c.next);
+                choices.appendChild(btn);
+            });
+        }
+
+        // TODO: Move storyNodes to an external JSON file for better separation of content and logic
+        const storyNodes = {
+            "start": {
+                title: 'It Begins',
+                text:
+                    `It’s late monsoon season, 2042. You’re Dr. \${playerName}, a field epidemiologist working with the Global Epidemic Intelligence Service. A message flashes across your secure tablet: bat die-offs reported near a mango orchard in southern Kampong Thun Province. Local farmers say dozens of flying foxes—fruit bats—have been dropping from the trees, twitching and dead.
+
+This isn’t just unusual... it's unsettling. In this region, bats are sacred to some and a pest to others. But to an epi like you, they’re a potential reservoir. You make a note, forward the report, and set an alert for regional syndromic surveillance updates.
+
+Maybe it’s nothing. Maybe it’s everything.`,
+                image: "image_1.png",
+                choices: [
+                    { text: "Flag for follow-up and move to next case", next: "first_cases" },
+                    { text: "Deploy local team to collect bat carcasses", next: "bat_sampling" }
+                ]
+            },
+            "first_cases": {
+                title: 'First Human Cases',
+                text:
+                    `Three days later, you get a ping from the district hospital in Prek Tbaeng. Five patients, all from the same village near the orchard, have been admitted with fever, headaches, and sudden confusion. Two are unconscious. The ER nurse says they're not like dengue cases, and their pupils are slow to respond.
+
+You pull up their records: all five are from families who process pig feed or harvest mangoes from the orchard. One had a family member report seeing bats drinking from sap collection pots. One child fed a sick bat. The hospital doesn’t have isolation.
+
+Families are in and out of the rooms. Nurses are unmasked. A wedding is scheduled for that village this weekend. Hundreds will gather. You feel the hairs rise on your neck. This could be a zoonotic spillover.`,
+                image: "image_2.png",
+                choices: [
+                    { text: "Send samples to national lab for PCR testing", next: "too_late_2" },
+                    { text: "Send urgent alert to WHO regional office", next: "who_alert_only" },
+                    { text: "Travel to hospital and begin direct investigation", next: "field_deployment" }
+                ]
+            },
+            "who_alert_only": {
+                title: 'WHO Alert',
+                text: `You send an urgent alert to the WHO regional office, flagging the pattern of unusual symptoms and the suspected animal exposure link. They respond within hours: a coordination team is mobilizing in Geneva, and Cambodia’s Ministry of Health has been informed.
+
+Meanwhile, updates from the district hospital keep coming. Two more patients admitted. One of them is a healthcare worker. The hospital still lacks isolation capacity, and families continue to visit freely.
+
+You're not on the ground, which limits your ability to steer the response directly—but perhaps it's better to wait for the international team to arrive.`,
+                image: "image_2b.png",
+                choices: [
+                    { text: "Travel to the hospital to assess the situation yourself", next: "field_deployment" },
+                    { text: "Hold back and monitor remotely until WHO arrives", next: "too_late_2" }
+                ]
+            },
+            "bat_sampling": {
+                title: 'Collecting Bat Samples',
+                text:
+                    `Your request triggers the dispatch of a small field team—two wildlife health officers and a vet from the agricultural ministry. They work with the local monks to collect carcasses and swab sap pots in the trees. Lab results won’t be ready for days, but one vet radios back: 'Some of these bats had hemorrhages. We’re also seeing viral inclusion bodies under the scope. Maybe paramyxoviruses.'
+
+You nod grimly. In your line of work, Nipah virus always lurks in the background. Transmitted by bats. Amplified in pigs. Fatal in humans. And if it evolves enough, maybe even airborne someday.
+
+You pray this isn't that day.`,
+                image: "image_3.png",
+                choices: [
+                    { text: "Call the district hospital to watch for symptoms", next: "first_cases" },
+                    { text: "Wait for lab results before acting further", next: "too_late_2" }
+                ]
+            },
+            "field_deployment": {
+                title: 'Field Epidemiology',
+                text:
+                    `You arrive at the district hospital just after midnight. The place smells of antiseptic and sweat. Through the glass doors, you see one of the patients convulsing. Nurses scramble. There are no isolation rooms—just a curtained ward. 
+                    Dr. Sokha, the chief medical officer, pulls you aside. 'We thought it was Japanese encephalitis,' she says. 'But none of them have travel history, and two were pig farmers.'
+
+You suit up in limited PPE, grab your notebook, and start triaging. Four more patients arrived since your last update. All from the same village. One nurse has now developed a fever.
+
+You quietly confirm what you feared: this is not a random set of fevers. You have an outbreak.`,
+                image: "image_4.png",
+                choices: [
+                    { text: "Begin developing a case definition with hospital staff", next: "case_definition" },
+                    { text: "Start contact tracing based on hospital admissions", next: "contact_tracing" },
+                    { text: "Wait for lab confirmation before acting further", next: "too_late_2" }
+                ]
+            },
+            "case_definition": {
+                title: 'Analyzing Case Data',
+                text:
+                    `You sit with the hospital staff and quickly create a working case definition: fever ≥38.5°C, headache, altered mental status, and onset within 7 days of visiting or living in the southern orchard district. It’s not perfect, but it gives the staff a filter.
+
+Within an hour, three more cases are flagged. A fourth patient dies before reaching the ICU. You map out their village on your tablet. All cases cluster within a 2 km radius of the mango orchards.
+
+You feel the clock ticking. Each person who walks in and out of that hospital is a link in a growing chain of transmission.`,
+                image: "image_5.png",
+                choices: [
+                    { text: "Initiate emergency infection control protocol", next: "infection_control" },
+                    { text: "Focus on community interviews in the orchard village", next: "community_fieldwork" }
+                ]
+            },
+            "contact_tracing": {
+                title: 'Contact Tracing Begins',
+                text:
+                    `With the help of the local Red Cross, you interview the families of admitted patients. You sketch out concentric exposure circles: family, caregivers, neighbors, ritual workers, and transport drivers.
+
+In just one day, your contact list grows to over 60 names. Many are already symptomatic. Some are attending the wedding you were warned about.
+
+You radio for additional teams, but they’re three days out. Meanwhile, the funeral for one patient is already underway—no distancing, no masks.
+
+Cultural customs are colliding with the laws of epidemiology. If this is Nipah, you’re losing time—and lives—with every delay.`,
+                image: "image_6.png",
+                choices: [
+                    { text: "Implement contact-based quarantine with police help", next: "quarantine_measures" },
+                    { text: "Issue a public alert to cancel gatherings", next: "cancel_events" }
+                ]
+            },
+            "too_late_2": {
+                title: 'A Deadly Wedding',
+                text:
+                    `You decide to wait for lab confirmation before taking broader action. Forty-eight hours pass. By the time the samples return—positive for Nipah virus—eleven new patients have been admitted, including two nurses.
+
+The wedding proceeds as planned. Three guests collapse by the reception’s end. The public thinks this is a seasonal bug. No one is masking. Schools are still open.
+
+Your name appears in a leaked memo: 'slow to act.' The window for containment may have closed. Your next choices will determine if the world pays for it.`,
+                image: "image_7.png",
+                choices: [
+                    { text: "Go public with outbreak information and take full control", next: "crisis_comms" },
+                    { text: "Request military lockdown of affected villages", next: "military_lockdown" }
+                ]
+            },
+            "crisis_comms": {
+                title: 'Going Public',
+                text: `You go public. Standing before a bank of microphones and a wall of cameras, you calmly announce what officials have feared: a Nipah virus outbreak is underway in central Cambodia. You explain the symptoms, the suspected bat-to-human link, and what people can do to protect themselves.
+
+Initial reaction is chaotic. Rumors spread like fire on social media. Misinformation and fear dominate the conversation. But then, something shifts. Your face—exhausted, steady—becomes a familiar presence in households across the region.
+
+Over the next few days, mask use increases. Farmers start boiling sap before consumption. Local radio hosts echo your advice. Trust begins to grow—but now, so does the spotlight. The next steps must match the message.`,
+                image: "image_13.png",
+                effects: { trust: 2, spread: -1 },
+                choices: [
+                    { text: "Leverage visibility to mobilize community action", next: "public_response" },
+                    { text: "Request WHO spokesperson to take over communications", next: "trusted_team" }
+                ]
+            },
+            "mental_health_breakdown": {
+                title: 'Take a Break',
+                text:`You haven’t slept more than four hours in days. You forget names, misplace notes, and second-guess basic calculations. One night, you break down crying in a hallway.
+
+A junior nurse finds you and quietly says, 'We can’t do this without you, Dr. \${playerName}. But maybe you can’t do this without help either.'`,
+                image: "image_30.png",
+                effects: { fatigue: 2, trust: -1 },
+                choices: [
+                    { text: "Request a counseling session via WHO mental health support line", next: "counseling_intervention" },
+                    { text: "Ignore it. Push through. People need me.", next: "burnout_cascade" }
+                ]
+            },
+            "counseling_intervention": {
+                title: 'Talking to an Expert',
+                text:
+                    `You speak with a remote trauma counselor. They guide you through grounding techniques and remind you of your boundaries. You cry again—but this time it helps.
+
+After the call, you sleep deeply for the first time in a week.`,
+                image: "image_31.png",
+                effects: { fatigue: -2, trust: 1 },
+                choices: [
+                    { text: "Resume field command with new wellness practices", next: "trusted_team" },
+                    { text: "Ask deputy to remain in command while you manage strategy remotely", next: "resilience_training" }
+                ]
+            },
+            "resilience_training": {
+                title: 'Resilient',
+                text:
+                    `You restructure your workflow. Your team now rotates duties with enforced rest. You hold weekly debriefs. One junior contact tracer tells you they’ve started sleeping again thanks to your leadership.`,
+                image: "image_32.png",
+                effects: { fatigue: -1, trust: 2 },
+                choices: [
+                    { text: "Return fully to lead frontline response", next: "final_outcome_branching" },
+                    { text: "Continue strategic support only", next: "final_outcome_branching" }
+                ]
+            },
+            "peer_support_circle": {
+                title: 'Peer Support Phone Party',
+                text:
+                    `You join a late-night peer support call with other epidemiologists and responders. Someone from a cholera response in Sudan. Another from an Ebola unit in DR Congo.
+
+You realize you’re not alone. You hang up lighter.`,
+                image: "image_33.png",
+                effects: { fatigue: -1, trust: 1 },
+                choices: [
+                    { text: "Begin weekly team support sessions at your base", next: "trusted_team" },
+                    { text: "Keep the calls private, personal, and infrequent", next: "rebuild_trust" }
+                ]
+            },
+            "mission_abandonment": {
+                title: 'You Give Up',
+                text:
+                    `You send your resignation via secure satellite uplink. It is accepted. Two weeks later, you watch the outbreak unfold from afar. The decisions continue without you. The virus doesn’t wait for anyone.`,
+                image: "image_34.png",
+                effects: { trust: -5, spread: 3, deaths: 3 },
+                choices: [
+                    { text: "Restart the game. Try again.", next: "start" }
+                ]
+            },
+            "infection_control": {
+                title: 'Infection Control',
+                text:
+                    `You organize an impromptu infection control station using bed curtains, duct tape, and crates of expired PPE. Staff are hesitant—some believe the patients are cursed or poisoned. But after you calmly show them video evidence from past Nipah outbreaks, they comply.
+
+Each patient is masked and isolated behind makeshift dividers. You reassign two nurses to monitor temperatures and collect vitals in 4-hour shifts. One nurse jokes that this feels like a movie. You know better.
+
+It’s not glamorous, but it buys you time—and maybe lives.
+
+A local reporter snaps a photo from outside. By morning, the story is trending on regional news. People are scared, but they’re listening.`,
+                image: 'image_8.png',
+                choices: [
+                    { text: 'Leverage media coverage to encourage masking and distancing', next: 'public_response' },
+                    { text: 'Keep focus on case interviews in the orchard village', next: 'community_fieldwork' }
+                ]
+            },
+            "community_fieldwork": {
+                title: 'Shoe-Leather Epidemiology',
+                text:
+                    `You walk the mango fields with your interpreter. The villagers are hesitant but polite. Through whispered stories, you piece together what may be the key: a child fed a dying bat. A family boiled sap gathered from trees visited by bats. A piglet died two days ago in a pen shared by three farms.
+
+This is the transmission path—bat to sap to people. Pig as amplifier. It’s textbook Nipah, but this version seems faster.
+
+Your notebook fills with dates, names, symptoms. You hear coughing from a neighbor’s hut.
+
+If you're right, a ring of early exposures has already spread out in all directions. You may be walking through the first ring of a much wider fire.`,
+                image: 'image_9.png',
+                choices: [
+                    { text: 'Advise temporary relocation of exposed families', next: 'containment_village' },
+                    { text: 'Focus on stopping the wedding first', next: 'cancel_events' }
+                ]
+            },
+            "quarantine_measures": {
+                title: 'Quarantine',
+                text:
+                    `With help from the provincial governor, you issue targeted quarantine orders. Police form checkpoints. Households with confirmed contacts are told to stay inside.
+
+Compliance is mixed. Some villagers resist, arguing they’ll starve without market access. A religious leader accuses you of “disease theater.”
+
+But your team delivers food and water. A few young volunteers help spread messages through loudspeakers and leaflets. Rumors still swirl, but your presence—and your clarity—begin to push back the fear.
+
+Two days later, a new case appears in a town 40 km away. Same symptoms. No contact with known patients. Somehow, the virus slipped the net.`,
+                image: 'image_10.png',
+                choices: [
+                    { text: 'Trace transportation routes and delivery contacts', next: 'super_spreader' },
+                    { text: 'Request military lockdown of outer regions', next: 'military_lockdown' }
+                ]
+            },
+            "cancel_events": {
+                title: 'Shutdowns and Shut-ins',
+                text:
+                    `You go on local radio and call for cancellation of all public events, weddings included. Your voice is calm, but you don’t sugarcoat it.
+
+At first, villagers are furious. One elder calls it a curse on their harvest. But later that night, when two wedding guests are admitted with confusion and fever, the family calls it off.
+
+Your message travels. By morning, other communities have canceled festivals, school assemblies, even football matches. Regional health officials praise your leadership. The WHO begins prepping a rapid response team.
+
+You know the incubation window is ticking—but so far, you’re holding the line.`,
+                image: 'image_11.png',
+                choices: [
+                    { text: 'Build public trust through daily radio updates', next: 'public_response' },
+                    { text: 'Refocus on contact tracing before containment cracks', next: 'super_spreader' }
+                ]
+            },
+            "public_response": {
+                title: 'On The Radio',
+                text:
+                    `You set up a morning radio segment: "Five Minutes with Dr. \${playerName}." Each day, you explain what’s happening in plain language. No jargon. No panic. Just facts and compassion.
+
+At first, it feels like shouting into a void. Then a nurse tells you her mother started boiling her sap after hearing you. A bus driver reports a symptomatic rider. A group of teens begins a mask distribution campaign.
+
+You see the needle move. Case numbers slow. The hospital has beds again. For now.
+
+But news breaks of a case in Phnom Penh. If that spreads, everything you’ve built could unravel.
+
+You need to decide where to direct your limited resources next.`,
+                image: 'image_12.png',
+                choices: [
+                    { text: 'Coordinate regional containment around Phnom Penh case', next: 'urban_response' },
+                    { text: 'Focus entirely on rural outbreak containment', next: 'containment_village' }
+                ]
+            },
+            "super_spreader": {
+                title: 'Super-Spreader Event',
+                text:
+                    `The new case had no known contact with your village patients. But you trace their timeline: one bus ride, one shared roadside meal, and one borrowed cellphone later—five new contacts are already ill.
+
+This was a super-spreader.
+
+The virus is ahead of you now, and public panic is rising. People are fleeing rural areas for the city, not knowing they’re taking the virus with them. A death in a border town raises fears of international spread.
+
+You need to move quickly—either isolate the city, or try to cut the virus off at the outskirts.`,
+                image: 'image_13b.png',
+                choices: [
+                    { text: 'Implement interprovincial travel restrictions', next: 'urban_response' },
+                    { text: 'Request military lockdown', next: 'military_lockdown' }
+                ]
+            },
+            "military_lockdown": {
+                title: 'Sending in the Troops',
+                text:
+                    `Military jeeps roll into the province. Curfews are enforced. Roadblocks go up. Helicopters drop rations to quarantined villages.
+
+It works—for a while. Cases stop spreading between regions. But inside the lockdown zones, food becomes scarce. A child with fever dies waiting for a checkpoint pass. Tensions rise.
+
+Your phone buzzes. Footage has leaked of soldiers shouting at villagers. Critics call you a technocrat playing general.
+
+Your inbox splits in two: one half is praise from global health leaders. The other half is hate mail from the people you're trying to protect.
+
+You’re containing the virus. But at what cost?`,
+                image: 'image_14.png',
+                choices: [
+                    { text: 'Reassign soldiers to assist with food delivery and health education', next: 'rebuild_trust' },
+                    { text: 'Double down: expand the lockdown and accelerate vaccine R&D', next: 'race_for_vaccine' }
+                ]
+            },
+            "urban_response": {
+                title: 'Urban Response',
+                text:
+                    `Phnom Penh. Over 2 million people packed into markets, factories, temples, and transit stations.
+
+When your team arrives, the hospitals are already filling with patients from the provinces. One funeral home director says they've never seen so many deaths from "head fevers."
+
+You deploy mobile testing vans and convert schools into isolation wards. Contact tracing is all but impossible now—too many vectors, too little time.
+
+The mayor resists lockdowns. "We’ll lose the garment economy," he warns.
+
+Meanwhile, satellite data shows crowds at bus terminals. You're forced to choose between a blunt citywide shutdown—or a more surgical strike at transmission hotspots.`,
+                image: 'image_15.png',
+                choices: [
+                    { text: 'Lock down entire city, economy be damned', next: 'race_for_vaccine' },
+                    { text: 'Target high-transmission sites with mobile units', next: 'urban_balancing_act' }
+                ]
+            },
+            "containment_village": {
+                text:
+                    `You refocus all resources on the original cluster: health teams, contact tracers, food drops, and local leaders. You shut down paths in and out of the village. You even deliver a community toolkit: sap pot covers, disinfectants, masks, radios.
+
+The village becomes a quarantine zone, but also a symbol. "We’re holding the line," one elder says in a video you share with global health media.
+
+But villagers begin to ask: Why only us? What about the cities? Why haven’t we gotten the experimental antivirals?
+
+You promised containment. Now you have to deliver—or explain what went wrong.`,
+                image: 'image_16.png',
+                choices: [
+                    { text: 'Scale up care: build mobile ICU and deploy local doctors', next: 'rebuild_trust' },
+                    { text: 'Shift to urban containment and let rural outbreak run its course', next: 'partial_failure_1' }
+                ]
+            },
+            "rebuild_trust": {
+                text:
+                    `You reassign soldiers to community support roles. They deliver rice, medicines, books. One even leads a children’s game over the radio. Your voice returns to the airwaves, this time with villagers reading stories of survival.
+
+Case counts in the village fall. Families begin waving from inside homes instead of hiding.
+
+Even the urban panic cools slightly. You receive a message from a contact at the Institut Pasteur: “If you can hold this containment for one more week, we may have a candidate antiviral protocol worth testing.”
+
+You’re buying time. But you’re running out of yourself.`,
+                image: 'image_17.png',
+                choices: [
+                    { text: 'Pull an all-nighter and coordinate the rural + urban strategy yourself', next: 'burnout_warning' },
+                    { text: 'Delegate authority and take a rest', next: 'trusted_team' }
+                ]
+            },
+            "race_for_vaccine": {
+                text:
+                    `You push for emergency-use approval of a Nipah vaccine candidate. It's shown some promise in animal trials. WHO fast-tracks Phase I in high-risk zones.
+
+Public reaction is mixed. Some call it a miracle. Others think it’s an experiment on poor people.
+
+You vaccinate frontline workers and high-exposure contacts. Your containment zones shrink—but cases outside them explode.
+
+One morning you wake up to find a child left at the hospital gates with a note: “Her parents are gone. Please help her survive.”
+
+The science may save her. But the system failed her.
+
+So now you push harder.`,
+                image: 'image_18.png',
+                choices: [
+                    { text: 'Launch a final wave of vaccinations and push public appeal', next: 'final_outcome_branching' },
+                    { text: 'Double down on isolation and restrict vaccine use', next: 'final_outcome_branching' }
+                ]
+            },
+            "urban_balancing_act": {
+                text:
+                    `You choose a targeted approach. Mobile fever tents are set up outside transit hubs. Market vendors get rapid screening. Temple gatherings move outdoors with spacing chalked on the ground. School lunches shift to take-home rations.
+
+Cases still rise, but slower than models predicted. The mayor stays on your side because the factories remain open. Local doctors say you bought them time.
+
+Then a factory cluster explodes. Workers slept in shared dorms. Your targeted strategy now faces its first stress test. Do you widen the net or try a ring-control method around the factory zone?`,
+                image: 'image_19.png',
+                choices: [
+                    { text: 'Expand to citywide restrictions after factory cluster', next: 'race_for_vaccine' },
+                    { text: 'Ring-control around factory zone only', next: 'containment_factory' }
+                ]
+            },
+            "containment_factory": {
+                text:
+                    `You cordon the factory zone. Testing, temperature checks, and meal delivery begin. Workers are housed on-site to stop spread. Many are scared but relieved to be seen.
+
+It works for several days. Then one worker slips out to visit family across town. Three days later that family shows symptoms.
+
+Containment works only as long as people can live with it. You now face a choice: go harder with enforcement or pivot back to public trust and community care.`,
+                image: 'image_20.png',
+                choices: [
+                    { text: 'Escalate enforcement with curfews', next: 'military_lockdown' },
+                    { text: 'Rebuild trust and community care model', next: 'rebuild_trust' }
+                ]
+            },
+            "burnout_warning": {
+                text:
+                    `You decide to coordinate both rural and urban strategies yourself. You sleep on clinic benches and answer radio calls at 3 a.m. Your decision logs slip. You snap at a nurse. Someone films it.
+
+Fatigue shows in the data. Contacts go uncalled. A charting error mislabels two suspected cases as cleared contacts. They attend a food distribution event. Now seven exposures.
+
+You push through, but the system starts bending. You can keep forcing it (and risk bad calls) or hand the reins to your deputy for 24 hours to reset.`,
+                image: 'image_21.png',
+                choices: [
+                    { text: 'Keep pushing. No time to rest.', next: 'burnout_cascade' },
+                    { text: 'Hand off to deputy and sleep', next: 'trusted_team' }
+                ]
+            },
+            "trusted_team": {
+                text:
+                    `You step away for six hours and sleep in a converted storeroom. Your deputy, Dr. Singh, takes command. She reruns the contact list and finds three missed names. She also smooths relations with a village leader who had stopped cooperating.
+
+When you return, you feel clearer. Your team looks relieved. Trust goes up across every layer: hospital, village, media, government.
+
+In outbreak work, rest is not weakness. It is capacity.
+
+You are now better positioned for an aggressive containment push.`,
+                image: 'image_22.png',
+                choices: [
+                    { text: 'Coordinate unified containment across rural and urban zones', next: 'final_outcome_branching' },
+                    { text: 'Focus vaccine and treatment on high-risk contacts only', next: 'final_outcome_branching' }
+                ]
+            },
+            "burnout_cascade": {
+                text:
+                    `You refuse to step back. Within 48 hours you miss a lab update. A false negative slips into the cleared list. The patient attends a funeral. That funeral becomes a transmission hub.
+
+Your teams are loyal but stretched. Morale drops. Media stories shift from hope to fear. International partners quietly reassign resources to other leaders.
+
+The outbreak is now running faster than your response. You may still save parts of the region, but the human cost will be high.`,
+                image: 'image_23.png',
+                choices: [
+                    { text: 'Call for international surge teams and salvage containment', next: 'final_outcome_branching' },
+                    { text: 'Accept regional burn and focus on protecting hospitals', next: 'partial_failure_2' }
+                ]
+            },
+            "partial_failure_1": {
+                text:
+                    `Urban spread terrifies national leaders, so you redirect supplies to the cities. Rural case numbers climb. By the time help returns, many in the original village have died.
+
+You stop a national wave but at a steep cost to the people who gave you your first warning signs. Their loss becomes a moral debate in parliament. International donors question triage priorities.
+
+You contained the bigger fire, but history will ask who was left to burn.`,
+                image: 'image_24.png',
+                choices: [
+                    { text: 'Launch memorial fund and rebuild clinics', next: 'final_outcome_branching' },
+                    { text: 'Stay mission focused. Move on to urban surge', next: 'final_outcome_branching' }
+                ]
+            },
+            "partial_failure_2": {
+                text:
+                    `You pivot to hospital defense: PPE, triage tents, staff rotation. Cities stabilize. Rural mortality spikes. Satellite imagery shows fresh burial sites in the mango belt.
+
+You preserved the health infrastructure. You lost the countryside.
+
+The global community thanks you for averting a wider disaster. Survivors in the quarantine zone ask why their children had to die.`,
+                image: 'image_25.png',
+                choices: [
+                    { text: 'Document the lessons learned and push reforms', next: 'final_outcome_branching' },
+                    { text: 'Close the file and redeploy', next: 'final_outcome_branching' }
+                ]
+            },
+            "final_outcome_branching": {
+                text:
+                    `Weeks later, you sit before the Outbreak Review Board. Charts, maps, and field notes cover the table. Lives saved. Lives lost. Choices made with incomplete data.
+
+Based on what you did (how fast you acted, whether you protected trust, who received care first) the Board will classify the response.
+
+You think back to the bats, the orchard, the crowded wards. You made the best calls you could at the time. Now comes the reckoning. Choose one of the three possible outcomes of your actions to review:`,
+                image: 'image_26.png',
+                choices: [
+                    { text: 'Review: Containment with minimal loss', next: 'outcome_full_success' },
+                    { text: 'Review: Containment after heavy loss', next: 'outcome_partial_success' },
+                    { text: 'Review: Containment failed. Global spread.', next: 'outcome_total_failure' }
+                ]
+            },
+            "outcome_full_success": {
+                text:
+                    `Containment succeeded. Rural transmission stopped within three incubation cycles. Urban spread never took off. Final case-fatality lower than modeled.
+
+Your mix of community trust, rapid isolation, and early alerting became a new case study for outbreak response. Villagers hold an annual sap safety festival in your honor (they renamed it after you, although the translation is loose).
+
+You saved lives by listening early and acting fast. History will remember.`,
+                image: 'image_27.png',
+                choices: [
+                    { text: 'Play again', next: 'start' }
+                ]
+            },
+            "outcome_partial_success": {
+                text:
+                    `You stopped a national catastrophe, but at a steep human cost. Mortality in the origin village was high. Political fallout lingers. Your tactics are now debated in ethics courses.
+
+Yet your efforts prevented a global wave. Millions who never heard your name were protected by your containment lines.
+
+History will argue. Epidemiologists will study. You did not lose, but you did not fully win.`,
+                image: 'image_28.png',
+                choices: [
+                    { text: 'Play again', next: 'start' }
+                ]
+            },
+            "outcome_total_failure": {
+                text:
+                    `Delays, poor messaging, and fractured response allowed Nipah 2042 to move across borders. Cities fell one after another. Global trade halted. International case-fatality stayed high despite advanced care.
+
+Retrospective genomic analysis showed early mutation toward improved human-to-human transmission. Epidemiologists still debate whether faster action in the orchard belt might have prevented the shift.
+
+You were there at the spark. The world burned. Now we rebuild.
+
+Try again. Act earlier. Listen to the bats.`,
+                image: 'image_29.png',
+                choices: [
+                    { text: 'Play again', next: 'start' }
+                ]
+            }
+        };
+    </script>
+</body>
+
+</html>
