@@ -146,7 +146,7 @@
 This isn’t just unusual... it's unsettling. In this region, bats are sacred to some and a pest to others. But to an epi like you, they’re a potential reservoir. You make a note, forward the report, and set an alert for regional syndromic surveillance updates.
 
 Maybe it’s nothing. Maybe it’s everything.`,
-                image: "nipah_images/image_1.png",
+                image: "assets/images/nipah_images/image_1.png",
                 choices: [
                     { text: "Flag for follow-up and move to next case", next: "first_cases" },
                     { text: "Deploy local team to collect bat carcasses", next: "bat_sampling" }
@@ -160,7 +160,7 @@ Maybe it’s nothing. Maybe it’s everything.`,
 You pull up their records: all five are from families who process pig feed or harvest mangoes from the orchard. One had a family member report seeing bats drinking from sap collection pots. One child fed a sick bat. The hospital doesn’t have isolation.
 
 Families are in and out of the rooms. Nurses are unmasked. A wedding is scheduled for that village this weekend. Hundreds will gather. You feel the hairs rise on your neck. This could be a zoonotic spillover.`,
-                image: "nipah_images/image_2.png",
+                image: "assets/images/nipah_images/image_2.png",
                 choices: [
                     { text: "Send samples to national lab for PCR testing", next: "too_late_2" },
                     { text: "Send urgent alert to WHO regional office", next: "who_alert_only" },
@@ -174,7 +174,7 @@ Families are in and out of the rooms. Nurses are unmasked. A wedding is schedule
 Meanwhile, updates from the district hospital keep coming. Two more patients admitted. One of them is a healthcare worker. The hospital still lacks isolation capacity, and families continue to visit freely.
 
 You're not on the ground, which limits your ability to steer the response directly—but perhaps it's better to wait for the international team to arrive.`,
-                image: "nipah_images/image_2b.png",
+                image: "assets/images/nipah_images/image_2b.png",
                 choices: [
                     { text: "Travel to the hospital to assess the situation yourself", next: "field_deployment" },
                     { text: "Hold back and monitor remotely until WHO arrives", next: "too_late_2" }
@@ -188,7 +188,7 @@ You're not on the ground, which limits your ability to steer the response direct
 You nod grimly. In your line of work, Nipah virus always lurks in the background. Transmitted by bats. Amplified in pigs. Fatal in humans. And if it evolves enough, maybe even airborne someday.
 
 You pray this isn't that day.`,
-                image: "nipah_images/image_3.png",
+                image: "assets/images/nipah_images/image_3.png",
                 choices: [
                     { text: "Call the district hospital to watch for symptoms", next: "first_cases" },
                     { text: "Wait for lab results before acting further", next: "too_late_2" }
@@ -203,7 +203,7 @@ You pray this isn't that day.`,
 You suit up in limited PPE, grab your notebook, and start triaging. Four more patients arrived since your last update. All from the same village. One nurse has now developed a fever.
 
 You quietly confirm what you feared: this is not a random set of fevers. You have an outbreak.`,
-                image: "nipah_images/image_4.png",
+                image: "assets/images/nipah_images/image_4.png",
                 choices: [
                     { text: "Begin developing a case definition with hospital staff", next: "case_definition" },
                     { text: "Start contact tracing based on hospital admissions", next: "contact_tracing" },
@@ -218,7 +218,7 @@ You quietly confirm what you feared: this is not a random set of fevers. You hav
 Within an hour, three more cases are flagged. A fourth patient dies before reaching the ICU. You map out their village on your tablet. All cases cluster within a 2 km radius of the mango orchards.
 
 You feel the clock ticking. Each person who walks in and out of that hospital is a link in a growing chain of transmission.`,
-                image: "nipah_images/image_5.png",
+                image: "assets/images/nipah_images/image_5.png",
                 choices: [
                     { text: "Initiate emergency infection control protocol", next: "infection_control" },
                     { text: "Focus on community interviews in the orchard village", next: "community_fieldwork" }
@@ -234,7 +234,7 @@ In just one day, your contact list grows to over 60 names. Many are already symp
 You radio for additional teams, but they’re three days out. Meanwhile, the funeral for one patient is already underway—no distancing, no masks.
 
 Cultural customs are colliding with the laws of epidemiology. If this is Nipah, you’re losing time—and lives—with every delay.`,
-                image: "nipah_images/image_6.png",
+                image: "assets/images/nipah_images/image_6.png",
                 choices: [
                     { text: "Implement contact-based quarantine with police help", next: "quarantine_measures" },
                     { text: "Issue a public alert to cancel gatherings", next: "cancel_events" }
@@ -248,7 +248,7 @@ Cultural customs are colliding with the laws of epidemiology. If this is Nipah, 
 The wedding proceeds as planned. Three guests collapse by the reception’s end. The public thinks this is a seasonal bug. No one is masking. Schools are still open.
 
 Your name appears in a leaked memo: 'slow to act.' The window for containment may have closed. Your next choices will determine if the world pays for it.`,
-                image: "nipah_images/image_7.png",
+                image: "assets/images/nipah_images/image_7.png",
                 choices: [
                     { text: "Go public with outbreak information and take full control", next: "crisis_comms" },
                     { text: "Request military lockdown of affected villages", next: "military_lockdown" }
@@ -261,7 +261,7 @@ Your name appears in a leaked memo: 'slow to act.' The window for containment ma
 Initial reaction is chaotic. Rumors spread like fire on social media. Misinformation and fear dominate the conversation. But then, something shifts. Your face—exhausted, steady—becomes a familiar presence in households across the region.
 
 Over the next few days, mask use increases. Farmers start boiling sap before consumption. Local radio hosts echo your advice. Trust begins to grow—but now, so does the spotlight. The next steps must match the message.`,
-                image: "nipah_images/image_13.png",
+                image: "assets/images/nipah_images/image_13.png",
                 effects: { trust: 2, spread: -1 },
                 choices: [
                     { text: "Leverage visibility to mobilize community action", next: "public_response" },
@@ -273,7 +273,7 @@ Over the next few days, mask use increases. Farmers start boiling sap before con
                 text:`You haven’t slept more than four hours in days. You forget names, misplace notes, and second-guess basic calculations. One night, you break down crying in a hallway.
 
 A junior nurse finds you and quietly says, 'We can’t do this without you, Dr. \${playerName}. But maybe you can’t do this without help either.'`,
-                image: "nipah_images/image_30.png",
+                image: "assets/images/nipah_images/image_30.png",
                 effects: { fatigue: 2, trust: -1 },
                 choices: [
                     { text: "Request a counseling session via WHO mental health support line", next: "counseling_intervention" },
@@ -286,7 +286,7 @@ A junior nurse finds you and quietly says, 'We can’t do this without you, Dr. 
                     `You speak with a remote trauma counselor. They guide you through grounding techniques and remind you of your boundaries. You cry again—but this time it helps.
 
 After the call, you sleep deeply for the first time in a week.`,
-                image: "nipah_images/image_31.png",
+                image: "assets/images/nipah_images/image_31.png",
                 effects: { fatigue: -2, trust: 1 },
                 choices: [
                     { text: "Resume field command with new wellness practices", next: "trusted_team" },
@@ -297,7 +297,7 @@ After the call, you sleep deeply for the first time in a week.`,
                 title: 'Resilient',
                 text:
                     `You restructure your workflow. Your team now rotates duties with enforced rest. You hold weekly debriefs. One junior contact tracer tells you they’ve started sleeping again thanks to your leadership.`,
-                image: "nipah_images/image_32.png",
+                image: "assets/images/nipah_images/image_32.png",
                 effects: { fatigue: -1, trust: 2 },
                 choices: [
                     { text: "Return fully to lead frontline response", next: "final_outcome_branching" },
@@ -310,7 +310,7 @@ After the call, you sleep deeply for the first time in a week.`,
                     `You join a late-night peer support call with other epidemiologists and responders. Someone from a cholera response in Sudan. Another from an Ebola unit in DR Congo.
 
 You realize you’re not alone. You hang up lighter.`,
-                image: "nipah_images/image_33.png",
+                image: "assets/images/nipah_images/image_33.png",
                 effects: { fatigue: -1, trust: 1 },
                 choices: [
                     { text: "Begin weekly team support sessions at your base", next: "trusted_team" },
@@ -321,7 +321,7 @@ You realize you’re not alone. You hang up lighter.`,
                 title: 'You Give Up',
                 text:
                     `You send your resignation via secure satellite uplink. It is accepted. Two weeks later, you watch the outbreak unfold from afar. The decisions continue without you. The virus doesn’t wait for anyone.`,
-                image: "nipah_images/image_34.png",
+                image: "assets/images/nipah_images/image_34.png",
                 effects: { trust: -5, spread: 3, deaths: 3 },
                 choices: [
                     { text: "Restart the game. Try again.", next: "start" }
@@ -337,7 +337,7 @@ Each patient is masked and isolated behind makeshift dividers. You reassign two 
 It’s not glamorous, but it buys you time—and maybe lives.
 
 A local reporter snaps a photo from outside. By morning, the story is trending on regional news. People are scared, but they’re listening.`,
-                image: 'nipah_images/image_8.png',
+                image: 'assets/images/nipah_images/image_8.png',
                 choices: [
                     { text: 'Leverage media coverage to encourage masking and distancing', next: 'public_response' },
                     { text: 'Keep focus on case interviews in the orchard village', next: 'community_fieldwork' }
@@ -353,7 +353,7 @@ This is the transmission path—bat to sap to people. Pig as amplifier. It’s t
 Your notebook fills with dates, names, symptoms. You hear coughing from a neighbor’s hut.
 
 If you're right, a ring of early exposures has already spread out in all directions. You may be walking through the first ring of a much wider fire.`,
-                image: 'nipah_images/image_9.png',
+                image: 'assets/images/nipah_images/image_9.png',
                 choices: [
                     { text: 'Advise temporary relocation of exposed families', next: 'containment_village' },
                     { text: 'Focus on stopping the wedding first', next: 'cancel_events' }
@@ -369,7 +369,7 @@ Compliance is mixed. Some villagers resist, arguing they’ll starve without mar
 But your team delivers food and water. A few young volunteers help spread messages through loudspeakers and leaflets. Rumors still swirl, but your presence—and your clarity—begin to push back the fear.
 
 Two days later, a new case appears in a town 40 km away. Same symptoms. No contact with known patients. Somehow, the virus slipped the net.`,
-                image: 'nipah_images/image_10.png',
+                image: 'assets/images/nipah_images/image_10.png',
                 choices: [
                     { text: 'Trace transportation routes and delivery contacts', next: 'super_spreader' },
                     { text: 'Request military lockdown of outer regions', next: 'military_lockdown' }
@@ -385,7 +385,7 @@ At first, villagers are furious. One elder calls it a curse on their harvest. Bu
 Your message travels. By morning, other communities have canceled festivals, school assemblies, even football matches. Regional health officials praise your leadership. The WHO begins prepping a rapid response team.
 
 You know the incubation window is ticking—but so far, you’re holding the line.`,
-                image: 'nipah_images/image_11.png',
+                image: 'assets/images/nipah_images/image_11.png',
                 choices: [
                     { text: 'Build public trust through daily radio updates', next: 'public_response' },
                     { text: 'Refocus on contact tracing before containment cracks', next: 'super_spreader' }
@@ -403,7 +403,7 @@ You see the needle move. Case numbers slow. The hospital has beds again. For now
 But news breaks of a case in Phnom Penh. If that spreads, everything you’ve built could unravel.
 
 You need to decide where to direct your limited resources next.`,
-                image: 'nipah_images/image_12.png',
+                image: 'assets/images/nipah_images/image_12.png',
                 choices: [
                     { text: 'Coordinate regional containment around Phnom Penh case', next: 'urban_response' },
                     { text: 'Focus entirely on rural outbreak containment', next: 'containment_village' }
@@ -419,7 +419,7 @@ This was a super-spreader.
 The virus is ahead of you now, and public panic is rising. People are fleeing rural areas for the city, not knowing they’re taking the virus with them. A death in a border town raises fears of international spread.
 
 You need to move quickly—either isolate the city, or try to cut the virus off at the outskirts.`,
-                image: 'nipah_images/image_13b.png',
+                image: 'assets/images/nipah_images/image_13b.png',
                 choices: [
                     { text: 'Implement interprovincial travel restrictions', next: 'urban_response' },
                     { text: 'Request military lockdown', next: 'military_lockdown' }
@@ -437,7 +437,7 @@ Your phone buzzes. Footage has leaked of soldiers shouting at villagers. Critics
 Your inbox splits in two: one half is praise from global health leaders. The other half is hate mail from the people you're trying to protect.
 
 You’re containing the virus. But at what cost?`,
-                image: 'nipah_images/image_14.png',
+                image: 'assets/images/nipah_images/image_14.png',
                 choices: [
                     { text: 'Reassign soldiers to assist with food delivery and health education', next: 'rebuild_trust' },
                     { text: 'Double down: expand the lockdown and accelerate vaccine R&D', next: 'race_for_vaccine' }
@@ -455,7 +455,7 @@ You deploy mobile testing vans and convert schools into isolation wards. Contact
 The mayor resists lockdowns. "We’ll lose the garment economy," he warns.
 
 Meanwhile, satellite data shows crowds at bus terminals. You're forced to choose between a blunt citywide shutdown—or a more surgical strike at transmission hotspots.`,
-                image: 'nipah_images/image_15.png',
+                image: 'assets/images/nipah_images/image_15.png',
                 choices: [
                     { text: 'Lock down entire city, economy be damned', next: 'race_for_vaccine' },
                     { text: 'Target high-transmission sites with mobile units', next: 'urban_balancing_act' }
@@ -471,14 +471,14 @@ The village becomes a quarantine zone, but also a symbol. "We’re holding the l
 But villagers begin to ask: Why only us? What about the cities? Why haven’t we gotten the experimental antivirals?
 
 You promised containment. Now you have to deliver—or explain what went wrong.`,
-                image: 'nipah_images/image_16.png',
+                image: 'assets/images/nipah_images/image_16.png',
                 choices: [
                     { text: 'Scale up care: build mobile ICU and deploy local doctors', next: 'rebuild_trust' },
                     { text: 'Shift to urban containment and let rural outbreak run its course', next: 'partial_failure_1' }
                 ]
             },
             "rebuild_trust": {
-                title: ''
+                title: 'Rebuilding Trust',
                 text:
                     `You reassign soldiers to community support roles. They deliver rice, medicines, books. One even leads a children’s game over the radio. Your voice returns to the airwaves, this time with villagers reading stories of survival.
 
@@ -487,7 +487,7 @@ Case counts in the village fall. Families begin waving from inside homes instead
 Even the urban panic cools slightly. You receive a message from a contact at the Institut Pasteur: “If you can hold this containment for one more week, we may have a candidate antiviral protocol worth testing.”
 
 You’re buying time. But you’re running out of yourself.`,
-                image: 'nipah_images/image_17.png',
+                image: 'assets/images/nipah_images/image_17.png',
                 choices: [
                     { text: 'Pull an all-nighter and coordinate the rural + urban strategy yourself', next: 'burnout_warning' },
                     { text: 'Delegate authority and take a rest', next: 'trusted_team' }
@@ -507,7 +507,7 @@ One morning you wake up to find a child left at the hospital gates with a note: 
 The science may save her. But the system failed her.
 
 So now you push harder.`,
-                image: 'nipah_images/image_18.png',
+                image: 'assets/images/nipah_images/image_18.png',
                 choices: [
                     { text: 'Launch a final wave of vaccinations and push public appeal', next: 'final_outcome_branching' },
                     { text: 'Double down on isolation and restrict vaccine use', next: 'final_outcome_branching' }
@@ -521,7 +521,7 @@ So now you push harder.`,
 Cases still rise, but slower than models predicted. The mayor stays on your side because the factories remain open. Local doctors say you bought them time.
 
 Then a factory cluster explodes. Workers slept in shared dorms. Your targeted strategy now faces its first stress test. Do you widen the net or try a ring-control method around the factory zone?`,
-                image: 'nipah_images/image_19.png',
+                image: 'assets/images/nipah_images/image_19.png',
                 choices: [
                     { text: 'Expand to citywide restrictions after factory cluster', next: 'race_for_vaccine' },
                     { text: 'Ring-control around factory zone only', next: 'containment_factory' }
@@ -535,7 +535,7 @@ Then a factory cluster explodes. Workers slept in shared dorms. Your targeted st
 It works for several days. Then one worker slips out to visit family across town. Three days later that family shows symptoms.
 
 Containment works only as long as people can live with it. You now face a choice: go harder with enforcement or pivot back to public trust and community care.`,
-                image: 'nipah_images/image_20.png',
+                image: 'assets/images/nipah_images/image_20.png',
                 choices: [
                     { text: 'Escalate enforcement with curfews', next: 'military_lockdown' },
                     { text: 'Rebuild trust and community care model', next: 'rebuild_trust' }
@@ -549,7 +549,7 @@ Containment works only as long as people can live with it. You now face a choice
 Fatigue shows in the data. Contacts go uncalled. A charting error mislabels two suspected cases as cleared contacts. They attend a food distribution event. Now seven exposures.
 
 You push through, but the system starts bending. You can keep forcing it (and risk bad calls) or hand the reins to your deputy for 24 hours to reset.`,
-                image: 'nipah_images/image_21.png',
+                image: 'assets/images/nipah_images/image_21.png',
                 choices: [
                     { text: 'Keep pushing. No time to rest.', next: 'burnout_cascade' },
                     { text: 'Hand off to deputy and sleep', next: 'trusted_team' }
@@ -565,7 +565,7 @@ When you return, you feel clearer. Your team looks relieved. Trust goes up acros
 In outbreak work, rest is not weakness. It is capacity.
 
 You are now better positioned for an aggressive containment push.`,
-                image: 'nipah_images/image_22.png',
+                image: 'assets/images/nipah_images/image_22.png',
                 choices: [
                     { text: 'Coordinate unified containment across rural and urban zones', next: 'final_outcome_branching' },
                     { text: 'Focus vaccine and treatment on high-risk contacts only', next: 'final_outcome_branching' }
@@ -579,7 +579,7 @@ You are now better positioned for an aggressive containment push.`,
 Your teams are loyal but stretched. Morale drops. Media stories shift from hope to fear. International partners quietly reassign resources to other leaders.
 
 The outbreak is now running faster than your response. You may still save parts of the region, but the human cost will be high.`,
-                image: 'nipah_images/image_23.png',
+                image: 'assets/images/nipah_images/image_23.png',
                 choices: [
                     { text: 'Call for international surge teams and salvage containment', next: 'final_outcome_branching' },
                     { text: 'Accept regional burn and focus on protecting hospitals', next: 'partial_failure_2' }
@@ -593,7 +593,7 @@ The outbreak is now running faster than your response. You may still save parts 
 You stop a national wave but at a steep cost to the people who gave you your first warning signs. Their loss becomes a moral debate in parliament. International donors question triage priorities.
 
 You contained the bigger fire, but history will ask who was left to burn.`,
-                image: 'nipah_images/image_24.png',
+                image: 'assets/images/nipah_images/image_24.png',
                 choices: [
                     { text: 'Launch memorial fund and rebuild clinics', next: 'final_outcome_branching' },
                     { text: 'Stay mission focused. Move on to urban surge', next: 'final_outcome_branching' }
@@ -607,7 +607,7 @@ You contained the bigger fire, but history will ask who was left to burn.`,
 You preserved the health infrastructure. You lost the countryside.
 
 The global community thanks you for averting a wider disaster. Survivors in the quarantine zone ask why their children had to die.`,
-                image: 'nipah_images/image_25.png',
+                image: 'assets/images/nipah_images/image_25.png',
                 choices: [
                     { text: 'Document the lessons learned and push reforms', next: 'final_outcome_branching' },
                     { text: 'Close the file and redeploy', next: 'final_outcome_branching' }
@@ -621,7 +621,7 @@ The global community thanks you for averting a wider disaster. Survivors in the 
 Based on what you did (how fast you acted, whether you protected trust, who received care first) the Board will classify the response.
 
 You think back to the bats, the orchard, the crowded wards. You made the best calls you could at the time. Now comes the reckoning. Choose one of the three possible outcomes of your actions to review:`,
-                image: 'nipah_images/image_26.png',
+                image: 'assets/images/nipah_images/image_26.png',
                 choices: [
                     { text: 'Review: Containment with minimal loss', next: 'outcome_full_success' },
                     { text: 'Review: Containment after heavy loss', next: 'outcome_partial_success' },
@@ -636,7 +636,7 @@ You think back to the bats, the orchard, the crowded wards. You made the best ca
 Your mix of community trust, rapid isolation, and early alerting became a new case study for outbreak response. Villagers hold an annual sap safety festival in your honor (they renamed it after you, although the translation is loose).
 
 You saved lives by listening early and acting fast. History will remember.`,
-                image: 'nipah_images/image_27.png',
+                image: 'assets/images/nipah_images/image_27.png',
                 choices: [
                     { text: 'Play again', next: 'start' }
                 ]
@@ -649,7 +649,7 @@ You saved lives by listening early and acting fast. History will remember.`,
 Yet your efforts prevented a global wave. Millions who never heard your name were protected by your containment lines.
 
 History will argue. Epidemiologists will study. You did not lose, but you did not fully win.`,
-                image: 'nipah_images/image_28.png',
+                image: 'assets/images/nipah_images/image_28.png',
                 choices: [
                     { text: 'Play again', next: 'start' }
                 ]
@@ -664,7 +664,7 @@ Retrospective genomic analysis showed early mutation toward improved human-to-hu
 You were there at the spark. The world burned. Now we rebuild.
 
 Try again. Act earlier. Listen to the bats.`,
-                image: 'nipah_images/image_29.png',
+                image: 'assets/images/nipah_images/image_29.png',
                 choices: [
                     { text: 'Play again', next: 'start' }
                 ]
