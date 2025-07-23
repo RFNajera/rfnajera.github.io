@@ -10,6 +10,7 @@
     <meta property="og:url" content="https://rfnajera.github.io/nipah.html" />
     <meta property="og:type" content="website" />
     <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+    <meta charset="UTF-8" />
     <title>Nipah Outbreak: 2042</title>
     <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
     <style>
@@ -67,7 +68,7 @@
         <button onclick="startGame()">Start</button>
     </div>
     <div id="gameUI">
-        <img src="assets/images/nipah_images/image_1.png" alt="Opening image" id="story-image" class="header-image">
+        <img src="image_1.png" alt="Opening image" id="story-image" class="header-image">
         <h2 id="title"></h2> <!-- This is the title line -->
         <div id="story"></div>
         <div id="choices"></div>
@@ -161,7 +162,7 @@ You pull up their records: all five are from families who process pig feed or ha
 Families are in and out of the rooms. Nurses are unmasked. A wedding is scheduled for that village this weekend. Hundreds will gather. You feel the hairs rise on your neck. This could be a zoonotic spillover.`,
                 image: "assets/images/nipah_images/image_2.png",
                 choices: [
-                    { text: "Send samples to national lab for PCR testing", next: "too_late_2" },
+                    { text: "Send samples to national lab for PCR testing", next: "deadly_wedding" },
                     { text: "Send urgent alert to WHO regional office", next: "who_alert_only" },
                     { text: "Travel to hospital and begin direct investigation", next: "field_deployment" }
                 ]
@@ -176,7 +177,7 @@ You're not on the ground, which limits your ability to steer the response direct
                 image: "assets/images/nipah_images/image_2b.png",
                 choices: [
                     { text: "Travel to the hospital to assess the situation yourself", next: "field_deployment" },
-                    { text: "Hold back and monitor remotely until WHO arrives", next: "too_late_2" }
+                    { text: "Hold back and monitor remotely until WHO arrives", next: "deadly_wedding" }
                 ]
             },
             "bat_sampling": {
@@ -190,7 +191,7 @@ You pray this isn't that day.`,
                 image: "assets/images/nipah_images/image_3.png",
                 choices: [
                     { text: "Call the district hospital to watch for symptoms", next: "first_cases" },
-                    { text: "Wait for lab results before acting further", next: "too_late_2" }
+                    { text: "Wait for lab results before acting further", next: "deadly_wedding" }
                 ]
             },
             "field_deployment": {
@@ -206,7 +207,7 @@ You quietly confirm what you feared: this is not a random set of fevers. You hav
                 choices: [
                     { text: "Begin developing a case definition with hospital staff", next: "case_definition" },
                     { text: "Start contact tracing based on hospital admissions", next: "contact_tracing" },
-                    { text: "Wait for lab confirmation before acting further", next: "too_late_2" }
+                    { text: "Wait for lab confirmation before acting further", next: "deadly_wedding" }
                 ]
             },
             "case_definition": {
@@ -239,7 +240,7 @@ Cultural customs are colliding with the laws of epidemiology. If this is Nipah, 
                     { text: "Issue a public alert to cancel gatherings", next: "cancel_events" }
                 ]
             },
-            "too_late_2": {
+            "deadly_wedding": {
                 title: 'A Deadly Wedding',
                 text:
                     `You decide to wait for lab confirmation before taking broader action. Forty-eight hours pass. By the time the samples return—positive for Nipah virus—eleven new patients have been admitted, including two nurses.
@@ -276,7 +277,7 @@ A junior nurse finds you and quietly says, 'We can’t do this without you, Dr. 
                 effects: { fatigue: 2, trust: -1 },
                 choices: [
                     { text: "Request a counseling session via WHO mental health support line", next: "counseling_intervention" },
-                    { text: "Ignore it. Push through. People need me.", next: "burnout_cascade" }
+                    { text: "You decide it might be better to walk away and not be a hindrance", next: "mission_abandonment" }
                 ]
             },
             "counseling_intervention": {
@@ -299,8 +300,8 @@ After the call, you sleep deeply for the first time in a week.`,
                 image: "assets/images/nipah_images/image_32.png",
                 effects: { fatigue: -1, trust: 2 },
                 choices: [
-                    { text: "Return fully to lead frontline response", next: "final_outcome_branching" },
-                    { text: "Continue strategic support only", next: "final_outcome_branching" }
+                    { text: "Return fully to lead frontline response", next: "trusted_team" },
+                    { text: "Talk with colleagues and sahre support", next: "peer_support_circle" }
                 ]
             },
             "peer_support_circle": {
@@ -313,7 +314,7 @@ You realize you’re not alone. You hang up lighter.`,
                 effects: { fatigue: -1, trust: 1 },
                 choices: [
                     { text: "Begin weekly team support sessions at your base", next: "trusted_team" },
-                    { text: "Keep the calls private, personal, and infrequent", next: "rebuild_trust" }
+                    { text: "Get back to work and get the soldiers to do more", next: "rebuild_trust" }
                 ]
             },
             "mission_abandonment": {
@@ -473,7 +474,7 @@ You promised containment. Now you have to deliver—or explain what went wrong.`
                 image: 'assets/images/nipah_images/image_16.png',
                 choices: [
                     { text: 'Scale up care: build mobile ICU and deploy local doctors', next: 'rebuild_trust' },
-                    { text: 'Shift to urban containment and let rural outbreak run its course', next: 'partial_failure_1' }
+                    { text: 'Shift to urban containment and let rural outbreak run its course', next: 'village_sacrifice' }
                 ]
             },
             "rebuild_trust": {
@@ -580,11 +581,11 @@ Your teams are loyal but stretched. Morale drops. Media stories shift from hope 
 The outbreak is now running faster than your response. You may still save parts of the region, but the human cost will be high.`,
                 image: 'assets/images/nipah_images/image_23.png',
                 choices: [
-                    { text: 'Call for international surge teams and salvage containment', next: 'final_outcome_branching' },
-                    { text: 'Accept regional burn and focus on protecting hospitals', next: 'partial_failure_2' }
+                    { text: 'This is all weighing heavily on you', next: 'mental_health_breakdown' },
+                    { text: 'Accept regional burn and focus on protecting hospitals', next: 'hospitals_first' }
                 ]
             },
-            "partial_failure_1": {
+            "village_sacrifice": {
                 title: 'A Village Sacrifice',
                 text:
                     `Urban spread terrifies national leaders, so you redirect supplies to the cities. Rural case numbers climb. By the time help returns, many in the original village have died.
@@ -598,7 +599,7 @@ You contained the bigger fire, but history will ask who was left to burn.`,
                     { text: 'Stay mission focused. Move on to urban surge', next: 'final_outcome_branching' }
                 ]
             },
-            "partial_failure_2": {
+            "hospitals_first": {
                 title: 'Protecting the Hospitals, Forgoing the Villages',
                 text:
                     `You pivot to hospital defense: PPE, triage tents, staff rotation. Cities stabilize. Rural mortality spikes. Satellite imagery shows fresh burial sites in the mango belt.
