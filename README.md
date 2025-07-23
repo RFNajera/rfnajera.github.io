@@ -25,6 +25,7 @@ This GitHub repository serves as my portfolio of coding-related projects, showca
   - Want to teach your kid about inferential statistics? Start with the [random candy game](random_candy.html){:target="_blank"}.
   - Want to teach your kid about probability and gambling? Start with the [roulette game simulator](gambling_kids.html){:target="_blank"}.
   - Show your kid how genetic shift and drift happens, using examples from literature with [this quick simulation](shift_drift.html){:target="_blank"}.
+  - Play a choose-your-own-adventure game in which you try to stop an epidemic of Nipah virus disease [by clicking here](https://rfnajera.github.io/nipah.html){:target="_blank"}
 - **Automation and Scripting**: Solutions to streamline workflows and enhance productivity.
 
 ---
