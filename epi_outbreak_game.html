@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta property="og:title" content="Intro to Epi Quiz game" />
+  <meta property="og:description" content="A quiz game to test your epidemiological knowledge." />
+  <meta property="og:image" content="https://rfnajera.github.io/assets/images/epi_outbreak_game_header.png" />
+  <meta property="og:url" content="https://rfnajera.github.io/epi_outbreak_game.html" />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+  <title>Intro to Epidemiology Quiz Game</title>
+  <style>
+    :root {
+      --bg1: #0b132b;
+      --bg2: #1c2541;
+      --panel: rgba(255,255,255,0.08);
+      --panel-strong: rgba(255,255,255,0.14);
+      --text: #f4f7fb;
+      --muted: #cbd5e1;
+      --accent: #5bc0be;
+      --accent-2: #f4d35e;
+      --danger: #ff6b6b;
+      --success: #7bd389;
+      --shadow: rgba(0,0,0,0.28);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(91,192,190,0.18), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(244,211,94,0.12), transparent 24%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      min-height: 100vh;
+    }
+
+    .app {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 20px;
+    }
+
+    .panel {
+      background: var(--panel);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 22px;
+      box-shadow: 0 12px 30px var(--shadow);
+    }
+
+    .sidebar {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-self: start;
+      position: sticky;
+      top: 20px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.7rem;
+      line-height: 1.15;
+    }
+
+    h2 {
+      margin: 0 0 10px 0;
+      font-size: 1.05rem;
+    }
+
+    p {
+      margin: 0;
+      line-height: 1.45;
+      color: var(--muted);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .stat {
+      background: var(--panel-strong);
+      border-radius: 16px;
+      padding: 12px;
+    }
+
+    .label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .value {
+      font-size: 1.4rem;
+      font-weight: bold;
+    }
+
+    .controls,
+    .instructions,
+    .legend {
+      background: var(--panel-strong);
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    button, select {
+      border: none;
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+
+    button {
+      background: var(--accent);
+      color: #0b132b;
+      font-weight: bold;
+      box-shadow: 0 8px 20px rgba(91,192,190,0.25);
+    }
+
+    button.secondary {
+      background: rgba(255,255,255,0.12);
+      color: var(--text);
+      box-shadow: none;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    select {
+      width: 100%;
+      background: rgba(255,255,255,0.9);
+      color: #111827;
+      margin-top: 10px;
+    }
+
+    .game-panel {
+      padding: 18px;
+      min-height: 780px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .status-pill {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+    }
+
+    .playfield {
+      position: relative;
+      flex: 1;
+      min-height: 580px;
+      border-radius: 24px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at top center, rgba(91,192,190,0.08), transparent 35%),
+        linear-gradient(to bottom, rgba(255,255,255,0.04), rgba(255,255,255,0.02)),
+        linear-gradient(180deg, #17213c 0%, #101827 100%);
+      border: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 18px;
+    }
+
+    .question-card {
+      position: relative;
+      width: min(760px, 100%);
+      margin: 0 auto;
+      background: rgba(9, 14, 25, 0.94);
+      border: 1px solid rgba(91,192,190,0.4);
+      border-radius: 24px;
+      padding: 18px;
+      box-shadow: 0 18px 35px rgba(0,0,0,0.35);
+      z-index: 3;
+      flex: 0 0 auto;
+    }
+
+.pause-mask {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 24px;
+  background: rgba(5, 10, 20, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 6;
+  pointer-events: none;
+}
+
+.pause-mask span {
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: var(--text);
+  font-weight: bold;
+  letter-spacing: 0.03em;
+}
+
+    .question-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .prompt-text {
+      font-size: 1.2rem;
+      line-height: 1.45;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+
+    .choices {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .choice {
+      width: 100%;
+      text-align: left;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: none;
+      font-weight: normal;
+    }
+
+    .choice:hover:not(:disabled),
+    .choice:focus-visible {
+      outline: 2px solid var(--accent-2);
+      background: rgba(255,255,255,0.12);
+    }
+
+    .choice.correct {
+      background: rgba(123,211,137,0.18);
+      border-color: rgba(123,211,137,0.65);
+    }
+
+    .choice.incorrect {
+      background: rgba(255,107,107,0.18);
+      border-color: rgba(255,107,107,0.65);
+    }
+
+    .choice-label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 1.9rem;
+      height: 1.9rem;
+      margin-right: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.12);
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: var(--accent-2);
+    }
+
+    .key-hint {
+      margin-top: 10px;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .progress-shell {
+      width: 100%;
+      height: 12px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 14px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width 0.12s linear;
+    }
+
+    .petri-zone {
+      position: relative;
+      flex: 1 1 auto;
+      min-height: 320px;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(255,255,255,0.06), transparent 22%),
+        radial-gradient(circle at 70% 30%, rgba(255,255,255,0.05), transparent 24%),
+        radial-gradient(circle at center, rgba(255,255,255,0.03), transparent 65%),
+        rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      overflow: hidden;
+    }
+
+    .petri-label {
+      position: absolute;
+      top: 10px;
+      left: 14px;
+      font-size: 0.86rem;
+      color: var(--muted);
+      z-index: 2;
+    }
+
+    .germ-field {
+      position: absolute;
+      inset: 0;
+    }
+
+    .germ {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      opacity: 0.92;
+      background: hsl(var(--germ-hue, 120), 70%, 50%);
+      box-shadow:
+        0 0 0 2px rgba(255,255,255,0.06) inset,
+        0 0 10px hsla(var(--germ-hue, 120), 80%, 60%, 0.22);
+    }
+
+    .germ::before,
+    .germ::after {
+      content: "";
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 1.5px dashed hsla(var(--germ-hue, 120), 80%, 65%, 0.7);
+    }
+
+    .germ::after {
+      inset: 3px;
+      border-style: solid;
+      opacity: 0.45;
+    }
+
+    .feedback {
+      min-height: 120px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 18px;
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .feedback strong {
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+
+    .feedback.good { border-color: rgba(123,211,137,0.35); }
+    .feedback.bad { border-color: rgba(255,107,107,0.35); }
+
+    .result-popup {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 4;
+      pointer-events: none;
+      background: rgba(5,10,20,0.18);
+    }
+
+    .result-card {
+      width: min(640px, 100%);
+      background: rgba(11,19,43,0.97);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 22px;
+      padding: 22px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+    }
+
+    .result-card strong {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+    }
+
+    .result-card.good {
+      border-color: rgba(123,211,137,0.45);
+    }
+
+    .result-card.bad {
+      border-color: rgba(255,107,107,0.45);
+    }
+    
+    #nextQuestionCountdown {
+    margin-top: 12px;
+    font-size: 0.95rem;
+    color: var(--accent-2);
+    font-weight: bold;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(5,10,20,0.78);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 5;
+    }
+
+    .overlay-card {
+      width: min(740px, 100%);
+      background: rgba(11,19,43,0.96);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+    }
+
+    .overlay-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+
+    .share-card {
+      margin-top: 16px;
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .share-image-placeholder {
+      display: grid;
+      place-items: center;
+      min-height: 120px;
+      border-radius: 16px;
+      border: 2px dashed rgba(255,255,255,0.18);
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 14px;
+      text-align: center;
+      padding: 12px;
+    }
+
+    .share-rank-image {
+      display: block;
+      width: 100%;
+      max-height: 240px;
+      object-fit: contain;
+      border-radius: 16px;
+      margin-bottom: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .share-card pre {
+      margin: 14px 0 0 0;
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      overflow: auto;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      white-space: pre-wrap;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .share-status {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: var(--muted);
+      min-height: 1.2em;
+    }
+
+    .tiny {
+      font-size: 0.84rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .legend ul,
+    .instructions ul {
+      padding-left: 18px;
+      margin: 10px 0 0 0;
+      color: var(--muted);
+    }
+
+    .legend li,
+    .instructions li {
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 960px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+      }
+
+      .choices {
+        grid-template-columns: 1fr;
+      }
+
+      .game-panel {
+        min-height: auto;
+      }
+
+      .playfield {
+        min-height: 700px;
+      }
+
+      .petri-zone {
+        min-height: 360px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="panel sidebar">
+      <div>
+        <h1>Stop the Outbreak:<br>Intro Epi Quiz Game</h1>
+        <p>Answer epidemiology questions correctly to wipe out the germs before they overrun the screen.</p>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="label">Points</div>
+          <div class="value" id="scoreValue">0</div>
+        </div>
+        <div class="stat">
+          <div class="label">Level</div>
+          <div class="value" id="levelValue">1</div>
+        </div>
+        <div class="stat">
+          <div class="label">Germs</div>
+          <div class="value" id="germCountValue">500</div>
+        </div>
+        <div class="stat">
+          <div class="label">Correct</div>
+          <div class="value" id="correctValue">0</div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <h2>Game Settings</h2>
+        <label for="modeSelect" class="label">Mode</label>
+        <select id="modeSelect">
+          <option value="study">Study Mode (more time)</option>
+          <option value="challenge">Challenge Mode (less time)</option>
+        </select>
+        <div class="btn-row">
+          <button id="startBtn">Start Game</button>
+          <button class="secondary" id="pauseBtn" disabled>Pause</button>
+          <button class="secondary" id="resetBtn">Reset</button>
+        </div>
+      </div>
+
+      <div class="instructions">
+        <h2>How to Play</h2>
+        <ul>
+          <li>You start with 600 germs.</li>
+          <li>You lose at 1000 germs. You win when all germs are dead.</li>
+          <li>Correct answers reduce the colony by 25 percent. Wrong answers increase it by 50 percent.</li>
+          <li>The game will adapt to your answers and get harder as you answer correctly.</li>
+          <li>The questions will get harder, and the time to answer will get smaller.</li>
+          <li>The last remaining germ is killed only by answering a <b>hard-level</b> question correctly.</li>
+          <li>You can answer with the mouse or by pressing 1, 2, 3, or 4.</li>
+        </ul>
+      </div>
+    </aside>
+
+    <main class="panel game-panel">
+      <div class="topbar">
+        <div class="status-pill" id="statusText">Ready to begin</div>
+        <div class="status-pill" id="questionCount">Questions answered: 0</div>
+        <div class="status-pill" id="timeLeftText">Time left: --</div>
+      </div>
+
+      <section class="playfield" id="playfield">
+        <div class="question-card" id="questionCard"></div>
+
+        <div class="petri-zone">
+          <div class="petri-label" id="petriLabel">Germ colony status: stable and green</div>
+          <div class="germ-field" id="germField"></div>
+        </div>
+        <div class="result-popup" id="resultPopup">
+         <div class="result-card" id="resultCard">
+         <strong>Results</strong>
+         <p id="feedbackText">When you answer a prompt, the result will appear here in the center of the screen.</p>
+         <p id="nextQuestionCountdown"></p>
+         </div>
+        </div>
+        <div class="overlay" id="startOverlay">
+          <div class="overlay-card">
+            <h2>Welcome to the field investigation</h2>
+            <p>You start with 600 germs. Correct answers reduce the outbreak by 25 percent. Wrong answers increase it by 50 percent. To fully end the outbreak, the final single germ has to be eliminated with a hard question answered correctly.</p>
+            <div class="btn-row" style="margin-top:16px;">
+              <button id="overlayStartBtn">Start</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="assets/js/epi_outbreak_game_question_bank.js"></script>
+
+  <script>
+    const questionBank = window.questionBank;
+
+    const DIFFICULTY_POINTS = {
+      Easy: 10,
+      Medium: 20,
+      Hard: 35
+    };
+
+    const DIFFICULTY_PENALTIES = {
+      Easy: 10,
+      Medium: 15,
+      Hard: 25
+    };
+
+    const state = {
+      score: 0,
+      level: 1,
+      germs: 600,
+      correct: 0,
+      answered: 0,
+      mode: 'study',
+      currentDifficulty: 'Easy',
+      easyStreak: 0,
+      mediumStreak: 0,
+      activeQuestion: null,
+      isRunning: false,
+      isPaused: false,
+      questionStart: null,
+      duration: 14000,
+      timerId: null,
+      acceptingAnswer: false,
+      usedByDifficulty: { Easy: [], Medium: [], Hard: [] }
+    };
+    const els = {
+    scoreValue: document.getElementById('scoreValue'),
+    levelValue: document.getElementById('levelValue'),
+    germCountValue: document.getElementById('germCountValue'),
+    correctValue: document.getElementById('correctValue'),
+    modeSelect: document.getElementById('modeSelect'),
+    startBtn: document.getElementById('startBtn'),
+    pauseBtn: document.getElementById('pauseBtn'),
+    resetBtn: document.getElementById('resetBtn'),
+    questionCard: document.getElementById('questionCard'),
+    germField: document.getElementById('germField'),
+    petriLabel: document.getElementById('petriLabel'),
+    resultPopup: document.getElementById('resultPopup'),
+    resultCard: document.getElementById('resultCard'),
+    feedbackText: document.getElementById('feedbackText'),
+    nextQuestionCountdown: document.getElementById('nextQuestionCountdown'),
+    statusText: document.getElementById('statusText'),
+    questionCount: document.getElementById('questionCount'),
+    timeLeftText: document.getElementById('timeLeftText'),
+    startOverlay: document.getElementById('startOverlay')
+    };
+
+    function shuffle(array) {
+      const copy = array.slice();
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function updateHud() {
+      els.scoreValue.textContent = state.score;
+      els.levelValue.textContent = state.level;
+      els.germCountValue.textContent = state.germs;
+      els.correctValue.textContent = state.correct;
+      els.questionCount.textContent = 'Questions answered: ' + state.answered;
+    }
+    
+    function setFeedback(message, tone) {
+    els.feedbackText.textContent = message;
+    if (els.nextQuestionCountdown) {
+    els.nextQuestionCountdown.textContent = '';
+    }
+    els.resultCard.classList.remove('good', 'bad');
+    if (tone === 'good') els.resultCard.classList.add('good');
+    if (tone === 'bad') els.resultCard.classList.add('bad');
+    els.resultPopup.style.display = 'flex';
+    }
+
+    function hideFeedback() {
+      els.resultPopup.style.display = 'none';
+      els.resultCard.classList.remove('good', 'bad');
+    }
+
+    function setModeValues() {
+      state.mode = els.modeSelect.value;
+      state.duration = state.mode === 'study' ? 30000 : 20000;
+    }
+
+    function computeLevel() {
+      if (state.germs === 1 || state.currentDifficulty === 'Hard') {
+        state.level = 3;
+      } else if (state.currentDifficulty === 'Medium') {
+        state.level = 2;
+      } else {
+        state.level = 1;
+      }
+    }
+
+    function getDifficulty() {
+      if (state.germs === 1) return 'Hard';
+      return state.currentDifficulty;
+    }
+
+    function getAdjustedDuration() {
+      const base = state.mode === 'study' ? 30000 : 20000;
+      const reduction = Math.min((state.level - 1) * 3000, 5000);
+      return Math.max(base - reduction, state.mode === 'study' ? 15000 : 10000);
+    }
+    
+    function getNextQuestion() {
+    const difficulty = getDifficulty();
+    const bucket = questionBank[difficulty];
+    let used = state.usedByDifficulty[difficulty];
+    if (used.length === bucket.length) {
+    state.usedByDifficulty[difficulty] = [];
+    used = state.usedByDifficulty[difficulty];
+    }
+    let idx;
+    do {
+    idx = Math.floor(Math.random() * bucket.length);
+    }
+    while (used.indexOf(idx) !== -1 && used.length < bucket.length);
+    used.push(idx);
+    const q = bucket[idx];
+    const points = DIFFICULTY_POINTS[difficulty];
+    if (typeof points !== 'number') {
+    throw new Error('Missing point value for difficulty: ' + difficulty);
+    }
+    return {
+    prompt: q.prompt,
+    answer: q.answer,
+    explanation: q.explanation,
+    topic: q.topic,
+    difficulty,
+    points,
+    choices: shuffle(q.choices)
+    };
+    }
+
+    function renderQuestion(question) {
+      hideFeedback();
+      els.questionCard.innerHTML = '';
+
+      const meta = document.createElement('div');
+      meta.className = 'question-meta';
+      meta.innerHTML = '<span>Difficulty: ' + question.difficulty + '</span><span>Choose the best answer</span>';
+
+      const prompt = document.createElement('div');
+      prompt.className = 'prompt-text';
+      prompt.textContent = question.prompt;
+
+      const choices = document.createElement('div');
+      choices.className = 'choices';
+
+      question.choices.forEach(function(choice, index) {
+        const btn = document.createElement('button');
+        btn.className = 'choice';
+        btn.setAttribute('data-choice-index', String(index));
+        btn.setAttribute('aria-label', 'Choice ' + (index + 1) + ': ' + choice);
+        btn.innerHTML = '<span class="choice-label">' + (index + 1) + '</span><span>' + choice + '</span>';
+        btn.addEventListener('click', function() {
+          handleAnswer(choice, btn);
+        });
+        choices.appendChild(btn);
+      });
+
+      const hint = document.createElement('div');
+      hint.className = 'key-hint';
+      hint.textContent = 'Keyboard shortcuts: press 1, 2, 3, or 4 to answer.';
+
+      const shell = document.createElement('div');
+      shell.className = 'progress-shell';
+      const bar = document.createElement('div');
+      bar.className = 'progress-bar';
+      bar.id = 'progressBar';
+      shell.appendChild(bar);
+
+      els.questionCard.appendChild(meta);
+      els.questionCard.appendChild(prompt);
+      els.questionCard.appendChild(choices);
+      els.questionCard.appendChild(hint);
+      els.questionCard.appendChild(shell);
+
+      state.activeQuestion = {
+        data: question,
+        progressBar: bar
+      };
+      state.acceptingAnswer = true;
+      state.questionStart = performance.now();
+      state.duration = getAdjustedDuration();
+
+      if (question.difficulty === 'Easy') {
+        els.statusText.textContent = 'Core vocabulary round';
+      } else if (question.difficulty === 'Medium') {
+        els.statusText.textContent = 'Intermediate concepts round';
+      } else {
+        els.statusText.textContent = state.germs === 1 ? 'Final germ elimination round' : 'Advanced concepts round';
+      }
+
+      startProgressLoop();
+      const pauseMask = document.createElement('div');
+pauseMask.className = 'pause-mask';
+pauseMask.id = 'pauseMask';
+pauseMask.innerHTML = '<span>Paused</span>';
+
+els.questionCard.appendChild(pauseMask);
+    }
+
+    function disableChoices() {
+      const buttons = els.questionCard.querySelectorAll('.choice');
+      buttons.forEach(function(btn) {
+        btn.disabled = true;
+      });
+    }
+
+    function markCorrectChoice(correct) {
+      const buttons = els.questionCard.querySelectorAll('.choice');
+      buttons.forEach(function(btn) {
+        const text = btn.textContent.replace(/^\d+/, '').trim();
+        if (text === correct) btn.classList.add('correct');
+      });
+    }
+
+    function floorToNearestEven(value) {
+      if (value % 2 !== 0) {
+        return value - 1;
+      }
+      return value;
+    }
+
+    function updateGermsAfterCorrect() {
+      if (state.germs === 1 && state.activeQuestion && state.activeQuestion.data.difficulty === 'Hard') {
+        state.germs = 0;
+        return;
+      }
+      const reduced = Math.floor(state.germs * 0.75);
+      if (reduced <= 1) {
+        state.germs = 1;
+      } else {
+        state.germs = floorToNearestEven(reduced);
+      }
+    }
+
+    function updateGermsAfterMiss() {
+      if (state.germs === 1) {
+        state.germs = 2;
+        return;
+      }
+      const increased = Math.floor(state.germs * 1.5);
+      state.germs = Math.min(1000, Math.max(2, floorToNearestEven(increased)));
+    }
+
+    function renderGerms() {
+      els.germField.innerHTML = '';
+      const field = els.germField.getBoundingClientRect();
+      const width = field.width || 760;
+      const height = field.height || 340;
+      const displayCount = state.germs <= 80 ? state.germs : 80;
+      const logRatio = Math.log10(Math.max(state.germs, 1)) / 3;
+      const hue = Math.round(120 - (120 * logRatio));
+      document.documentElement.style.setProperty('--germ-hue', String(hue));
+
+      for (let i = 0; i < displayCount; i++) {
+        const germ = document.createElement('div');
+        germ.className = 'germ';
+        const size = state.germs <= 30 ? 16 + Math.random() * 8 : 12 + Math.random() * 6;
+        germ.style.width = size + 'px';
+        germ.style.height = size + 'px';
+        germ.style.left = (Math.random() * Math.max(12, width - size - 12)) + 'px';
+        germ.style.top = (Math.random() * Math.max(12, height - size - 12)) + 'px';
+        els.germField.appendChild(germ);
+      }
+
+      if (state.germs === 1) {
+        els.petriLabel.textContent = 'One final germ remains. Only a hard question will eliminate it.';
+      } else if (state.germs <= 20) {
+        els.petriLabel.textContent = 'Germ colony status: LOW';
+      } else if (state.germs <= 100) {
+        els.petriLabel.textContent = 'Germ colony status: GROWING!';
+      } else if (state.germs <= 500) {
+        els.petriLabel.textContent = 'Germ colony status: SPREADING!!';
+      } else {
+        els.petriLabel.textContent = 'Germ colony status: SATURATED!!!';
+      }
+    }
+
+    function stopProgressLoop() {
+      clearInterval(state.timerId);
+      state.timerId = null;
+    }
+
+    function startProgressLoop() {
+      stopProgressLoop();
+      const progressBar = state.activeQuestion.progressBar;
+      function update() {
+        if (!state.isRunning || state.isPaused || !state.activeQuestion) return;
+        const elapsed = performance.now() - state.questionStart;
+        const ratio = Math.min(elapsed / state.duration, 1);
+        progressBar.style.width = (ratio * 100) + '%';
+        const secondsLeft = Math.max(0, Math.ceil((state.duration - elapsed) / 1000));
+        els.timeLeftText.textContent = 'Time left: ' + secondsLeft + 's';
+        if (ratio >= 1) handleTimeout();
+      }
+      update();
+      state.timerId = setInterval(update, 100);
+    }
+    
+    function finishRound() {
+  state.acceptingAnswer = false;
+  stopProgressLoop();
+  computeLevel();
+  updateHud();
+  renderGerms();
+
+  const delay = state.mode === 'study' ? 5000 : 3000;
+  let secondsRemaining = Math.ceil(delay / 1000);
+
+  if (els.nextQuestionCountdown) {
+    els.nextQuestionCountdown.textContent = 'Next question in: ' + secondsRemaining;
+  }
+
+  const countdownTimer = setInterval(function() {
+    secondsRemaining -= 1;
+    if (els.nextQuestionCountdown && secondsRemaining > 0) {
+      els.nextQuestionCountdown.textContent = 'Next question in: ' + secondsRemaining;
+    }
+  }, 1000);
+
+  setTimeout(function() {
+    clearInterval(countdownTimer);
+
+    if (els.nextQuestionCountdown) {
+      els.nextQuestionCountdown.textContent = '';
+    }
+
+    if (state.germs <= 0) {
+      endGame(true);
+      return;
+    }
+    if (state.germs >= 1000) {
+      endGame(false);
+      return;
+    }
+    nextQuestion();
+  }, delay);
+  }
+
+    function handleAnswer(choice, clickedBtn) {
+      if (!state.isRunning || state.isPaused || !state.activeQuestion || !state.acceptingAnswer) return;
+      state.acceptingAnswer = false;
+      disableChoices();
+
+      const question = state.activeQuestion.data;
+      const correct = question.answer;
+      markCorrectChoice(correct);
+      state.answered += 1;
+
+      if (choice === correct) {
+        clickedBtn.classList.add('correct');
+        state.score += question.points;
+        state.correct += 1;
+        updateGermsAfterCorrect();
+
+        if (question.difficulty === 'Easy') {
+          state.easyStreak += 1;
+          state.mediumStreak = 0;
+          state.currentDifficulty = state.easyStreak >= 2 ? 'Medium' : 'Easy';
+          if (state.easyStreak >= 2) state.easyStreak = 0;
+        } else if (question.difficulty === 'Medium') {
+          state.mediumStreak += 1;
+          state.easyStreak = 0;
+          state.currentDifficulty = state.mediumStreak >= 3 ? 'Hard' : 'Medium';
+          if (state.mediumStreak >= 3) state.mediumStreak = 0;
+        } else {
+          state.easyStreak = 0;
+          state.mediumStreak = 0;
+          state.currentDifficulty = 'Hard';
+        }
+
+        computeLevel();
+        setFeedback('Correct. ' + question.explanation, 'good');
+        els.statusText.textContent = state.germs === 0 ? 'Germs eliminated' : 'Containment successful';
+      } else {
+        clickedBtn.classList.add('incorrect');
+        state.score -= DIFFICULTY_PENALTIES[question.difficulty];
+        updateGermsAfterMiss();
+
+        if (question.difficulty === 'Hard') {
+          state.currentDifficulty = 'Medium';
+        } else {
+          state.currentDifficulty = 'Easy';
+        }
+        state.easyStreak = 0;
+        state.mediumStreak = 0;
+
+        computeLevel();
+        setFeedback('Not quite. The best answer was “' + correct + '.” ' + question.explanation, 'bad');
+        els.statusText.textContent = 'The germ colony multiplied!';
+      }
+
+      finishRound();
+    }
+
+    function handleTimeout() {
+      if (!state.activeQuestion || !state.acceptingAnswer) return;
+      state.acceptingAnswer = false;
+      disableChoices();
+      const question = state.activeQuestion.data;
+      const correct = question.answer;
+      markCorrectChoice(correct);
+      state.answered += 1;
+      state.score -= DIFFICULTY_PENALTIES[question.difficulty];
+      updateGermsAfterMiss();
+
+      if (question.difficulty === 'Hard') {
+        state.currentDifficulty = 'Medium';
+      } else {
+        state.currentDifficulty = 'Easy';
+      }
+      state.easyStreak = 0;
+      state.mediumStreak = 0;
+
+      computeLevel();
+      setFeedback('Time ran out. The best answer was “' + correct + '.” ' + question.explanation, 'bad');
+      els.statusText.textContent = 'Too slow. The germ colony multiplied!';
+      finishRound();
+    }
+
+    function nextQuestion() {
+      if (!state.isRunning) return;
+      const q = getNextQuestion();
+      renderQuestion(q);
+    }
+
+    function getRankLabel(score) {
+      if (score >= 400) return 'John Snow';
+      if (score >= 250) return 'Senior Epidemiologist';
+      if (score >= 120) return 'Supervisory Epidemiologist';
+      if (score >= 50) return 'Field Epidemiologist';
+      return 'Junior Epidemiologist';
+    }
+
+    function getRankImageFilename(rankLabel) {
+      const map = {
+        'Junior Epidemiologist': '/assets/images/rank_junior_epidemiologist.png',
+        'Field Epidemiologist': '/assets/images/rank_field_epidemiologist.png',
+        'Supervisory Epidemiologist': '/assets/images/rank_supervisory_epidemiologist.png',
+        'Senior Epidemiologist': '/assets/images/rank_senior_epidemiologist.png',
+        'John Snow': '/assets/images/rank_john_snow.png'
+      };
+      return map[rankLabel] || 'rank_placeholder.png';
+    }
+    function getFinalSummaryText(didWin, rankLabel) {
+      const lines = [];
+      if (didWin) {
+        lines.push('Outcome: Win');
+        lines.push('');
+        lines.push("You've obviously been studying and practicing your craft.");
+        lines.push('');
+        if (rankLabel === 'Junior Epidemiologist') {
+          lines.push("For now, you're a junior epidemiologist, but you're well on your way to being a field epidemiologist.");
+        } else if (rankLabel === 'Field Epidemiologist') {
+          lines.push("You know more than the basics, and you're out there asking the hard questions. Keep it up! You'll be a supervisory epidemiologist in no time!");
+        } else if (rankLabel === 'Supervisory Epidemiologist') {
+          lines.push("You've done the work, learned the big concepts. Congrats! Now you get to teach and supervise after seeing and doing.");
+        } else if (rankLabel === 'Senior Epidemiologist') {
+          lines.push("Wow! People look to you for guidance, don't they? Great job!");
+        } else if (rankLabel === 'John Snow') {
+          lines.push('You, my friend, are legendary!');
+        }
+      } else {
+        lines.push('Outcome: Loss');
+        lines.push('');
+        lines.push("You lost. You are not ready for prime time, but you're learning. So you're a junior epidemiologist for now.");
+      }
+      lines.push('');
+      lines.push('Total correct answers: ' + state.correct);
+      lines.push('Total points: ' + state.score);
+      lines.push('Rank: ' + (didWin ? rankLabel : 'Junior Epidemiologist'));
+      return lines.join('\n');
+    }
+
+    function showOverlay(title, message, buttonText, options) {
+      const showSummary = options && options.showSummary === true;
+      const summaryText = options && options.summaryText ? options.summaryText : '';
+      const rankLabel = options && options.rankLabel ? options.rankLabel : '';
+
+      els.startOverlay.innerHTML = '';
+      const card = document.createElement('div');
+      card.className = 'overlay-card';
+
+      const h2 = document.createElement('h2');
+      h2.textContent = title;
+      card.appendChild(h2);
+
+      if (message) {
+        const p = document.createElement('p');
+        p.textContent = message;
+        card.appendChild(p);
+      }
+
+      if (showSummary) {
+        const shareCard = document.createElement('div');
+        shareCard.className = 'share-card';
+
+        const imageFile = getRankImageFilename(rankLabel);
+        const rankImage = document.createElement('img');
+        rankImage.className = 'share-rank-image';
+        rankImage.src = imageFile;
+        rankImage.alt = rankLabel + ' rank image';
+
+        const placeholder = document.createElement('div');
+        placeholder.className = 'share-image-placeholder';
+        placeholder.textContent = 'Add an image named ' + imageFile + ' to this folder to show the ' + rankLabel + ' badge here.';
+        placeholder.style.display = 'none';
+
+        rankImage.addEventListener('error', function() {
+          rankImage.style.display = 'none';
+          placeholder.style.display = 'grid';
+        });
+
+        rankImage.addEventListener('load', function() {
+          placeholder.style.display = 'none';
+          rankImage.style.display = 'block';
+        });
+
+        const pre = document.createElement('pre');
+        pre.textContent = summaryText;
+
+        shareCard.appendChild(rankImage);
+        shareCard.appendChild(placeholder);
+        shareCard.appendChild(pre);
+        card.appendChild(shareCard);
+      }
+
+      const row = document.createElement('div');
+      row.className = 'btn-row';
+      row.style.marginTop = '16px';
+
+      const playBtn = document.createElement('button');
+      playBtn.id = 'overlayActionBtn';
+      playBtn.textContent = buttonText;
+      playBtn.addEventListener('click', startGame);
+      row.appendChild(playBtn);
+
+      card.appendChild(row);
+      els.startOverlay.appendChild(card);
+      els.startOverlay.style.display = 'flex';
+    }
+
+    function hideOverlay() {
+      els.startOverlay.style.display = 'none';
+    }
+
+    function startGame() {
+      state.score = 0;
+      state.level = 1;
+      state.germs = 600;
+      state.correct = 0;
+      state.answered = 0;
+      state.isRunning = true;
+      state.isPaused = false;
+      state.acceptingAnswer = false;
+      state.currentDifficulty = 'Easy';
+      state.easyStreak = 0;
+      state.mediumStreak = 0;
+      state.usedByDifficulty = { Easy: [], Medium: [], Hard: [] };
+      setModeValues();
+      computeLevel();
+      updateHud();
+      renderGerms();
+      hideFeedback();
+      hideOverlay();
+      els.pauseBtn.disabled = false;
+      els.pauseBtn.textContent = 'Pause';
+      hideFeedback();
+      nextQuestion();
+    }
+
+function pauseGame() {
+  if (!state.isRunning) return;
+
+  const pauseMask = document.getElementById('pauseMask');
+
+  if (!state.isPaused) {
+    state.isPaused = true;
+    stopProgressLoop();
+    els.pauseBtn.textContent = 'Resume';
+    els.statusText.textContent = 'Paused';
+    els.timeLeftText.textContent = 'Time left: paused';
+    if (pauseMask) pauseMask.style.display = 'flex';
+  } else {
+    state.isPaused = false;
+    const progressWidth = parseFloat(
+      (state.activeQuestion &&
+       state.activeQuestion.progressBar &&
+       state.activeQuestion.progressBar.style.width || '0').replace('%', '')
+    ) || 0;
+
+    state.questionStart = performance.now() - (progressWidth / 100) * state.duration;
+    els.pauseBtn.textContent = 'Pause';
+    els.statusText.textContent = 'Back in the field';
+    if (pauseMask) pauseMask.style.display = 'none';
+    startProgressLoop();
+  }
+}
+
+    function resetGame() {
+      state.isRunning = false;
+      state.isPaused = false;
+      state.acceptingAnswer = false;
+      stopProgressLoop();
+      state.score = 0;
+      state.level = 1;
+      state.germs = 600;
+      state.correct = 0;
+      state.answered = 0;
+      state.currentDifficulty = 'Easy';
+      state.easyStreak = 0;
+      state.mediumStreak = 0;
+      state.usedByDifficulty = { Easy: [], Medium: [], Hard: [] };
+      computeLevel();
+      updateHud();
+      renderGerms();
+      els.pauseBtn.disabled = true;
+      els.statusText.textContent = 'Ready to begin';
+      els.timeLeftText.textContent = 'Time left: --';
+      els.questionCard.innerHTML = '';
+      hideFeedback();
+      showOverlay('Welcome back', 'Answer questions to reduce the outbreak by 25 percent. Wrong answers increase it by 50 percent, and the difficulty climbs by streaks instead of raw total correct answers.', 'Start');
+    }
+    function endGame(didWin) {
+      state.isRunning = false;
+      state.isPaused = false;
+      state.acceptingAnswer = false;
+      stopProgressLoop();
+      els.pauseBtn.disabled = true;
+      hideFeedback();
+      els.statusText.textContent = didWin ? 'Outbreak controlled' : 'Screen saturated';
+      els.timeLeftText.textContent = 'Time left: --';
+      const rankLabel = getRankLabel(state.score);
+      const overlayRank = didWin ? rankLabel : 'Junior Epidemiologist';
+      const summaryText = getFinalSummaryText(didWin, rankLabel);
+      setFeedback(summaryText, didWin ? 'good' : 'bad');
+      showOverlay(
+        didWin ? 'Quiz is complete: Victory!' : 'Quiz is complete: You Lost!',
+        '',
+        'Play Again',
+        {
+          showSummary: true,
+          summaryText: summaryText,
+          rankLabel: overlayRank
+        }
+      );
+    }
+
+    function handleKeyAnswer(event) {
+      if (!state.isRunning || state.isPaused || !state.activeQuestion || !state.acceptingAnswer) return;
+      if (event.target && ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON'].indexOf(event.target.tagName) !== -1) return;
+      const keyMap = {
+        '1': 0,
+        '2': 1,
+        '3': 2,
+        '4': 3,
+        'Numpad1': 0,
+        'Numpad2': 1,
+        'Numpad3': 2,
+        'Numpad4': 3
+      };
+      const key = keyMap[event.key] !== undefined ? keyMap[event.key] : keyMap[event.code];
+      if (key === undefined) return;
+      const buttons = els.questionCard.querySelectorAll('.choice');
+      const button = buttons[key];
+      if (!button || button.disabled) return;
+      event.preventDefault();
+      const choice = state.activeQuestion.data.choices[key];
+      handleAnswer(choice, button);
+    }
+
+    els.startBtn.addEventListener('click', startGame);
+    document.addEventListener('click', function(event) {
+      if (event.target && event.target.id === 'overlayStartBtn') startGame();
+    });
+    els.pauseBtn.addEventListener('click', pauseGame);
+    els.resetBtn.addEventListener('click', resetGame);
+    els.modeSelect.addEventListener('change', setModeValues);
+    document.addEventListener('keydown', handleKeyAnswer);
+
+    computeLevel();
+    updateHud();
+    renderGerms();
+  </script>
+</body>
+</html>
