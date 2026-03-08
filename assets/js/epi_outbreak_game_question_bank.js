@@ -114,7 +114,7 @@ window.questionBank = {
     },
     {
       topic: 'Measures of frequency',
-      prompt: 'A report says "the frequency of opioid overdose deaths rose last year." What does frequency mean here?',
+      prompt: 'A report says "the number of opioid overdose deaths rose last year." What does NUMBER mean here?',
       choices: ['Frequency', 'Blinding', 'Misclassification', 'Matching'],
       answer: 'Frequency',
       explanation: 'Frequency is a general term for how often disease or another event occurs in a population.'
