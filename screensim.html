@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<!-- SEO Meta Tags -->
+<meta name="author" content="Rene Najera, DrPH">
+<meta property="og:title" content="ScreenSim" />
+<meta property="og:description" content="Interactive Screening Test Simulator." />
+<meta property="og:image" content="https://rfnajera.github.io/assets/images/screensim.png" />
+<meta property="og:url" content="https://rfnajera.github.io/screensim.html" />
+<meta property="og:type" content="website" />
+<link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+<link rel="author" href="https://www.perplexity.ai/computer">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Screening Test Simulator — Understanding Predictive Values</title>
+<meta name="description" content="Interactive tool for understanding how disease prevalence affects screening test results, positive predictive value, and negative predictive value.">
+
+<!-- Fonts -->
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&f[]=chillax@500,600,700&display=swap" rel="stylesheet">
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<link rel="stylesheet" href="screensim_style.css">
+</head>
+<body>
+
+<a href="#main" class="skip-link">Skip to content</a>
+
+<!-- Header -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo-area">
+      <svg class="logo-icon" width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <rect x="2" y="2" width="12" height="12" rx="2" fill="var(--color-primary)"/>
+        <rect x="18" y="2" width="12" height="12" rx="2" fill="var(--color-success)"/>
+        <rect x="2" y="18" width="12" height="12" rx="2" fill="var(--color-warning)"/>
+        <rect x="18" y="18" width="12" height="12" rx="2" fill="var(--color-primary)" opacity="0.35"/>
+      </svg>
+      <span class="logo-text">ScreenSim</span>
+    </div>
+    <nav class="header-nav" aria-label="Main navigation">
+      <a href="#learn">Learn</a>
+      <a href="#simulator">Simulator</a>
+      <a href="#scenarios">Scenarios</a>
+    </nav>
+    <button data-theme-toggle aria-label="Switch to dark mode" class="theme-toggle">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container narrow">
+      <h1>What Does Your Test Result Really Mean?</h1>
+      <p class="hero-sub">
+        A positive screening test does not always mean you have the disease. A negative test does not always mean you're free of it. Explore how <strong>prevalence</strong>, <strong>sensitivity</strong>, and <strong>specificity</strong> shape what your test result actually tells you.
+      </p>
+      <div class="hero-actions">
+        <a href="#simulator" class="btn btn-primary">Try the Simulator</a>
+        <a href="#learn" class="btn btn-outline">Learn the Basics</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEARN Section -->
+  <section id="learn" class="section">
+    <div class="container">
+      <h2>Understanding Screening Tests</h2>
+      <p class="section-intro">
+        Before diving into the simulator, let's build a foundation. Every screening test has four possible outcomes when applied to a population. These outcomes depend on two things: <strong>the test's accuracy</strong> and <strong>how common the disease is</strong>.
+      </p>
+
+      <!-- 2x2 Table Explainer -->
+      <div class="concept-card">
+        <h3>The 2&times;2 Table</h3>
+        <p>
+          When a screening test is given to a group of people, every person falls into one of four categories:
+        </p>
+        <div class="two-by-two-wrapper">
+          <table class="two-by-two" aria-label="2x2 screening test outcome table">
+            <thead>
+              <tr>
+                <th></th>
+                <th class="col-disease">Has Disease</th>
+                <th class="col-no-disease">No Disease</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th class="row-pos">Test Positive</th>
+                <td class="cell-tp">True Positive (TP)<br><span class="cell-desc">Correctly identified as having the disease</span></td>
+                <td class="cell-fp">False Positive (FP)<br><span class="cell-desc">Incorrectly told they have the disease</span></td>
+              </tr>
+              <tr>
+                <th class="row-neg">Test Negative</th>
+                <td class="cell-fn">False Negative (FN)<br><span class="cell-desc">Disease missed by the test</span></td>
+                <td class="cell-tn">True Negative (TN)<br><span class="cell-desc">Correctly identified as disease-free</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Key Terms -->
+      <div class="terms-grid">
+        <div class="term-card" id="term-sensitivity">
+          <div class="term-header">
+            <span class="term-badge badge-sens">Sensitivity</span>
+          </div>
+          <p class="term-formula">TP &divide; (TP + FN)</p>
+          <p>
+            Of all people who <strong>truly have the disease</strong>, what percentage does the test correctly identify as positive? High sensitivity means fewer <strong>false negatives</strong> &mdash; the test rarely misses a sick person.
+          </p>
+          <div class="term-visual">
+            <canvas id="chart-sensitivity" width="280" height="180" aria-label="Sensitivity visualization"></canvas>
+          </div>
+        </div>
+
+        <div class="term-card" id="term-specificity">
+          <div class="term-header">
+            <span class="term-badge badge-spec">Specificity</span>
+          </div>
+          <p class="term-formula">TN &divide; (TN + FP)</p>
+          <p>
+            Of all people who <strong>do NOT have the disease</strong>, what percentage does the test correctly identify as negative? High specificity means fewer <strong>false positives</strong> &mdash; healthy people are rarely told they're sick.
+          </p>
+          <div class="term-visual">
+            <canvas id="chart-specificity" width="280" height="180" aria-label="Specificity visualization"></canvas>
+          </div>
+        </div>
+
+        <div class="term-card" id="term-ppv">
+          <div class="term-header">
+            <span class="term-badge badge-ppv">Positive Predictive Value</span>
+          </div>
+          <p class="term-formula">TP &divide; (TP + FP)</p>
+          <p>
+            If your test is <strong>positive</strong>, what is the probability that you actually have the disease? This is what patients care about most. PPV depends heavily on <strong>prevalence</strong>.
+          </p>
+          <div class="term-visual">
+            <canvas id="chart-ppv" width="280" height="180" aria-label="PPV visualization"></canvas>
+          </div>
+        </div>
+
+        <div class="term-card" id="term-npv">
+          <div class="term-header">
+            <span class="term-badge badge-npv">Negative Predictive Value</span>
+          </div>
+          <p class="term-formula">TN &divide; (TN + FN)</p>
+          <p>
+            If your test is <strong>negative</strong>, what is the probability that you truly do not have the disease? NPV also depends on prevalence &mdash; when disease is rare, even a mediocre test gives reassuring negatives.
+          </p>
+          <div class="term-visual">
+            <canvas id="chart-npv" width="280" height="180" aria-label="NPV visualization"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Prevalence -->
+      <div class="concept-card prevalence-card">
+        <h3>Why Prevalence Matters</h3>
+        <p>
+          <strong>Prevalence</strong> is the proportion of people in a population who have the disease at a given time. It is the single biggest factor that determines what a positive or negative result means for <em>you</em>.
+        </p>
+        <div class="prevalence-insight">
+          <div class="insight-block insight-low">
+            <span class="insight-label">Low prevalence (e.g., 1%)</span>
+            <p>Most people being tested are healthy. Even a small false-positive rate produces many false alarms relative to the few true cases. A positive result is <strong>less likely to be a true positive</strong>.</p>
+          </div>
+          <div class="insight-block insight-high">
+            <span class="insight-label">High prevalence (e.g., 30%)</span>
+            <p>A substantial portion of the tested group has the disease. True positives outnumber false positives. A positive result is <strong>much more likely to be a true positive</strong>.</p>
+          </div>
+        </div>
+        <p class="prevalence-note">
+          This is why screening programs target high-risk groups &mdash; the disease is more prevalent in those groups, so the test results are more meaningful.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SIMULATOR Section -->
+  <section id="simulator" class="section section-alt">
+    <div class="container">
+      <h2>Screening Test Simulator</h2>
+      <p class="section-intro">
+        Adjust the sliders to see how prevalence, sensitivity, and specificity interact to determine what test results mean. The population below is simulated with 1,000 people.
+      </p>
+
+      <div class="sim-layout">
+        <!-- Controls -->
+        <div class="sim-controls">
+          <fieldset class="control-group">
+            <legend>Test &amp; Population Parameters</legend>
+
+            <div class="slider-row">
+              <label for="slider-prevalence">Prevalence</label>
+              <div class="slider-wrapper">
+                <input type="range" id="slider-prevalence" min="0.1" max="50" step="0.1" value="3" aria-describedby="desc-prevalence">
+                <output id="val-prevalence" for="slider-prevalence">3.0%</output>
+              </div>
+              <p class="slider-desc" id="desc-prevalence">Percentage of the population with the disease.</p>
+            </div>
+
+            <div class="slider-row">
+              <label for="slider-sensitivity">Sensitivity</label>
+              <div class="slider-wrapper">
+                <input type="range" id="slider-sensitivity" min="50" max="100" step="0.5" value="95" aria-describedby="desc-sensitivity">
+                <output id="val-sensitivity" for="slider-sensitivity">95.0%</output>
+              </div>
+              <p class="slider-desc" id="desc-sensitivity">Ability to correctly detect those with the disease (true positive rate).</p>
+            </div>
+
+            <div class="slider-row">
+              <label for="slider-specificity">Specificity</label>
+              <div class="slider-wrapper">
+                <input type="range" id="slider-specificity" min="50" max="100" step="0.5" value="95" aria-describedby="desc-specificity">
+                <output id="val-specificity" for="slider-specificity">95.0%</output>
+              </div>
+              <p class="slider-desc" id="desc-specificity">Ability to correctly identify those without the disease (true negative rate).</p>
+            </div>
+          </fieldset>
+
+          <!-- Quick Presets -->
+          <div class="presets">
+            <span class="presets-label">Quick scenarios:</span>
+            <button class="btn btn-sm" data-preset="hepC" data-testid="preset-hepC">Hepatitis C (Bob's case)</button>
+            <button class="btn btn-sm" data-preset="flu-summer" data-testid="preset-flu-summer">Influenza in Summer</button>
+            <button class="btn btn-sm" data-preset="flu-winter" data-testid="preset-flu-winter">Influenza in Winter</button>
+            <button class="btn btn-sm" data-preset="hiv-high" data-testid="preset-hiv-high">HIV in High-Risk Group</button>
+            <button class="btn btn-sm" data-preset="mammogram" data-testid="preset-mammogram">Mammogram Screening</button>
+          </div>
+        </div>
+
+        <!-- Results -->
+        <div class="sim-results">
+          <!-- KPIs -->
+          <div class="kpi-row">
+            <div class="kpi kpi-ppv">
+              <span class="kpi-label">Positive Predictive Value</span>
+              <span class="kpi-value" id="kpi-ppv" data-testid="kpi-ppv">--</span>
+              <span class="kpi-sub">Chance a positive result is a true case</span>
+            </div>
+            <div class="kpi kpi-npv">
+              <span class="kpi-label">Negative Predictive Value</span>
+              <span class="kpi-value" id="kpi-npv" data-testid="kpi-npv">--</span>
+              <span class="kpi-sub">Chance a negative result means no disease</span>
+            </div>
+          </div>
+
+          <!-- 2x2 Results -->
+          <div class="result-table-wrap">
+            <h3>Results for 1,000 People</h3>
+            <table class="result-table" aria-label="Simulated screening results">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Has Disease</th>
+                  <th>No Disease</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th>Test +</th>
+                  <td id="cell-tp" data-testid="cell-tp" class="cell-tp">--</td>
+                  <td id="cell-fp" data-testid="cell-fp" class="cell-fp">--</td>
+                  <td id="cell-total-pos" data-testid="cell-total-pos">--</td>
+                </tr>
+                <tr>
+                  <th>Test &minus;</th>
+                  <td id="cell-fn" data-testid="cell-fn" class="cell-fn">--</td>
+                  <td id="cell-tn" data-testid="cell-tn" class="cell-tn">--</td>
+                  <td id="cell-total-neg" data-testid="cell-total-neg">--</td>
+                </tr>
+                <tr class="total-row">
+                  <th>Total</th>
+                  <td id="cell-total-disease" data-testid="cell-total-disease">--</td>
+                  <td id="cell-total-healthy" data-testid="cell-total-healthy">--</td>
+                  <td>1,000</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Charts side-by-side -->
+          <div class="chart-pair">
+            <div class="chart-box">
+              <h4>Who Tests Positive?</h4>
+              <canvas id="chart-positive-breakdown" aria-label="Breakdown of positive results"></canvas>
+            </div>
+            <div class="chart-box">
+              <h4>Who Tests Negative?</h4>
+              <canvas id="chart-negative-breakdown" aria-label="Breakdown of negative results"></canvas>
+            </div>
+          </div>
+
+          <!-- PPV vs Prevalence curve -->
+          <div class="chart-box chart-full">
+            <h4>How PPV Changes with Prevalence</h4>
+            <p class="chart-caption">This curve shows PPV at every prevalence level for the current sensitivity and specificity. The dot marks your current setting.</p>
+            <canvas id="chart-ppv-curve" aria-label="PPV as a function of prevalence"></canvas>
+          </div>
+
+          <!-- Interpretation -->
+          <div class="interpretation" id="interpretation" data-testid="interpretation">
+            <h3>Interpretation</h3>
+            <div id="interpretation-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENARIOS Section -->
+  <section id="scenarios" class="section">
+    <div class="container">
+      <h2>Real-World Scenarios</h2>
+      <p class="section-intro">
+        These scenarios show why the same test can mean very different things depending on context.
+      </p>
+
+      <div class="scenario-grid">
+        <article class="scenario-card">
+          <div class="scenario-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="1.5"><path d="M12 2a5 5 0 015 5v3H7V7a5 5 0 015-5z"/><rect x="3" y="10" width="18" height="12" rx="2"/><circle cx="12" cy="16" r="2"/></svg>
+          </div>
+          <h3>Bob's Hepatitis C Test</h3>
+          <p>
+            Bob is 45 and doesn't inject drugs or have other Hepatitis C risk factors, but his doctor recommends screening. The local prevalence in his age group is <strong>3%</strong>. <a href="https://www.hepatitis.va.gov/hcv/screening-diagnosis/laboratory-tests.asp" target="_blank">The antibody test has about <strong>99% sensitivity</strong> and <strong>99% specificity</strong></a>.
+          </p>
+          <p>
+            If Bob tests positive, there's only about a <strong>37% chance</strong> he truly has Hepatitis C. That's why a confirmatory test (RNA PCR) is always ordered after a positive antibody screen &mdash; most positive screens in low-prevalence populations are false alarms.
+          </p>
+          <button class="btn btn-sm btn-outline" data-preset="hepC">Load in Simulator</button>
+        </article>
+
+        <article class="scenario-card">
+          <div class="scenario-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-warning)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <h3>Influenza Testing: Summer vs. Winter</h3>
+          <p>
+            Rapid influenza tests <a href="https://www.cdc.gov/flu/hcp/testing-methods/rapidclin.html" target="_blank">have roughly <strong>70% sensitivity</strong> and <strong>95% specificity</strong></a>. In summer, influenza prevalence drops to about <strong>1%</strong>. In winter, it rises to around <strong>20%</strong>.
+          </p>
+          <p>
+            <strong>In summer:</strong> Most positive tests are false positives. Only about 12% of positive rapid tests are true influenza cases. Doctors should not trust a positive result in summer without confirmation.
+          </p>
+          <p>
+            <strong>In winter:</strong> A positive test is reliable (about 78% PPV). But 30% of true flu cases are missed (false negatives), so a negative test doesn't rule it out.
+          </p>
+          <div class="scenario-btns">
+            <button class="btn btn-sm btn-outline" data-preset="flu-summer">Summer Scenario</button>
+            <button class="btn btn-sm btn-outline" data-preset="flu-winter">Winter Scenario</button>
+          </div>
+        </article>
+
+        <article class="scenario-card">
+          <div class="scenario-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          </div>
+          <h3>Mammogram Screening</h3>
+          <p>
+            Mammography has about <strong>85% sensitivity</strong> and <strong>90% specificity</strong>. For women aged 40-49, <a href="https://www.cancer.gov/types/breast/risk-fact-sheet" target="_blank">breast cancer prevalence is roughly <strong>1.5%</strong></a>.
+          </p>
+          <p>
+            In this scenario, only about <strong>11% of positive mammograms</strong> represent actual breast cancer. Most callbacks are false alarms. This is why guidelines emphasize informed decision-making about when to begin screening &mdash; the anxiety from false positives is a real cost.
+          </p>
+          <button class="btn btn-sm btn-outline" data-preset="mammogram">Load in Simulator</button>
+        </article>
+
+        <article class="scenario-card">
+          <div class="scenario-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-error)" stroke-width="1.5"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4-4V7"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          </div>
+          <h3>HIV in a High-Risk Population</h3>
+          <p>
+            Modern HIV antibody/antigen combo tests have <a href="https://www.aidsmap.com/about-hiv/how-accurate-are-rapid-point-care-tests-hiv" target="_blank"><strong>&gt;99% sensitivity</strong> and <strong>&gt;99.5% specificity</strong></a>. In a high-risk population (prevalence around <strong>15%</strong>), a positive test has a PPV of about <strong>97%</strong>.
+          </p>
+          <p>
+            This is why targeted testing in high-prevalence groups is so effective. The same test given to the general population (prevalence ~0.3%) would have a much lower PPV &mdash; around 37%.
+          </p>
+          <button class="btn btn-sm btn-outline" data-preset="hiv-high">Load in Simulator</button>
+        </article>
+      </div>
+
+      <!-- Key Takeaways -->
+      <div class="concept-card takeaways-card">
+        <h3>Key Takeaways</h3>
+        <ul class="takeaway-list">
+          <li>A positive screening test is <strong>not a diagnosis</strong>. It means further testing is needed, especially when the disease is rare in your group.</li>
+          <li>When prevalence is low, even highly specific tests produce many false positives relative to true positives.</li>
+          <li>When prevalence is high, even moderately sensitive tests miss fewer cases, and positive results are more reliable.</li>
+          <li>Sensitivity and specificity are properties of the <strong>test itself</strong>. PPV and NPV depend on the <strong>population being tested</strong>.</li>
+          <li>Clinicians improve predictive values by targeting screening to groups where the disease is more common.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>Built for teaching epidemiology concepts. Not a substitute for medical advice.</p>
+    <p class="footer-attr">
+      <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
+    </p>
+  </div>
+</footer>
+
+<script src="screensim_app.js"></script>
+</body>
+</html>
