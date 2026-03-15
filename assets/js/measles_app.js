@@ -84,7 +84,7 @@ async function init() {
     status.innerHTML = `
       News could not be loaded right now.
       Please try again later or check the
-      <a href="https://www.cdc.gov/measles/data-research/index.html" target="_blank" rel="noopener noreferrer">CDC measles page</a>.
+      <a href="https://www.cidrap.umn.edu/measles" target="_blank" rel="noopener noreferrer">CIDRAP measles news page</a>.
     `;
     document.getElementById("news-grid").innerHTML = "";
   }
