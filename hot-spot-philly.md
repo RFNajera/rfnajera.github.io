@@ -205,4 +205,4 @@ The data used in this analysis came from [OpenDataPhilly](https://opendataphilly
 
 The original version of this piece was published on Medium: [Hot Spots and Cold Spots of Criminal Homicides in Philadelphia (2023)](https://medium.com/@epiren/hot-spots-and-cold-spots-of-criminal-homicides-in-philadelphia-2023-d8a7851cb16e)
 
-[← Back Home](./)
+[← Back Home](https://rfnajera.github.io/)
