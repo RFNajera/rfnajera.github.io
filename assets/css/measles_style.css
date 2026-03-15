@@ -43,7 +43,7 @@ a:hover {
   min-height: 42vh;
   background:
     linear-gradient(rgba(20, 22, 30, 0.58), rgba(20, 22, 30, 0.72)),
-    url("../images/measles_header.jpg") center/cover no-repeat;
+    url("../images/measles_header.png") center/cover no-repeat;
   color: #fff;
   display: grid;
   align-items: end;
