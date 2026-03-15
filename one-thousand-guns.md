@@ -1,7 +1,7 @@
 ---
 layout: project
 title: "How Many Guns Were Within 1,000 Feet of Schools in Baltimore in 2018?"
-permalink: /one-thousand-guns.md
+permalink: /one-thousand-guns/
 description: "An analysis of firearm crimes near schools in Baltimore using 2018 open data."
 ---
 
