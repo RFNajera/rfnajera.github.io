@@ -66,7 +66,7 @@ async function init() {
   const status = document.getElementById("status");
 
   try {
-    const response = await fetch("data/news.json", { cache: "no-store" });
+    const response = await fetch("data/measles_news.json", { cache: "no-store" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
     const payload = await response.json();
