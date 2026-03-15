@@ -9,7 +9,10 @@ const FEED_URL =
 const BLOCKED_DOMAINS = [
   "childrenshealthdefense.org",
   "nvic.org",
-  "learntherisk.org"
+  "learntherisk.org",
+  "https://icandecide.org",
+  "https://mercola.com",
+  "https://aapsonline.org"  
 ];
 
 const OFFICIAL_DOMAINS = [
