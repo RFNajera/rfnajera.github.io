@@ -1,10 +1,9 @@
 ---
-
 layout: project
 title: "Hot Spots and Cold Spots of Criminal Homicides in Philadelphia (2023)"
 permalink: /hot-spot-philly/
 description: "A geospatial analysis of criminal homicides in Philadelphia in 2023, exploring spatial clusters and the relationship between homicide rates and income."
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+---
 
 <div class="project-hero">
   <div class="project-badge">Geospatial analysis • Philadelphia • 2023</div>
