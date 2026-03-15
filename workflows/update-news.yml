@@ -2,7 +2,7 @@ name: Update measles news
 
 on:
   schedule:
-    - cron: "15 */3 * * *"
+    - cron: "20 * * * *"
   workflow_dispatch:
 
 permissions:
