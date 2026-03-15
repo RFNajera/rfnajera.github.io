@@ -234,5 +234,5 @@ This project could be extended in several useful directions.
 - [Baltimore City Open Data Portal](https://data.baltimorecity.gov/)
 - [CRAN Spatial Packages](https://cran.r-project.org/)
 
-[← Back Home](./)
+[← Back Home](https://rfnajera.github.io/)
 
