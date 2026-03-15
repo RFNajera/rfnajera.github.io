@@ -25,7 +25,7 @@ jobs:
         run: npm install rss-parser
 
       - name: Update JSON feed
-        run: node scripts/update-news.js
+        run: node script/update-news.js
 
       - name: Commit updated data
         run: |
