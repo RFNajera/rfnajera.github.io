@@ -1,755 +1,1588 @@
+<!-- SEO Meta Tags -->
+<meta name="author" content="René F. Najera, MPH, DrPH, FCCP">
+<link rel="author" href="https://epidemiological.net">
+
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" data-theme="light">
 <head>
-    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:title" content="Herd Immunity Simulator" />
-    <meta property="og:description" content="A simulation of how vaccines work to protect us all." />
-    <meta property="og:image" content="https://rfnajera.github.io/assets/images/herd_immunity_image.jpg" />
-    <meta property="og:url" content="https://rfnajera.github.io/herd_immunity_simulation.html" />
-    <meta property="og:type" content="website" />
-    <title>Herd Immunity Simulation</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background-color: #f0f8ff;
-            padding-bottom: 50px; /* Add padding at the bottom */
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community Immunity Simulator</title>
+  <meta name="description" content="An interactive simulator showing how community immunity (herd immunity) works — explore how vaccination rates and vaccine effectiveness protect entire communities from disease outbreaks.">
+  <meta property="og:title" content="Community Immunity Simulator">
+  <meta property="og:description" content="Explore how community immunity works through interactive disease outbreak simulations.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://rfnajera.github.io/assets/images/herd_immunity_image.jpg" />
+  <meta property="og:url" content="https://rfnajera.github.io/herd_immunity_simulation.html" />
 
-        canvas {
-            border: 1px solid #000;
-            margin-top: 20px;
-        }
+  <!-- Fonts -->
+  <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&f[]=chillax@400,500,600,700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-        #controls {
-            flex-direction: column;
-            align-items: center;
-        }
+  <style>
+    /* ── DESIGN TOKENS ── */
+    :root, [data-theme="light"] {
+      --font-display: 'Chillax', 'Georgia', sans-serif;
+      --font-body: 'General Sans', 'Helvetica Neue', sans-serif;
 
-        .input-container {
-            margin: 10px 0;
-            width: 800px; /* Match the width of the simulation box */
-        }
+      --text-xs:   clamp(0.75rem,  0.7rem  + 0.25vw, 0.875rem);
+      --text-sm:   clamp(0.875rem, 0.8rem  + 0.35vw, 1rem);
+      --text-base: clamp(1rem,     0.95rem + 0.25vw, 1.125rem);
+      --text-lg:   clamp(1.125rem, 1rem    + 0.75vw, 1.5rem);
+      --text-xl:   clamp(1.5rem,   1.2rem  + 1.25vw, 2.25rem);
+      --text-2xl:  clamp(2rem,     1.2rem  + 2.5vw,  3.5rem);
 
-        input[type="range"] {
-            width: 100%; /* Make the slider fill the container */
-            margin-top: 5px;
-        }
+      --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem;
+      --space-4: 1rem;    --space-5: 1.25rem; --space-6: 1.5rem;
+      --space-8: 2rem;    --space-10: 2.5rem; --space-12: 3rem;
+      --space-16: 4rem;   --space-20: 5rem;
 
-        label {
-            font-size: 14px;
-        }
+      /* Health-science palette: clean blues + warm greens */
+      --color-bg:             #f5f7fa;
+      --color-surface:        #ffffff;
+      --color-surface-2:      #f0f4f8;
+      --color-surface-offset: #e8edf3;
+      --color-divider:        #dde3eb;
+      --color-border:         #c8d1dc;
 
-        span {
-            font-size: 14px;
-            margin-left: 10px;
-        }
+      --color-text:           #1a2332;
+      --color-text-muted:     #5a6778;
+      --color-text-faint:     #9aaabb;
+      --color-text-inverse:   #f5f7fa;
 
-        #result {
-            margin-top: 20px;
-            font-size: 16px;
-            font-weight: bold;
-        }
+      /* Primary: medical teal-blue */
+      --color-primary:        #0571a8;
+      --color-primary-hover:  #045a87;
+      --color-primary-active: #034468;
+      --color-primary-highlight: #d0e8f5;
+      --color-primary-subtle: #e8f4fb;
 
-        table {
-            margin-top: 20px;
-            border-collapse: collapse;
-        }
+      /* Accent: warm green for "immune/safe" */
+      --color-success:        #1a7a4a;
+      --color-success-hover:  #145e38;
+      --color-success-highlight: #d4f0e2;
 
-        table,
-        th,
-        td {
-            border: 1px solid black;
-        }
+      /* Warning: amber */
+      --color-warning:        #b85c00;
+      --color-warning-highlight: #fdecd5;
 
-        th,
-        td {
-            padding: 5px 10px;
-            text-align: center;
-        }
-        
-        #histogram-container {
-            margin-top: 20px;
-            padding-bottom: 50px; /* Add padding at the bottom */
-            display: block;
-        }
-    </style>
+      /* Danger/infected: clear red */
+      --color-danger:         #c8202e;
+      --color-danger-hover:   #a3141f;
+      --color-danger-highlight: #fde8ea;
+
+      /* Particle colors */
+      --particle-immune:      #22a266;
+      --particle-vaccinated-nonimmune: #3b82f6;
+      --particle-unvaccinated: #8b95a1;
+      --particle-infected:    #ef4444;
+
+      --radius-sm: 0.375rem;
+      --radius-md: 0.625rem;
+      --radius-lg: 1rem;
+      --radius-xl: 1.25rem;
+      --radius-full: 9999px;
+
+      --shadow-sm: 0 1px 3px rgba(26,35,50,0.08), 0 1px 2px rgba(26,35,50,0.04);
+      --shadow-md: 0 4px 12px rgba(26,35,50,0.10), 0 2px 4px rgba(26,35,50,0.06);
+      --shadow-lg: 0 12px 32px rgba(26,35,50,0.12), 0 4px 8px rgba(26,35,50,0.06);
+
+      --transition: 200ms cubic-bezier(0.16, 1, 0.3, 1);
+      --content-narrow: 640px;
+      --content-default: 900px;
+      --content-wide: 1140px;
+    }
+
+    [data-theme="dark"] {
+      --color-bg:             #0f1620;
+      --color-surface:        #161e2d;
+      --color-surface-2:      #1c2638;
+      --color-surface-offset: #1a2335;
+      --color-divider:        #253040;
+      --color-border:         #2e3d52;
+      --color-text:           #d4dce8;
+      --color-text-muted:     #7a8fa8;
+      --color-text-faint:     #485970;
+      --color-text-inverse:   #0f1620;
+      --color-primary:        #4da8e0;
+      --color-primary-hover:  #2d95d4;
+      --color-primary-active: #1a7cb8;
+      --color-primary-highlight: #1a3050;
+      --color-primary-subtle: #141f30;
+      --color-success:        #4dc991;
+      --color-success-hover:  #2eb87a;
+      --color-success-highlight: #0f3025;
+      --color-warning:        #f0a040;
+      --color-warning-highlight: #3a2400;
+      --color-danger:         #f26370;
+      --color-danger-hover:   #e04550;
+      --color-danger-highlight: #3a1218;
+      --particle-immune:      #22a266;
+      --particle-vaccinated-nonimmune: #5a9cf5;
+      --particle-unvaccinated: #6b7a8a;
+      --particle-infected:    #f87171;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.25);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.35);
+      --shadow-lg: 0 12px 32px rgba(0,0,0,0.45);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme]) {
+        --color-bg: #0f1620; --color-surface: #161e2d; --color-surface-2: #1c2638;
+        --color-surface-offset: #1a2335; --color-divider: #253040; --color-border: #2e3d52;
+        --color-text: #d4dce8; --color-text-muted: #7a8fa8; --color-text-faint: #485970;
+        --color-text-inverse: #0f1620;
+        --color-primary: #4da8e0; --color-primary-hover: #2d95d4; --color-primary-active: #1a7cb8;
+        --color-primary-highlight: #1a3050; --color-primary-subtle: #141f30;
+        --color-success: #4dc991; --color-success-hover: #2eb87a; --color-success-highlight: #0f3025;
+        --color-warning: #f0a040; --color-warning-highlight: #3a2400;
+        --color-danger: #f26370; --color-danger-hover: #e04550; --color-danger-highlight: #3a1218;
+        --particle-immune: #22a266; --particle-vaccinated-nonimmune: #5a9cf5;
+        --particle-unvaccinated: #6b7a8a; --particle-infected: #f87171;
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.25);
+        --shadow-md: 0 4px 12px rgba(0,0,0,0.35);
+        --shadow-lg: 0 12px 32px rgba(0,0,0,0.45);
+      }
+    }
+
+    /* ── BASE RESET ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html {
+      -webkit-text-size-adjust: none; text-size-adjust: none;
+      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility; scroll-behavior: smooth;
+      scroll-padding-top: var(--space-16);
+    }
+    body {
+      min-height: 100dvh; line-height: 1.65;
+      font-family: var(--font-body); font-size: var(--text-base);
+      color: var(--color-text); background-color: var(--color-bg);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    img, canvas, svg { display: block; max-width: 100%; }
+    h1,h2,h3,h4 { text-wrap: balance; line-height: 1.2; }
+    p, li { text-wrap: pretty; }
+    button { cursor: pointer; background: none; border: none; font: inherit; color: inherit; }
+    a { color: var(--color-primary); transition: color var(--transition); }
+    a:hover { color: var(--color-primary-hover); }
+    input, select { font: inherit; color: inherit; }
+    ::selection { background: var(--color-primary-highlight); color: var(--color-text); }
+    :focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; border-radius: var(--radius-sm); }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+
+    /* ── LAYOUT ── */
+    .container { width: 100%; max-width: var(--content-wide); margin: 0 auto; padding: 0 var(--space-6); }
+    .container--narrow { max-width: var(--content-narrow); }
+    .container--default { max-width: var(--content-default); }
+
+    /* ── HEADER ── */
+    .site-header {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-divider);
+      box-shadow: var(--shadow-sm);
+      transition: background var(--transition), border-color var(--transition);
+    }
+    .header-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: var(--space-4) var(--space-6); gap: var(--space-4);
+      max-width: var(--content-wide); margin: 0 auto;
+    }
+    .site-logo { display: flex; align-items: center; gap: var(--space-3); text-decoration: none; color: var(--color-text); }
+    .site-logo svg { flex-shrink: 0; }
+    .logo-text { font-family: var(--font-display); font-weight: 700; font-size: var(--text-lg); line-height: 1; }
+    .logo-sub { font-size: var(--text-xs); color: var(--color-text-muted); font-weight: 500; display: block; }
+
+    .header-actions { display: flex; align-items: center; gap: var(--space-3); }
+    .theme-toggle {
+      width: 40px; height: 40px; border-radius: var(--radius-full);
+      display: flex; align-items: center; justify-content: center;
+      background: var(--color-surface-2); border: 1px solid var(--color-border);
+      color: var(--color-text-muted); transition: all var(--transition);
+    }
+    .theme-toggle:hover { background: var(--color-surface-offset); color: var(--color-primary); border-color: var(--color-primary); }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, var(--color-primary-subtle) 0%, var(--color-bg) 60%);
+      border-bottom: 1px solid var(--color-divider);
+      padding: var(--space-12) var(--space-6);
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: var(--space-2);
+      background: var(--color-primary-highlight); color: var(--color-primary);
+      border-radius: var(--radius-full); padding: var(--space-1) var(--space-4);
+      font-size: var(--text-xs); font-weight: 600; letter-spacing: 0.05em;
+      text-transform: uppercase; margin-bottom: var(--space-5);
+    }
+    .hero h1 {
+      font-family: var(--font-display); font-size: var(--text-2xl);
+      font-weight: 700; color: var(--color-text);
+      margin-bottom: var(--space-4); max-width: 18ch; margin-inline: auto;
+    }
+    .hero h1 span { color: var(--color-primary); }
+    .hero-lead {
+      font-size: var(--text-lg); color: var(--color-text-muted);
+      max-width: 58ch; margin-inline: auto; margin-bottom: var(--space-8);
+      line-height: 1.6;
+    }
+    .hero-nav { display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: var(--space-2);
+      padding: var(--space-3) var(--space-6); border-radius: var(--radius-md);
+      font-size: var(--text-sm); font-weight: 600; text-decoration: none;
+      transition: all var(--transition); border: 2px solid transparent;
+    }
+    .btn-primary { background: var(--color-primary); color: #fff; }
+    .btn-primary:hover { background: var(--color-primary-hover); color: #fff; transform: translateY(-1px); box-shadow: var(--shadow-md); }
+    .btn-outline { background: transparent; border-color: var(--color-border); color: var(--color-text-muted); }
+    .btn-outline:hover { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-primary-subtle); }
+
+    /* ── SECTION ── */
+    .section { padding: clamp(var(--space-10), 6vw, var(--space-16)) var(--space-6); }
+    .section + .section { padding-top: 0; }
+    .section-header { margin-bottom: var(--space-8); }
+    .section-label {
+      font-size: var(--text-xs); font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--color-primary);
+      margin-bottom: var(--space-2); display: block;
+    }
+    .section-title { font-family: var(--font-display); font-size: var(--text-xl); font-weight: 700; color: var(--color-text); }
+    .section-desc { color: var(--color-text-muted); margin-top: var(--space-2); max-width: 62ch; }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--color-surface); border: 1px solid var(--color-divider);
+      border-radius: var(--radius-lg); padding: var(--space-6); box-shadow: var(--shadow-sm);
+      transition: box-shadow var(--transition);
+    }
+    .card-grid { display: grid; gap: var(--space-6); grid-template-columns: 1fr; }
+    @media (min-width: 640px) { .card-grid--2 { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 900px) { .card-grid--3 { grid-template-columns: repeat(3, 1fr); } }
+
+    /* ── EXPLAINER CARDS ── */
+    .explainer-grid { display: grid; gap: var(--space-5); }
+    @media (min-width: 768px) { .explainer-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .explainer-grid { grid-template-columns: repeat(3, 1fr); } }
+    .explainer-card {
+      background: var(--color-surface); border: 1px solid var(--color-divider);
+      border-radius: var(--radius-lg); padding: var(--space-5);
+      transition: box-shadow var(--transition), transform var(--transition);
+    }
+    .explainer-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+    .explainer-icon {
+      width: 44px; height: 44px; border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: var(--space-4); font-size: 1.35rem;
+    }
+    .explainer-icon--blue { background: var(--color-primary-highlight); }
+    .explainer-icon--green { background: var(--color-success-highlight); }
+    .explainer-icon--amber { background: var(--color-warning-highlight); }
+    .explainer-card h3 { font-size: var(--text-base); font-weight: 700; margin-bottom: var(--space-2); }
+    .explainer-card p { font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.6; }
+
+    /* ── SCENARIO TABS ── */
+    .scenario-tabs { display: flex; gap: var(--space-2); flex-wrap: wrap; margin-bottom: var(--space-6); }
+    .tab-btn {
+      padding: var(--space-2) var(--space-5); border-radius: var(--radius-full);
+      border: 2px solid var(--color-border); background: var(--color-surface-2);
+      font-size: var(--text-sm); font-weight: 600; color: var(--color-text-muted);
+      transition: all var(--transition); white-space: nowrap;
+    }
+    .tab-btn:hover { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-primary-subtle); }
+    .tab-btn.active { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── SCENARIO DESCRIPTION BOX ── */
+    .scenario-desc-box {
+      background: var(--color-primary-subtle); border: 1px solid var(--color-primary-highlight);
+      border-radius: var(--radius-lg); padding: var(--space-5);
+      margin-bottom: var(--space-6);
+    }
+    .scenario-desc-box h3 { font-size: var(--text-base); font-weight: 700; color: var(--color-primary); margin-bottom: var(--space-2); }
+    .scenario-desc-box p { font-size: var(--text-sm); color: var(--color-text-muted); }
+    .scenario-desc-box p + p { margin-top: var(--space-2); }
+
+    /* ── CONTROLS ── */
+    .sim-layout {
+      display: grid; gap: var(--space-6);
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 900px) {
+      .sim-layout { grid-template-columns: 320px 1fr; }
+    }
+    @media (min-width: 1100px) {
+      .sim-layout { grid-template-columns: 360px 1fr; }
+    }
+
+    .controls-panel {
+      background: var(--color-surface); border: 1px solid var(--color-divider);
+      border-radius: var(--radius-lg); padding: var(--space-5); box-shadow: var(--shadow-sm);
+    }
+    .controls-title {
+      font-family: var(--font-display); font-size: var(--text-base); font-weight: 700;
+      margin-bottom: var(--space-5); display: flex; align-items: center; gap: var(--space-2);
+      padding-bottom: var(--space-4); border-bottom: 1px solid var(--color-divider);
+      color: var(--color-text);
+    }
+    .control-group { margin-bottom: var(--space-5); }
+    .control-label {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: var(--text-sm); font-weight: 600; margin-bottom: var(--space-2);
+      color: var(--color-text);
+    }
+    .control-value {
+      background: var(--color-primary-highlight); color: var(--color-primary);
+      font-weight: 700; padding: 2px 8px; border-radius: var(--radius-full);
+      font-size: var(--text-xs); min-width: 36px; text-align: center;
+    }
+    .control-hint { font-size: var(--text-xs); color: var(--color-text-faint); margin-top: var(--space-1); }
+
+    /* Range sliders */
+    input[type="range"] {
+      width: 100%; -webkit-appearance: none; appearance: none;
+      height: 6px; border-radius: var(--radius-full);
+      background: var(--color-surface-offset); outline: none;
+      transition: background var(--transition);
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none; appearance: none;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--color-primary); cursor: pointer;
+      box-shadow: 0 2px 6px rgba(5,113,168,0.35);
+      transition: all var(--transition);
+    }
+    input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+    input[type="range"]::-moz-range-thumb {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--color-primary); cursor: pointer; border: none;
+    }
+
+    /* Buttons */
+    .btn-start {
+      width: 100%; padding: var(--space-4); border-radius: var(--radius-md);
+      background: var(--color-primary); color: #fff;
+      font-size: var(--text-base); font-weight: 700; font-family: var(--font-body);
+      transition: all var(--transition); margin-top: var(--space-2);
+      box-shadow: 0 4px 12px rgba(5,113,168,0.3);
+    }
+    .btn-start:hover:not(:disabled) { background: var(--color-primary-hover); transform: translateY(-1px); box-shadow: 0 6px 18px rgba(5,113,168,0.4); }
+    .btn-start:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* ── SIMULATION CANVAS AREA ── */
+    .sim-right { display: flex; flex-direction: column; gap: var(--space-5); }
+
+    .canvas-container {
+      background: var(--color-surface); border: 1px solid var(--color-divider);
+      border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm);
+      position: relative;
+    }
+    .canvas-header {
+      padding: var(--space-4) var(--space-5);
+      border-bottom: 1px solid var(--color-divider);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .canvas-title { font-size: var(--text-sm); font-weight: 700; color: var(--color-text); }
+    .canvas-status-badges { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+    .status-badge {
+      display: flex; align-items: center; gap: var(--space-1);
+      background: var(--color-surface-2); border: 1px solid var(--color-border);
+      border-radius: var(--radius-full); padding: 2px var(--space-3);
+      font-size: var(--text-xs); font-weight: 600; color: var(--color-text-muted);
+    }
+    .status-badge .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .dot-red { background: var(--particle-infected); }
+    .dot-green { background: var(--particle-immune); }
+    .dot-blue { background: var(--particle-vaccinated-nonimmune); }
+    .dot-gray { background: var(--particle-unvaccinated); }
+
+    #simulationCanvas {
+      width: 100%; height: auto;
+      display: block;
+      background: var(--color-surface-2);
+    }
+
+    .canvas-footer { padding: var(--space-4) var(--space-5); border-top: 1px solid var(--color-divider); }
+    .legend-row { display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: center; }
+    .legend-item { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-xs); color: var(--color-text-muted); }
+    .legend-swatch { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
+    .swatch-immune { background: var(--particle-immune); }
+    .swatch-nonimmune { background: var(--particle-vaccinated-nonimmune); }
+    .swatch-unvax { background: var(--particle-unvaccinated); }
+    .swatch-infected { background: var(--particle-infected); }
+
+    /* ── STATS ── */
+    .stats-row { display: grid; gap: var(--space-4); grid-template-columns: repeat(3, 1fr); }
+    @media (max-width: 600px) { .stats-row { grid-template-columns: 1fr; } }
+    .stat-card {
+      background: var(--color-surface); border: 1px solid var(--color-divider);
+      border-radius: var(--radius-lg); padding: var(--space-4); text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+    .stat-value { font-family: var(--font-display); font-size: var(--text-xl); font-weight: 700; color: var(--color-primary); line-height: 1; margin-bottom: var(--space-1); }
+    .stat-label { font-size: var(--text-xs); color: var(--color-text-muted); font-weight: 500; }
+    .stat-card.infected .stat-value { color: var(--color-danger); }
+
+    /* ── SIMULATION RESULT BANNER ── */
+    .result-banner {
+      display: none; border-radius: var(--radius-lg); padding: var(--space-5);
+      background: var(--color-success-highlight); border: 1px solid var(--color-success);
+    }
+    .result-banner.show { display: block; }
+    .result-banner h3 { font-size: var(--text-base); font-weight: 700; color: var(--color-success); margin-bottom: var(--space-2); }
+    .result-banner p { font-size: var(--text-sm); color: var(--color-text-muted); }
+
+    /* ── SUMMARY TABLES ── */
+    .table-section { background: var(--color-surface); border: 1px solid var(--color-divider); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); }
+    .table-section-header { padding: var(--space-4) var(--space-5); border-bottom: 1px solid var(--color-divider); }
+    .table-section-header h3 { font-size: var(--text-base); font-weight: 700; }
+    .table-section-header p { font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-1); }
+    .table-wrapper { overflow-x: auto; padding: var(--space-4) var(--space-5); }
+    table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+    thead tr { border-bottom: 2px solid var(--color-divider); }
+    th { padding: var(--space-3) var(--space-4); text-align: left; font-weight: 700; font-size: var(--text-xs); letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-text-muted); white-space: nowrap; }
+    td { padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--color-divider); color: var(--color-text); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: var(--color-surface-2); }
+    .td-label { font-weight: 500; }
+    .td-highlight { font-weight: 700; color: var(--color-primary); }
+    .td-danger { font-weight: 700; color: var(--color-danger); }
+    .td-success { font-weight: 700; color: var(--color-success); }
+
+    /* Color-coded swatch in table */
+    .color-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+
+    /* ── EPI CURVE ── */
+    #histogram-section { display: none; }
+    #histogram-section.show { display: block; }
+    #histogramCanvas { width: 100%; height: auto; display: block; }
+
+    /* ── THRESHOLD METER ── */
+    .threshold-card {
+      background: var(--color-surface); border: 1px solid var(--color-divider);
+      border-radius: var(--radius-lg); padding: var(--space-5); box-shadow: var(--shadow-sm);
+    }
+    .threshold-card h3 { font-size: var(--text-base); font-weight: 700; margin-bottom: var(--space-2); }
+    .threshold-card p { font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-4); }
+    .threshold-bar-container { position: relative; height: 28px; background: var(--color-surface-offset); border-radius: var(--radius-full); overflow: hidden; }
+    .threshold-bar-fill {
+      height: 100%; border-radius: var(--radius-full);
+      background: linear-gradient(90deg, var(--color-success), #22c55e);
+      transition: width 0.4s ease; min-width: 4px;
+    }
+    .threshold-bar-fill.below { background: linear-gradient(90deg, var(--color-danger), #f87171); }
+    .threshold-marker {
+      position: absolute; top: 0; bottom: 0; width: 3px;
+      background: var(--color-warning); z-index: 2;
+    }
+    .threshold-marker-label {
+      position: absolute; bottom: 100%; transform: translateX(-50%);
+      font-size: 10px; color: var(--color-warning); font-weight: 700;
+      white-space: nowrap; padding-bottom: 4px;
+    }
+    .threshold-labels { display: flex; justify-content: space-between; margin-top: var(--space-2); font-size: var(--text-xs); color: var(--color-text-faint); }
+    .threshold-status { margin-top: var(--space-3); font-size: var(--text-sm); font-weight: 600; }
+    .threshold-status.above { color: var(--color-success); }
+    .threshold-status.below { color: var(--color-danger); }
+    .threshold-formula {
+      margin-top: var(--space-4); padding: var(--space-3) var(--space-4);
+      background: var(--color-surface-2); border-radius: var(--radius-md);
+      font-size: var(--text-xs); color: var(--color-text-muted);
+    }
+    .threshold-formula code { font-family: monospace; color: var(--color-primary); font-size: 0.95em; }
+
+    /* ── R0 TABLE ── */
+    .r0-grid { display: grid; gap: var(--space-3); grid-template-columns: 1fr; }
+    @media (min-width: 640px) { .r0-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 900px) { .r0-grid { grid-template-columns: repeat(3, 1fr); } }
+    .r0-item {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--color-surface); border: 1px solid var(--color-divider);
+      border-radius: var(--radius-md); padding: var(--space-3) var(--space-4);
+    }
+    .r0-disease { font-size: var(--text-sm); font-weight: 600; }
+    .r0-val { font-size: var(--text-sm); font-weight: 700; color: var(--color-primary); background: var(--color-primary-highlight); padding: 2px 10px; border-radius: var(--radius-full); }
+
+    /* ── ASSUMPTIONS / INFO BOX ── */
+    .info-list { list-style: none; display: flex; flex-direction: column; gap: var(--space-3); }
+    .info-list li {
+      display: flex; gap: var(--space-3); align-items: flex-start;
+      font-size: var(--text-sm); color: var(--color-text-muted);
+    }
+    .info-list li .icon { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; background: var(--color-primary-highlight); color: var(--color-primary); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; margin-top: 2px; }
+
+    /* ── REFERENCES ── */
+    .references-section {
+      background: var(--color-surface-2); border-top: 1px solid var(--color-divider);
+      padding: clamp(var(--space-8), 5vw, var(--space-16)) var(--space-6);
+    }
+    .ref-grid { display: grid; gap: var(--space-4); }
+    @media (min-width: 768px) { .ref-grid { grid-template-columns: repeat(2, 1fr); } }
+    .ref-item {
+      background: var(--color-surface); border: 1px solid var(--color-divider);
+      border-radius: var(--radius-md); padding: var(--space-4);
+      font-size: var(--text-sm);
+    }
+    .ref-num { font-weight: 700; color: var(--color-primary); margin-right: var(--space-2); }
+    .ref-title { font-weight: 600; display: block; margin-bottom: var(--space-1); }
+    .ref-meta { font-size: var(--text-xs); color: var(--color-text-faint); }
+
+    /* ── FOOTER ── */
+    .site-footer {
+      background: var(--color-surface); border-top: 1px solid var(--color-divider);
+      padding: var(--space-8) var(--space-6); text-align: center;
+    }
+    .footer-inner { max-width: var(--content-wide); margin: 0 auto; }
+    .footer-text { font-size: var(--text-xs); color: var(--color-text-faint); }
+    .footer-text a { color: var(--color-text-muted); }
+    .footer-text a:hover { color: var(--color-primary); }
+
+    /* ── COMPLICATIONS ── */
+    .complications-note {
+      background: var(--color-warning-highlight); border: 1px solid var(--color-warning);
+      border-radius: var(--radius-md); padding: var(--space-3) var(--space-4);
+      font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-4);
+    }
+
+    /* ── DIVIDER ── */
+    .section-divider { border: none; border-top: 1px solid var(--color-divider); margin: 0; }
+
+    /* ── MOBILE ── */
+    @media (max-width: 480px) {
+      .header-inner { padding: var(--space-3) var(--space-4); }
+      .hero { padding: var(--space-8) var(--space-4); }
+      .section { padding: var(--space-8) var(--space-4); }
+    }
+  </style>
 </head>
 
 <body>
-    <h1>Herd Immunity Simulation (v0.9)</h1>
-    <div id="instructions"
-        style="max-width: 800px; text-align: left; margin-top: 20px; margin-bottom: 20px; font-size: 16px; line-height: 1.5;">
-        <h2>Background Information</h2>
-        <p>
-            This simulator shows you how herd immunity works from a mathematical point of view. We make several
-            assumptions:
-        </p>
-        <ul>
-            <li>
-                The population is closed. No new people come in or leave the population. It remains steady at whatever
-                number you choose.
-            </li>
-            <li>
-                Meetings of people (when dots cross each other) are completely at random. We know this is not the case
-                in the real world. We congregate with people who are like us, people we work with, people we go to
-                school with, or people who ride public transportation with us. Those congregations and "touch points"
-                may not be at random. (In fact, many are not.)
-            </li>
-            <li>
-                The percent vaccinated remains what you picked. Often times, people who are not vaccinated will get
-                vaccinated during an outbreak.
-            </li>
-            <li>
-                The R-naught (R<sub>0</sub>, which is the number of people one case infects) remains the same throughout
-                the outbreak. This is often not the case, as intervention measures can and do change how many people a
-                case may infect.
-            </li>
-            <li>
-                The "Infection to Infectious Time" remains constant, and the "Infectious Period" is the same for
-                everyone. This is often not the case. The times from exposure to infection, infection to disease, and
-                disease to recovery vary from person to person. These times depend on many factors like the
-                pathogenicity and virulence of the strain, the infected person's immune response, and their general
-                health.
-            </li>
-        </ul>
-        <h2>Instructions</h2>
-        <p>
-            Choose from the value options in the boxes below, and then click on "Start Simulation". The simulation will
-            begin, and you will see a timer below the simulation telling you how much time has passed since the outbreak
-            started.
-        </p>
-        <p>
-            The simulation will end after two incubation periods without any cases (red dots). This is often how we
-            declare epidemics to be over.
-        </p>
-        <h2>Take Note!</h2>
-        <p>
-            Note the differences in the number of cases, the attack rates between vaccinated and unvaccinated, etc. Pay
-            attention to the histogram of cases (aka "Epi Curve") at the bottom once the simulation ends.
-        </p>
-        <p>
-            Pay attention to the vaccine effectiveness and percent vaccinated, and go above or below the <i>Herd
-                Immunity Threshold</i>, whose value depends on the R<sub>0</sub> value:
-        </p>
-        <div style="text-align: center;"><math xmlns="http://www.w3.org/1998/Math/MathML">
-                <mi>H</mi>
-                <sub>
-                    <mi>c</mi>
-                </sub>
-                <mo>=</mo>
-                <mn>1</mn>
-                <mo>-</mo>
-                <mfrac>
-                    <mn>1</mn>
-                    <mo>/</mo>
-                    <mi>R</mi>
-                    <sub>
-                        <mn>0</mn>
-                    </sub>
-                </mfrac>
-            </math>
+
+  <!-- ━━━━━━━━━━━━━━━━━━━━ HEADER ━━━━━━━━━━━━━━━━━━━━ -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="#" class="site-logo" aria-label="Community Immunity Simulator home">
+        <!-- SVG Logo: shield with dots (community/network) -->
+        <svg width="38" height="38" viewBox="0 0 38 38" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+          <rect width="38" height="38" rx="10" fill="var(--color-primary)"/>
+          <path d="M19 6 L30 11 L30 22 C30 27.5 24.5 32 19 33 C13.5 32 8 27.5 8 22 L8 11 Z" fill="white" opacity="0.18"/>
+          <circle cx="14" cy="18" r="3" fill="white"/>
+          <circle cx="24" cy="18" r="3" fill="white"/>
+          <circle cx="19" cy="24" r="3" fill="white"/>
+          <line x1="17" y1="18" x2="22" y2="18" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="15.5" y1="20.5" x2="17.5" y2="22.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="22.5" y1="20.5" x2="20.5" y2="22.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <div>
+          <span class="logo-text">Community Immunity</span>
+          <span class="logo-sub">Interactive Simulator</span>
         </div>
-        <p>
-            Notice how different the number of cases in the vaccinated and unvaccinated are, depending on the value of
-            "Percent Vaccinated" versus the threshold. And notice the speed at which the outbreak happens.
-        </p>
-        <h2>Common R<sub>0</sub> Values for Diseases</h2>
-        <ul>
-            <li>Seasonal Flu: 2</li>
-            <li>Ebola: 2.5</li>
-            <li>Diphtheria: 2 to 4</li>
-            <li>Common Cold: 3</li>
-            <li>COVID-19 (Delta): 5 to 8</li>
-            <li>Mumps: 7</li>
-            <li>Chickenpox: 10 to 12</li>
-            <li>Measles: 12 to 18</li>
-        </ul>
+      </a>
+      <div class="header-actions">
+        <button class="theme-toggle" data-theme-toggle aria-label="Switch to dark mode">
+          <!-- Moon icon (shown in light mode) -->
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+      </div>
     </div>
+  </header>
 
-    <div id="controls">
-        <div class="input-container">
-            <label for="population">Population Size (50-2000):</label><br>
-            <input type="range" id="population" min="50" max="2000" step="10" value="1000" oninput="updateSliderValue('population', this.value)">
-            <span id="population-value">1000</span>
-        </div>
-        <div class="input-container">
-            <label for="vaccinated">Percent Vaccinated:</label><br>
-            <input type="range" id="vaccinated" min="0" max="100" step="1" value="95" oninput="updateSliderValue('vaccinated', this.value)">
-            <span id="vaccinated-value">95</span>
-        </div>
-        <div class="input-container">
-            <label for="r0">R<sub>0</sub> (Enter a value):</label><br>
-            <input type="range" id="r0" min="0" max="20" step="0.1" value="18" oninput="updateSliderValue('r0', this.value)">
-            <span id="r0-value">18</span>
-        </div>
-        <div class="input-container">
-            <label for="initial-infected">Number of Initial Infections (1-50):</label><br>
-            <input type="range" id="initial-infected" min="1" max="50" step="1" value="1" oninput="updateSliderValue('initial-infected', this.value)">
-            <span id="initial-infected-value">1</span>
-        </div>
-        <div class="input-container">
-            <label for="vaccine-effectiveness">Vaccine Effectiveness (0-100%):</label><br>
-            <input type="range" id="vaccine-effectiveness" min="0" max="100" step="1" value="98" oninput="updateSliderValue('vaccine-effectiveness', this.value)">
-            <span id="vaccine-effectiveness-value">98</span>
-        </div>
-        <div class="input-container">
-            <label for="infection-to-infectious">Infection to Infectious Time (1-30 days):</label><br>
-            <input type="range" id="infection-to-infectious" min="1" max="30" step="1" value="8" oninput="updateSliderValue('infection-to-infectious', this.value)">
-            <span id="infection-to-infectious-value">8</span>
-        </div>
-        <div class="input-container">
-            <label for="infectious-period">Infectious Period (1-30 days):</label><br>
-            <input type="range" id="infectious-period" min="1" max="30" step="1" value="8" oninput="updateSliderValue('infectious-period', this.value)">
-            <span id="infectious-period-value">8</span>
-        </div>
-        <button onclick="startSimulation()">Start Simulation</button>
+  <!-- ━━━━━━━━━━━━━━━━━━━━ HERO ━━━━━━━━━━━━━━━━━━━━ -->
+  <section class="hero">
+    <div class="container container--default" style="text-align:center;">
+      <div class="hero-badge">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+        Interactive Learning Tool
+      </div>
+      <h1>How <span>Community Immunity</span> Protects Us All</h1>
+      <p class="hero-lead">
+        When enough people in a community are protected against a disease — through vaccination or prior infection —
+        the disease struggles to spread and cannot reach those who are most vulnerable.
+        This is called <a href="https://historyofvaccines.org/vaccines-101/what-do-vaccines-do/how-herd-immunity-works/" target="_blank" rel="noopener">community immunity</a>,
+        sometimes called herd immunity. Explore it here through real-world scenarios.
+      </p>
+      <div class="hero-nav">
+        <a href="#simulator" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Try the Simulator
+        </a>
+        <a href="#how-it-works" class="btn btn-outline">How It Works</a>
+      </div>
     </div>
-    <canvas id="simulationCanvas" width="800" height="800"></canvas>
-    <div id="legend" style="margin-top: 10px; font-size: 14px;">
-        <span
-            style="display: inline-block; width: 20px; height: 20px; background-color: green; border: 1px solid black; margin-right: 5px;"></span>
-        Vaccinated and/or Immune
-        <span
-            style="display: inline-block; width: 20px; height: 20px; background-color: blue; border: 1px solid black; margin-left: 15px; margin-right: 5px;"></span>
-        Vaccinated and Non-Immune
-        <span
-            style="display: inline-block; width: 20px; height: 20px; background-color: gray; border: 1px solid black; margin-left: 15px; margin-right: 5px;"></span>
-        Unvaccinated
-        <span
-            style="display: inline-block; width: 20px; height: 20px; background-color: red; border: 1px solid black; margin-left: 15px; margin-right: 5px;"></span>
-        Infected
+  </section>
+
+  <!-- ━━━━━━━━━━━━━━━━━━━━ HOW IT WORKS ━━━━━━━━━━━━━━━━━━━━ -->
+  <section class="section" id="how-it-works">
+    <div class="container container--wide">
+      <div class="section-header">
+        <span class="section-label">The Basics</span>
+        <h2 class="section-title">What Is Community Immunity?</h2>
+        <p class="section-desc">Community immunity protects everyone — including people who cannot get vaccinated — by limiting how easily a disease can spread through a population.</p>
+      </div>
+      <div class="explainer-grid">
+        <div class="explainer-card">
+          <div class="explainer-icon explainer-icon--green">💉</div>
+          <h3>Vaccinated &amp; Protected</h3>
+          <p>When you get vaccinated, your immune system learns to fight the disease without you getting sick.
+             Most people who are vaccinated become <strong>immune</strong> — the vaccine
+             <a href="https://publichealth.jhu.edu/2025/the-biology-of-vaccines" target="_blank" rel="noopener">teaches the body to recognize and fight</a> the germ.</p>
+        </div>
+        <div class="explainer-card">
+          <div class="explainer-icon explainer-icon--blue">🛡️</div>
+          <h3>A Wall Around the Vulnerable</h3>
+          <p>Babies, elderly people, and those with weakened immune systems often cannot receive certain vaccines.
+             <a href="https://www.immunize.org/wp-content/uploads/nslt.d/n54/cocooning.pdf" target="_blank" rel="noopener">When those around them are protected</a>,
+             the disease has nowhere to go and cannot reach these vulnerable individuals.</p>
+        </div>
+        <div class="explainer-card">
+          <div class="explainer-icon explainer-icon--amber">📉</div>
+          <h3>The Threshold Matters</h3>
+          <p>Every disease has a <strong>community immunity threshold</strong> — the minimum share of people who need to be immune
+             before the disease stops spreading. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8836627/" target="_blank" rel="noopener">Fall below that level</a>
+             and outbreaks become more likely.</p>
+        </div>
+        <div class="explainer-card">
+          <div class="explainer-icon explainer-icon--blue">🔢</div>
+          <h3>The R₀ Number</h3>
+          <p>R₀ (said "R-naught") is the average number of people one sick person infects in a fully susceptible population.
+             <a href="https://globalhealth.harvard.edu/understanding-predictions-what-is-r-naught/" target="_blank" rel="noopener">A higher R₀ means a disease spreads more easily</a>
+             and requires a higher vaccination rate to achieve community immunity.</p>
+        </div>
+        <div class="explainer-card">
+          <div class="explainer-icon explainer-icon--green">📊</div>
+          <h3>Vaccine Effectiveness</h3>
+          <p>No vaccine is 100% effective for every person.
+             <a href="https://www.who.int/news-room/feature-stories/detail/vaccine-efficacy-effectiveness-and-protection" target="_blank" rel="noopener">Vaccine effectiveness</a>
+             varies by disease, age, and individual biology.
+             This means some vaccinated people may still get sick, though usually with milder illness.</p>
+        </div>
+        <div class="explainer-card">
+          <div class="explainer-icon explainer-icon--amber">⚠️</div>
+          <h3>When Coverage Drops</h3>
+          <p>If vaccination rates fall — due to exemptions, access barriers, or vaccine hesitancy —
+             the community immunity threshold may no longer be met.
+             <a href="https://www.kff.org/state-health-policy-data/a-look-at-recent-changes-to-state-vaccine-requirements-for-school-children/" target="_blank" rel="noopener">Exemptions in U.S. schools have hit record highs</a>,
+             putting entire communities at risk.</p>
+        </div>
+      </div>
     </div>
-    <table id="status-table" style="margin-top: 20px; font-size: 30px; text-align: center; border-collapse: collapse;">
-        <tr>
-            <td>Currently Infected:</td>
-            <td id="currently-infected">0</td>
-        </tr>
-        <tr>
-            <td>Days From First Case:</td>
-            <td id="simulation-timer">0</td>
-        </tr>
-        <tr>
-            <td>Days Since Last Case:</td>
-            <td id="days-since-last-case">0</td>
-        </tr>
-    </table>
-    <div id="result" style="font-size: 30px; margin-top: 20px;"></div>
-    <h2>Pre- and Post-Epidemic Summary</h2>
-    <table id="summary-table">
-        <thead>
-            <tr>
-                <th>Group</th>
-                <th>Initial Count</th>
-                <th>Final Count</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Vaccinated and/or Immune (Green)</td>
-                <td id="initial-immune-count">0</td>
-                <td id="final-immune-count">0</td>
-            </tr>
-            <tr>
-                <td>Vaccinated but Non-Immune (Blue)</td>
-                <td id="initial-non-immune-vaccinated-count">0</td>
-                <td id="final-non-immune-vaccinated-count">0</td>
-            </tr>
-            <tr>
-                <td>Unvaccinated (Gray)</td>
-                <td id="initial-unvaccinated-count">0</td>
-                <td id="final-unvaccinated-count">0</td>
-            </tr>
-            <tr>
-                <td>Infected (Red)</td>
-                <td id="initial-infected-count">0</td>
-                <td id="final-infected-count">0</td>
-            </tr>
-            <tr>
-                <td>Recovered (Red to Green)</td>
-                <td>0</td>
-                <td id="final-recovered-count">0</td>
-            </tr>
-        </tbody>
-    </table>
-    <h2>Attack Rates and Rate Ratio</h2>
-    <table id="attack-rate-table">
-        <thead>
-            <tr>
-                <th>Metric</th>
-                <th>Value</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Attack Rate - Vaccinated</td>
-                <td id="attack-rate-vaccinated">0.00</td>
-            </tr>
-            <tr>
-                <td>Attack Rate - Unvaccinated</td>
-                <td id="attack-rate-unvaccinated">0.00</td>
-            </tr>
-            <tr>
-                <td>Rate Ratio</td>
-                <td id="rate-ratio">0.00</td>
-            </tr>
-        </tbody>
-    </table>
-    <h2>Complications (If Measles)</h2>
-    <table id="complications-table">
-        <thead>
-            <tr>
-                <th>Complication</th>
-                <th>Value</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Ear Infections</td>
-                <td id="ear-infections">0</td>
-            </tr>
-            <tr>
-                <td>Diarrhea</td>
-                <td id="diarrhea">0</td>
-            </tr>
-            <tr>
-                <td>Hospitalization</td>
-                <td id="hospitalization">0</td>
-            </tr>
-            <tr>
-                <td>Pneumonia</td>
-                <td id="pneumonia">0</td>
-            </tr>
-            <tr>
-                <td>Encephalitis</td>
-                <td id="encephalitis">0</td>
-            </tr>
-            <tr>
-                <td>Death</td>
-                <td id="death">0</td>
-            </tr>
-        </tbody>
-    </table>
+  </section>
 
-    <div id="histogram-container">
-        <h2>Epidemic Curve</h2>
-        <canvas id="histogramCanvas" width="800" height="400" style="border: 1px solid black;"></canvas>
+  <hr class="section-divider">
+
+  <!-- ━━━━━━━━━━━━━━━━━━━━ SIMULATOR ━━━━━━━━━━━━━━━━━━━━ -->
+  <section class="section" id="simulator">
+    <div class="container container--wide">
+      <div class="section-header">
+        <span class="section-label">Interactive Tool</span>
+        <h2 class="section-title">Community Immunity Simulator</h2>
+        <p class="section-desc">Choose a real-world scenario below, or adjust the sliders yourself to explore how vaccination rates and vaccine effectiveness shape the outcome of an outbreak.</p>
+      </div>
+
+      <!-- SCENARIO TABS -->
+      <div class="scenario-tabs" role="tablist" aria-label="Pre-set scenarios">
+        <button class="tab-btn active" role="tab" aria-selected="true" data-scenario="custom" onclick="switchScenario('custom')">
+          Custom
+        </button>
+        <button class="tab-btn" role="tab" aria-selected="false" data-scenario="flu-nursing-high" onclick="switchScenario('flu-nursing-high')">
+          Flu · Nursing Home (High Coverage)
+        </button>
+        <button class="tab-btn" role="tab" aria-selected="false" data-scenario="flu-nursing-low" onclick="switchScenario('flu-nursing-low')">
+          Flu · Nursing Home (Low Coverage)
+        </button>
+        <button class="tab-btn" role="tab" aria-selected="false" data-scenario="measles-well" onclick="switchScenario('measles-well')">
+          Measles · Well-Vaccinated School
+        </button>
+        <button class="tab-btn" role="tab" aria-selected="false" data-scenario="measles-poor" onclick="switchScenario('measles-poor')">
+          Measles · Poorly Vaccinated School
+        </button>
+      </div>
+
+      <!-- SCENARIO DESCRIPTION BOX -->
+      <div class="scenario-desc-box" id="scenarioDescBox">
+        <h3 id="scenarioTitle">Custom Scenario</h3>
+        <p id="scenarioDesc">Adjust the sliders below to explore any combination of parameters. Click <strong>Start Simulation</strong> to run it.</p>
+        <p id="scenarioSource"></p>
+      </div>
+
+      <!-- SIM LAYOUT: Controls + Canvas -->
+      <div class="sim-layout">
+
+        <!-- LEFT: Controls -->
+        <div class="controls-panel">
+          <div class="controls-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+            Simulation Controls
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Population Size</span>
+              <span class="control-value" id="population-value">500</span>
+            </div>
+            <input type="range" id="population" min="50" max="1500" step="10" value="500" oninput="updateSlider('population',this.value)">
+            <div class="control-hint">How many people are in this community</div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>% Vaccinated</span>
+              <span class="control-value" id="vaccinated-value">95%</span>
+            </div>
+            <input type="range" id="vaccinated" min="0" max="100" step="1" value="95" oninput="updateSlider('vaccinated',this.value,'%')">
+            <div class="control-hint">Share of people who received the vaccine</div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Vaccine Effectiveness</span>
+              <span class="control-value" id="vaccine-effectiveness-value">97%</span>
+            </div>
+            <input type="range" id="vaccine-effectiveness" min="0" max="100" step="1" value="97" oninput="updateSlider('vaccine-effectiveness',this.value,'%')">
+            <div class="control-hint">How often the vaccine successfully protects a vaccinated person</div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>R₀ (Spread Rate)</span>
+              <span class="control-value" id="r0-value">15</span>
+            </div>
+            <input type="range" id="r0" min="1" max="20" step="0.1" value="15" oninput="updateSlider('r0',this.value)">
+            <div class="control-hint">Average number of people one case infects in an unprotected population</div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Starting Infections</span>
+              <span class="control-value" id="initial-infected-value">1</span>
+            </div>
+            <input type="range" id="initial-infected" min="1" max="20" step="1" value="1" oninput="updateSlider('initial-infected',this.value)">
+            <div class="control-hint">Number of sick people at the start</div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Days Before Infectious</span>
+              <span class="control-value" id="infection-to-infectious-value">8</span>
+            </div>
+            <input type="range" id="infection-to-infectious" min="1" max="20" step="1" value="8" oninput="updateSlider('infection-to-infectious',this.value)">
+            <div class="control-hint">Days from exposure until a person can spread the disease</div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Infectious Period (days)</span>
+              <span class="control-value" id="infectious-period-value">8</span>
+            </div>
+            <input type="range" id="infectious-period" min="1" max="20" step="1" value="8" oninput="updateSlider('infectious-period',this.value)">
+            <div class="control-hint">How long a sick person can spread the disease</div>
+          </div>
+
+          <!-- Community Immunity Threshold Meter -->
+          <div class="threshold-card" style="margin-top: var(--space-5);">
+            <h3 style="font-size:var(--text-sm);">Community Immunity Meter</h3>
+            <p>Based on your R₀ and vaccine settings, are you above or below the protection threshold?</p>
+            <div class="threshold-bar-container" id="thresholdBar">
+              <div class="threshold-bar-fill" id="thresholdFill" style="width: 92%;"></div>
+              <div class="threshold-marker" id="thresholdMarker" style="left: 93.3%;">
+                <span class="threshold-marker-label" id="thresholdMarkerLabel">Threshold</span>
+              </div>
+            </div>
+            <div class="threshold-labels"><span>0%</span><span>Effective Coverage</span><span>100%</span></div>
+            <div class="threshold-status above" id="thresholdStatus">✓ Above threshold — community immunity likely</div>
+            <div class="threshold-formula">
+              Threshold = 1 − 1/R₀ = <code id="thresholdCalc">93.3%</code> &nbsp;|&nbsp;
+              Effective coverage = vaccinated% × effectiveness% = <code id="effectiveCovCalc">92.2%</code>
+            </div>
+          </div>
+
+          <button class="btn-start" id="startBtn" onclick="startSimulation()">
+            ▶ Start Simulation
+          </button>
+        </div>
+
+        <!-- RIGHT: Canvas + Stats -->
+        <div class="sim-right">
+
+          <!-- Stat cards -->
+          <div class="stats-row">
+            <div class="stat-card infected">
+              <div class="stat-value" id="currently-infected">0</div>
+              <div class="stat-label">Currently Sick</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="simulation-timer">0</div>
+              <div class="stat-label">Days Elapsed</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="days-since-last-case">0</div>
+              <div class="stat-label">Days Since Last Case</div>
+            </div>
+          </div>
+
+          <!-- Canvas -->
+          <div class="canvas-container">
+            <div class="canvas-header">
+              <div class="canvas-title">Outbreak Simulation</div>
+              <div class="canvas-status-badges">
+                <div class="status-badge"><div class="dot dot-green"></div>Immune</div>
+                <div class="status-badge"><div class="dot dot-blue"></div>Vaccinated (not immune)</div>
+                <div class="status-badge"><div class="dot dot-gray"></div>Unvaccinated</div>
+                <div class="status-badge"><div class="dot dot-red"></div>Infected</div>
+              </div>
+            </div>
+            <canvas id="simulationCanvas" width="700" height="500" aria-label="Outbreak simulation visualisation"></canvas>
+            <div class="canvas-footer">
+              <div class="legend-row">
+                <div class="legend-item"><div class="legend-swatch swatch-immune"></div>Vaccinated &amp; immune (protected)</div>
+                <div class="legend-item"><div class="legend-swatch swatch-nonimmune"></div>Vaccinated but not immune</div>
+                <div class="legend-item"><div class="legend-swatch swatch-unvax"></div>Not vaccinated</div>
+                <div class="legend-item"><div class="legend-swatch swatch-infected"></div>Currently sick</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Result Banner -->
+          <div class="result-banner" id="resultBanner">
+            <h3 id="resultTitle">Simulation complete</h3>
+            <p id="resultText"></p>
+          </div>
+
+          <!-- Summary Table -->
+          <div class="table-section">
+            <div class="table-section-header">
+              <h3>Before &amp; After Summary</h3>
+              <p>Counts at the start and end of the simulation</p>
+            </div>
+            <div class="table-wrapper">
+              <table>
+                <thead><tr><th>Group</th><th>Start</th><th>End</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td class="td-label"><span class="color-dot" style="background:var(--particle-immune)"></span>Vaccinated &amp; Immune</td>
+                    <td id="initial-immune-count">—</td>
+                    <td id="final-immune-count">—</td>
+                  </tr>
+                  <tr>
+                    <td class="td-label"><span class="color-dot" style="background:var(--particle-vaccinated-nonimmune)"></span>Vaccinated, Not Immune</td>
+                    <td id="initial-non-immune-vaccinated-count">—</td>
+                    <td id="final-non-immune-vaccinated-count">—</td>
+                  </tr>
+                  <tr>
+                    <td class="td-label"><span class="color-dot" style="background:var(--particle-unvaccinated)"></span>Unvaccinated</td>
+                    <td id="initial-unvaccinated-count">—</td>
+                    <td id="final-unvaccinated-count">—</td>
+                  </tr>
+                  <tr>
+                    <td class="td-label"><span class="color-dot" style="background:var(--particle-infected)"></span>Total Infected</td>
+                    <td id="initial-infected-count">—</td>
+                    <td id="final-infected-count" class="td-danger">—</td>
+                  </tr>
+                  <tr>
+                    <td class="td-label">Recovered (gained immunity)</td>
+                    <td>0</td>
+                    <td id="final-recovered-count" class="td-success">—</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Attack Rates -->
+          <div class="table-section">
+            <div class="table-section-header">
+              <h3>Attack Rates &amp; Rate Ratio</h3>
+              <p>The "attack rate" is the share of each group that got sick. A high rate ratio means being unvaccinated carried much more risk.</p>
+            </div>
+            <div class="table-wrapper">
+              <table>
+                <thead><tr><th>Measure</th><th>Value</th></tr></thead>
+                <tbody>
+                  <tr><td class="td-label">Attack Rate — Vaccinated</td><td id="attack-rate-vaccinated" class="td-highlight">—</td></tr>
+                  <tr><td class="td-label">Attack Rate — Unvaccinated</td><td id="attack-rate-unvaccinated" class="td-danger">—</td></tr>
+                  <tr><td class="td-label">Rate Ratio (Unvax ÷ Vax)</td><td id="rate-ratio" class="td-highlight">—</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Measles Complications (shown only for measles scenarios) -->
+          <div class="table-section" id="complications-section" style="display:none;">
+            <div class="table-section-header">
+              <h3>Estimated Measles Complications</h3>
+              <p>Measles is not just a rash — it carries serious complications, especially in unvaccinated children.</p>
+            </div>
+            <div class="table-wrapper">
+              <table>
+                <thead><tr><th>Complication</th><th>Estimated Cases</th></tr></thead>
+                <tbody>
+                  <tr><td>Ear Infections (risk: 1 in 10)</td><td id="ear-infections">—</td></tr>
+                  <tr><td>Diarrhea (risk: 1 in 10)</td><td id="diarrhea">—</td></tr>
+                  <tr><td>Pneumonia (risk: 1 in 20)</td><td id="pneumonia">—</td></tr>
+                  <tr><td>Hospital Admission (risk: 1 in 5 unvaccinated)</td><td id="hospitalization">—</td></tr>
+                  <tr><td>Brain Swelling/Encephalitis (risk: 1 in 1,000)</td><td id="encephalitis">—</td></tr>
+                  <tr><td>Death (risk: 1–3 in 1,000)</td><td id="death" class="td-danger">—</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="complications-note">
+              Complication rates are based on
+              <a href="https://www.cdc.gov/measles/about/index.html" target="_blank" rel="noopener">CDC estimates for measles complications in the United States</a>.
+              These are statistical averages — outcomes vary by individual health status and access to care.
+            </div>
+          </div>
+
+          <!-- Epidemic Curve -->
+          <div class="table-section" id="histogram-section">
+            <div class="table-section-header">
+              <h3>Epidemic Curve</h3>
+              <p>This chart shows how many new infections happened each simulated day. Epidemiologists call this an "epi curve" — the shape tells you a lot about how fast an outbreak moved.</p>
+            </div>
+            <div style="padding: var(--space-5);">
+              <canvas id="histogramCanvas" width="700" height="280" aria-label="Epidemic curve chart"></canvas>
+            </div>
+          </div>
+
+        </div><!-- end sim-right -->
+      </div><!-- end sim-layout -->
     </div>
+  </section>
 
-    <script>
-        const canvas = document.getElementById('simulationCanvas');
-        const ctx = canvas.getContext('2d');
-        const populationInput = document.getElementById('population');
-        const vaccinatedInput = document.getElementById('vaccinated');
-        const r0Input = document.getElementById('r0');
-        const initialInfectedInput = document.getElementById('initial-infected');
-        const vaccineEffectivenessInput = document.getElementById('vaccine-effectiveness');
-        const infectionToInfectiousInput = document.getElementById('infection-to-infectious');
-        const infectiousPeriodInput = document.getElementById('infectious-period');
-        const resultDiv = document.getElementById('result');
-        const initialImmuneCountCell = document.getElementById('initial-immune-count');
-        const finalImmuneCountCell = document.getElementById('final-immune-count');
-        const initialNonImmuneVaccinatedCountCell = document.getElementById('initial-non-immune-vaccinated-count');
-        const finalNonImmuneVaccinatedCountCell = document.getElementById('final-non-immune-vaccinated-count');
-        const initialUnvaccinatedCountCell = document.getElementById('initial-unvaccinated-count');
-        const finalUnvaccinatedCountCell = document.getElementById('final-unvaccinated-count');
-        const initialInfectedCountCell = document.getElementById('initial-infected-count');
-        const finalInfectedCountCell = document.getElementById('final-infected-count');
-        const finalRecoveredCountCell = document.getElementById('final-recovered-count');
+  <hr class="section-divider">
 
-        let particles = [];
-        let simulationStartTime;
-        let simulationRunning = true;
-        let animationFrameId; // Track the animation frame ID
-        let lastCaseTime = null;
+  <!-- ━━━━━━━━━━━━━━━━━━━━ R0 REFERENCE ━━━━━━━━━━━━━━━━━━━━ -->
+  <section class="section" id="r0-reference">
+    <div class="container container--wide">
+      <div class="section-header">
+        <span class="section-label">Quick Reference</span>
+        <h2 class="section-title">Spread Rates (R₀) for Common Diseases</h2>
+        <p class="section-desc">The R₀ number describes how contagious a disease is in a population with no immunity.
+          <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10511978/" target="_blank" rel="noopener">Diseases with a higher R₀ require more of the community to be vaccinated</a> before outbreaks are prevented.</p>
+      </div>
+      <div class="r0-grid">
+        <div class="r0-item"><span class="r0-disease">Seasonal Flu</span><span class="r0-val">R₀ ≈ 1–2</span></div>
+        <div class="r0-item"><span class="r0-disease">Ebola</span><span class="r0-val">R₀ ≈ 1.5–2.5</span></div>
+        <div class="r0-item"><span class="r0-disease">SARS (2003)</span><span class="r0-val">R₀ ≈ 2–5</span></div>
+        <div class="r0-item"><span class="r0-disease">Diphtheria</span><span class="r0-val">R₀ ≈ 6–7</span></div>
+        <div class="r0-item"><span class="r0-disease">COVID-19 (Delta)</span><span class="r0-val">R₀ ≈ 5–8</span></div>
+        <div class="r0-item"><span class="r0-disease">Smallpox</span><span class="r0-val">R₀ ≈ 5–7</span></div>
+        <div class="r0-item"><span class="r0-disease">Mumps</span><span class="r0-val">R₀ ≈ 4–7</span></div>
+        <div class="r0-item"><span class="r0-disease">Rubella</span><span class="r0-val">R₀ ≈ 6–7</span></div>
+        <div class="r0-item"><span class="r0-disease">Chickenpox</span><span class="r0-val">R₀ ≈ 10–12</span></div>
+        <div class="r0-item"><span class="r0-disease">Measles</span><span class="r0-val">R₀ ≈ 12–18</span></div>
+        <div class="r0-item"><span class="r0-disease">Pertussis (Whooping Cough)</span><span class="r0-val">R₀ ≈ 12–17</span></div>
+        <div class="r0-item"><span class="r0-disease">Poliovirus</span><span class="r0-val">R₀ ≈ 5–7</span></div>
+      </div>
+    </div>
+  </section>
 
-        function createParticles(populationSize, vaccinatedPercentage, initialInfected, vaccineEffectiveness) {
-            particles = [];
+  <hr class="section-divider">
 
-            const vaccinatedProportion = vaccinatedPercentage / 100;
-            const vaccineEffectivenessProportion = vaccineEffectiveness / 100;
+  <!-- ━━━━━━━━━━━━━━━━━━━━ ASSUMPTIONS ━━━━━━━━━━━━━━━━━━━━ -->
+  <section class="section" id="assumptions">
+    <div class="container container--default">
+      <div class="section-header">
+        <span class="section-label">Model Assumptions</span>
+        <h2 class="section-title">What This Simulator Assumes</h2>
+        <p class="section-desc">All models simplify reality. Here's what this simulator assumes — and where real life is more complex.</p>
+      </div>
+      <ul class="info-list">
+        <li>
+          <div class="icon">1</div>
+          <div><strong>Closed population:</strong> No one enters or leaves. In reality, disease can be introduced by travelers or spread to neighboring communities. Population size stays constant throughout the run.</div>
+        </li>
+        <li>
+          <div class="icon">2</div>
+          <div><strong>Random mixing:</strong> All encounters between people happen by chance, with no clustering. In real life, people spend more time with family, coworkers, classmates, or neighbors — and clusters of unvaccinated people can fuel outbreaks even when overall vaccination is high.</div>
+        </li>
+        <li>
+          <div class="icon">3</div>
+          <div><strong>Fixed vaccination rate:</strong> The share of vaccinated people stays the same throughout. In real outbreaks, <a href="https://www.cdc.gov/mmwr/volumes/75/wr/mm7509a1.htm" target="_blank" rel="noopener">vaccination rates often change</a> as people respond to a threat.</div>
+        </li>
+        <li>
+          <div class="icon">4</div>
+          <div><strong>Constant R₀:</strong> The spread rate does not change during the simulation. Public health measures like masking, isolation, or social distancing can lower the effective R during a real outbreak.</div>
+        </li>
+        <li>
+          <div class="icon">5</div>
+          <div><strong>Uniform disease course:</strong> Everyone's incubation period and infectious period are the same. In reality, these vary by age, immune status, and the specific strain of the disease.</div>
+        </li>
+      </ul>
+    </div>
+  </section>
 
-            const vaccinatedCount = Math.floor(populationSize * vaccinatedProportion);
-            const immuneCount = Math.floor(vaccinatedCount * vaccineEffectivenessProportion);
-            const nonImmuneCount = vaccinatedCount - immuneCount;
-            const unvaccinatedCount = populationSize - vaccinatedCount;
+  <hr class="section-divider">
 
-            initialImmuneCountCell.textContent = immuneCount;
-            initialNonImmuneVaccinatedCountCell.textContent = nonImmuneCount;
-            initialUnvaccinatedCountCell.textContent = unvaccinatedCount;
-            initialInfectedCountCell.textContent = initialInfected;
+  <!-- ━━━━━━━━━━━━━━━━━━━━ REFERENCES ━━━━━━━━━━━━━━━━━━━━ -->
+  <section class="references-section" id="references">
+    <div class="container container--wide">
+      <div class="section-header">
+        <span class="section-label">Sources &amp; Data</span>
+        <h2 class="section-title">References</h2>
+        <p class="section-desc">All vaccine effectiveness values, R₀ estimates, and epidemiological data used in this simulator are drawn from the sources below.</p>
+      </div>
+      <div class="ref-grid">
+        <div class="ref-item">
+          <span class="ref-num">[1]</span>
+          <span class="ref-title">CDC — Flu Vaccine Effectiveness Data, 2023–2024 Season</span>
+          <div class="ref-meta">Older adults (≥65): ~31–37% VE. Source for nursing home flu scenarios.</div>
+          <a href="https://www.cdc.gov/flu-vaccines-work/php/effectiveness-studies/2023-2024.html" target="_blank" rel="noopener">cdc.gov/flu-vaccines-work</a>
+        </div>
+        <div class="ref-item">
+          <span class="ref-num">[2]</span>
+          <span class="ref-title">CIDRAP — Flu vaccine efficacy 41% overall and 26% in older adults, 2023–24</span>
+          <div class="ref-meta">California statewide VE study. Source for flu VE in elderly/nursing home population.</div>
+          <a href="https://www.cidrap.umn.edu/influenza-vaccines/flu-vaccine-efficacy-41-overall-and-26-older-adults-2023-24-estimates" target="_blank" rel="noopener">cidrap.umn.edu</a>
+        </div>
+        <div class="ref-item">
+          <span class="ref-num">[3]</span>
+          <span class="ref-title">Influenza Vaccine Effectiveness, 2023/2024 — Northern Ireland, PMC</span>
+          <div class="ref-meta">Care home resident uptake 82%; VE 47.5% across all age groups. Source for nursing home coverage &amp; VE.</div>
+          <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12422802/" target="_blank" rel="noopener">pmc.ncbi.nlm.nih.gov</a>
+        </div>
+        <div class="ref-item">
+          <span class="ref-num">[4]</span>
+          <span class="ref-title">PubMed — Two-dose measles vaccine effectiveness remains high over time (France, 2023)</span>
+          <div class="ref-meta">Two-dose VE: 99.6% in young children, 96.7% 16 years post-vaccination. Source for measles VE values.</div>
+          <a href="https://pubmed.ncbi.nlm.nih.gov/37586955/" target="_blank" rel="noopener">pubmed.ncbi.nlm.nih.gov/37586955</a>
+        </div>
+        <div class="ref-item">
+          <span class="ref-num">[5]</span>
+          <span class="ref-title">Truveta — Measles vaccination trends in U.S. children (2025)</span>
+          <div class="ref-meta">Two-dose MMR series 97% effective. Source for measles vaccine effectiveness.</div>
+          <a href="https://www.truveta.com/blog/research/research-insights/latest-trends-in-two-dose-vaccination-against-measles-among-children-in-the-us/" target="_blank" rel="noopener">truveta.com</a>
+        </div>
+        <div class="ref-item">
+          <span class="ref-num">[6]</span>
+          <span class="ref-title">CDC MMWR — School Vaccination Coverage, 2022–23 School Year</span>
+          <div class="ref-meta">National MMR coverage: ~93.1% for kindergartners; exemption rate 3.0%. Source for poorly vaccinated school scenario.</div>
+          <a href="https://www.cdc.gov/mmwr/volumes/72/wr/mm7245a2.htm" target="_blank" rel="noopener">cdc.gov/mmwr</a>
+        </div>
+        <div class="ref-item">
+          <span class="ref-num">[7]</span>
+          <span class="ref-title">KFF — Recent Changes to State Vaccine Requirements for School Children (2025)</span>
+          <div class="ref-meta">Non-medical exemptions rose to 3.4% nationally; Idaho reached 15.4%. Context for school exemption scenarios.</div>
+          <a href="https://www.kff.org/state-health-policy-data/a-look-at-recent-changes-to-state-vaccine-requirements-for-school-children/" target="_blank" rel="noopener">kff.org</a>
+        </div>
+        <div class="ref-item">
+          <span class="ref-num">[8]</span>
+          <span class="ref-title">Johns Hopkins Bloomberg School of Public Health — Measles &amp; Vaccines (2025)</span>
+          <div class="ref-meta">Two doses of MMR protect ~97% of children. Measles requires ≥95% coverage for community immunity.</div>
+          <a href="https://publichealth.jhu.edu/2025/what-to-know-about-measles-and-vaccines" target="_blank" rel="noopener">publichealth.jhu.edu</a>
+        </div>
+        <div class="ref-item">
+          <span class="ref-num">[9]</span>
+          <span class="ref-title">Mayo Clinic — Herd Immunity and Vaccines</span>
+          <div class="ref-meta">Community immunity for measles requires ≥95% vaccination. Explains threshold concept.</div>
+          <a href="https://www.mayoclinic.org/diseases-conditions/coronavirus/in-depth/herd-immunity-and-coronavirus/art-20486808" target="_blank" rel="noopener">mayoclinic.org</a>
+        </div>
+        <div class="ref-item">
+          <span class="ref-num">[10]</span>
+          <span class="ref-title">WHO — Community Immunity, Lockdowns, and COVID-19</span>
+          <div class="ref-meta">Explains community immunity thresholds and how they are calculated (1 − 1/R₀).</div>
+          <a href="https://www.who.int/news-room/questions-and-answers/item/herd-immunity-lockdowns-and-covid-19" target="_blank" rel="noopener">who.int</a>
+        </div>
+        <div class="ref-item">
+          <span class="ref-num">[11]</span>
+          <span class="ref-title">CDC — Measles Complications</span>
+          <div class="ref-meta">Ear infections (1/10), pneumonia (1/20), encephalitis (1/1,000), death (1–3/1,000). Source for complications table.</div>
+          <a href="https://www.cdc.gov/measles/about/index.html" target="_blank" rel="noopener">cdc.gov/measles</a>
+        </div>
+        <div class="ref-item">
+          <span class="ref-num">[12]</span>
+          <span class="ref-title">PMC — Herd Immunity, Vaccination and Moral Obligation (Journal of Medical Ethics, 2023)</span>
+          <div class="ref-meta">R₀ values, threshold formula, and differences between diseases regarding community immunity.</div>
+          <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10511978/" target="_blank" rel="noopener">pmc.ncbi.nlm.nih.gov/articles/PMC10511978</a>
+        </div>
+      </div>
+    </div>
+  </section>
 
-            for (let i = 0; i < immuneCount; i++) {
-                particles.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    dx: (Math.random() - 0.5) * 2,
-                    dy: (Math.random() - 0.5) * 2,
-                    infected: false,
-                    immune: true,
-                    vaccinated: true,
-                    infectionsCaused: 0,
-                    color: 'green'
-                });
+  <!-- ━━━━━━━━━━━━━━━━━━━━ FOOTER ━━━━━━━━━━━━━━━━━━━━ -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p class="footer-text">
+        Community Immunity Simulator · An educational tool for exploring how vaccination protects communities ·
+        <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
+      </p>
+    </div>
+  </footer>
+
+  <!-- ━━━━━━━━━━━━━━━━━━━━ SCRIPTS ━━━━━━━━━━━━━━━━━━━━ -->
+  <script>
+    // ── THEME TOGGLE ──────────────────────────────────────────
+    (function(){
+      const t = document.querySelector('[data-theme-toggle]');
+      const r = document.documentElement;
+      let d = matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light';
+      r.setAttribute('data-theme', d);
+      function setIcon(theme) {
+        if (!t) return;
+        t.setAttribute('aria-label', 'Switch to ' + (theme === 'dark' ? 'light' : 'dark') + ' mode');
+        t.innerHTML = theme === 'dark'
+          ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
+          : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+      }
+      setIcon(d);
+      if (t) t.addEventListener('click', () => {
+        d = d === 'dark' ? 'light' : 'dark';
+        r.setAttribute('data-theme', d);
+        setIcon(d);
+        redrawCanvasBackground();
+      });
+    })();
+
+    // ── SCENARIO DATA ─────────────────────────────────────────
+    const scenarios = {
+      custom: {
+        title: 'Custom Scenario',
+        desc: 'Adjust the sliders yourself to explore any combination. Try changing the vaccination rate above and below the community immunity threshold to see the difference.',
+        source: '',
+        values: null,
+        showComplications: false
+      },
+      'flu-nursing-high': {
+        title: '🏠 Flu in a Nursing Home — High Vaccination Coverage',
+        desc: 'In this scenario, 82% of nursing home residents are vaccinated against seasonal flu — consistent with care-home uptake rates during the 2023–24 flu season. Vaccine effectiveness in adults over 65 is set to ~37%, reflecting recent CDC data. Even with a well-vaccinated community, flu can still spread because of the vaccine\'s lower effectiveness in older adults.',
+        source: 'Sources: CDC 2023–24 VE data [1], Northern Ireland care home data [3], CIDRAP 2023–24 estimates [2].',
+        values: { population: 150, vaccinated: 82, 've': 37, r0: 1.6, initialInfected: 1, incubation: 2, infectious: 5 },
+        showComplications: false
+      },
+      'flu-nursing-low': {
+        title: '🏠 Flu in a Nursing Home — Lower Staff Vaccination',
+        desc: 'What happens when nursing home staff vaccination rates are low (~45%, as observed in U.S. nursing homes in 2023–24)? Staff can introduce flu to vulnerable residents. This scenario combines low staff coverage with the same 37% vaccine effectiveness in elderly residents, showing how staff vaccination gaps can amplify outbreaks even when some residents are vaccinated.',
+        source: 'Sources: CDC 2023–24 VE data [1]; U.S. Pharmacist — nursing home staff flu vaccination ~45% [3].',
+        values: { population: 150, vaccinated: 45, 've': 37, r0: 1.6, initialInfected: 2, incubation: 2, infectious: 5 },
+        showComplications: false
+      },
+      'measles-well': {
+        title: '🏫 Measles in a Well-Vaccinated Elementary School',
+        desc: 'This school has 97% of students vaccinated with two doses of the MMR vaccine, exceeding the ~95% community immunity threshold for measles. With two-dose vaccine effectiveness at 97%, the effective coverage is very high. A single case is introduced — watch what happens when the community is well protected.',
+        source: 'Sources: Johns Hopkins measles data [8]; PubMed two-dose VE study [4]; CDC MMR coverage [6].',
+        values: { population: 400, vaccinated: 97, 've': 97, r0: 15, initialInfected: 1, incubation: 8, infectious: 8 },
+        showComplications: true
+      },
+      'measles-poor': {
+        title: '🏫 Measles in a Poorly Vaccinated Elementary School',
+        desc: 'In some U.S. counties, kindergarten MMR vaccination has fallen well below 80%, driven by rising non-medical exemptions. This scenario reflects a school at ~75% vaccination coverage — far below the 95% threshold. The same vaccine (97% effective) is available, but not enough people have taken it. Watch how the outbreak unfolds.',
+        source: 'Sources: KFF school exemption data [7]; Education Week measles outbreak analysis; CDC MMWR [6].',
+        values: { population: 400, vaccinated: 75, 've': 97, r0: 15, initialInfected: 1, incubation: 8, infectious: 8 },
+        showComplications: true
+      }
+    };
+
+    let currentScenario = 'custom';
+
+    function switchScenario(key) {
+      currentScenario = key;
+      // Update tab buttons
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.scenario === key);
+        btn.setAttribute('aria-selected', btn.dataset.scenario === key);
+      });
+      const s = scenarios[key];
+      document.getElementById('scenarioTitle').textContent = s.title;
+      document.getElementById('scenarioDesc').textContent = s.desc;
+      document.getElementById('scenarioSource').textContent = s.source;
+      if (s.values) {
+        setSlider('population', s.values.population, '');
+        setSlider('vaccinated', s.values.vaccinated, '%');
+        setSlider('vaccine-effectiveness', s.values['ve'], '%');
+        setSlider('r0', s.values.r0, '');
+        setSlider('initial-infected', s.values.initialInfected, '');
+        setSlider('infection-to-infectious', s.values.incubation, '');
+        setSlider('infectious-period', s.values.infectious, '');
+      }
+      document.getElementById('complications-section').style.display = s.showComplications ? 'block' : 'none';
+      updateThreshold();
+    }
+
+    function setSlider(id, val, suffix) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.value = val;
+      document.getElementById(id + '-value').textContent = val + suffix;
+    }
+
+    // ── SLIDER UPDATE + THRESHOLD ─────────────────────────────
+    function updateSlider(id, value, suffix = '') {
+      document.getElementById(id + '-value').textContent = value + suffix;
+      updateThreshold();
+    }
+
+    function updateThreshold() {
+      const vaccPct = parseFloat(document.getElementById('vaccinated').value);
+      const vePct   = parseFloat(document.getElementById('vaccine-effectiveness').value);
+      const r0      = parseFloat(document.getElementById('r0').value);
+
+      const threshold      = r0 > 1 ? (1 - 1/r0) * 100 : 0;
+      const effectiveCov   = (vaccPct / 100) * (vePct / 100) * 100;
+      const isAbove        = effectiveCov >= threshold;
+
+      document.getElementById('thresholdCalc').textContent     = threshold.toFixed(1) + '%';
+      document.getElementById('effectiveCovCalc').textContent  = effectiveCov.toFixed(1) + '%';
+
+      const markerPct = Math.min(threshold, 99.5);
+      document.getElementById('thresholdMarker').style.left = markerPct + '%';
+
+      const fillEl = document.getElementById('thresholdFill');
+      fillEl.style.width = Math.min(effectiveCov, 100) + '%';
+      fillEl.classList.toggle('below', !isAbove);
+
+      const statusEl = document.getElementById('thresholdStatus');
+      statusEl.className = 'threshold-status ' + (isAbove ? 'above' : 'below');
+      statusEl.textContent = isAbove
+        ? '✓ Above threshold — community immunity is likely'
+        : '✗ Below threshold — outbreaks are more likely';
+    }
+
+    // ── SIMULATION ENGINE ─────────────────────────────────────
+    const canvas = document.getElementById('simulationCanvas');
+    const ctx    = canvas.getContext('2d');
+    const histCanvas = document.getElementById('histogramCanvas');
+    const histCtx    = histCanvas.getContext('2d');
+
+    let particles = [];
+    let simulationStartTime;
+    let simulationRunning = false;
+    let animationFrameId;
+    let lastCaseTime = null;
+    let totalInfections = 0;
+    let newInfectionsPerSecond = [];
+    let lastElapsedSeconds = -1;
+    let initialGreenCount = 0;
+    let checkEndRef = { lastRedTime: null };
+
+    function getParticleColors() {
+      const style = getComputedStyle(document.documentElement);
+      return {
+        immune:    style.getPropertyValue('--particle-immune').trim()    || '#22a266',
+        nonimmune: style.getPropertyValue('--particle-vaccinated-nonimmune').trim() || '#3b82f6',
+        unvax:     style.getPropertyValue('--particle-unvaccinated').trim() || '#8b95a1',
+        infected:  style.getPropertyValue('--particle-infected').trim()  || '#ef4444',
+        bg:        style.getPropertyValue('--color-surface-2').trim()    || '#f0f4f8'
+      };
+    }
+
+    function createParticles(populationSize, vaccinatedPct, initialInfected, vaccineEff) {
+      particles = [];
+      const c = getParticleColors();
+      const vaccinatedCount = Math.floor(populationSize * vaccinatedPct / 100);
+      initialGreenCount = Math.floor(vaccinatedCount * vaccineEff / 100);
+      const nonImmuneCount = vaccinatedCount - initialGreenCount;
+      const unvaccinatedCount = populationSize - vaccinatedCount;
+
+      document.getElementById('initial-immune-count').textContent = initialGreenCount;
+      document.getElementById('initial-non-immune-vaccinated-count').textContent = nonImmuneCount;
+      document.getElementById('initial-unvaccinated-count').textContent = unvaccinatedCount;
+      document.getElementById('initial-infected-count').textContent = initialInfected;
+
+      const W = canvas.width, H = canvas.height;
+      function makeParticle(color, immune, vaccinated) {
+        return {
+          x: Math.random() * W, y: Math.random() * H,
+          dx: (Math.random() - 0.5) * 2.2, dy: (Math.random() - 0.5) * 2.2,
+          infected: false, immune, vaccinated,
+          infectionsCaused: 0, color, baseColor: color
+        };
+      }
+      for (let i = 0; i < initialGreenCount; i++)  particles.push(makeParticle(c.immune, true, true));
+      for (let i = 0; i < nonImmuneCount; i++)      particles.push(makeParticle(c.nonimmune, false, true));
+      for (let i = 0; i < unvaccinatedCount; i++)   particles.push(makeParticle(c.unvax, false, false));
+
+      // Infect initial cases (prefer unvaccinated)
+      let infected = 0;
+      const eligible = particles.filter(p => !p.immune && p.color !== c.infected);
+      const shuffled = eligible.sort(() => Math.random() - 0.5);
+      for (let i = 0; i < Math.min(initialInfected, shuffled.length); i++) {
+        shuffled[i].infected = true;
+        shuffled[i].color = c.infected;
+        shuffled[i].infectionTime = Date.now();
+        infected++;
+      }
+      totalInfections = infected;
+    }
+
+    function redrawCanvasBackground() {
+      if (!simulationRunning) {
+        const c = getParticleColors();
+        ctx.fillStyle = c.bg;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    function drawParticles() {
+      const c = getParticleColors();
+      ctx.fillStyle = c.bg;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const W = canvas.width, H = canvas.height;
+      particles.forEach(p => {
+        const r = p.color === c.infected ? 6 : 4.5;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.fill();
+        // Move
+        p.x += p.dx; p.y += p.dy;
+        p.dx += (Math.random() - 0.5) * 0.2;
+        p.dy += (Math.random() - 0.5) * 0.2;
+        const maxSpeed = 2.2;
+        p.dx = Math.max(-maxSpeed, Math.min(maxSpeed, p.dx));
+        p.dy = Math.max(-maxSpeed, Math.min(maxSpeed, p.dy));
+        if (p.x < 0) { p.x = 0; p.dx *= -1; }
+        if (p.x > W) { p.x = W; p.dx *= -1; }
+        if (p.y < 0) { p.y = 0; p.dy *= -1; }
+        if (p.y > H) { p.y = H; p.dy *= -1; }
+      });
+    }
+
+    function updateParticles(infectionRate, infectionToInfectious, infectiousPeriod) {
+      const currentTime = Date.now();
+      const elapsedSeconds = Math.floor((currentTime - simulationStartTime) / 1000);
+      if (!newInfectionsPerSecond[elapsedSeconds]) newInfectionsPerSecond[elapsedSeconds] = 0;
+      const c = getParticleColors();
+
+      particles.forEach(p1 => {
+        if (!p1.infected) return;
+        const timeSince = (currentTime - p1.infectionTime) / 1000;
+        if (timeSince >= infectionToInfectious && timeSince < infectionToInfectious + infectiousPeriod) {
+          particles.forEach(p2 => {
+            if (p2.infected || p2.immune || p1.infectionsCaused >= infectionRate) return;
+            if (p2.color !== c.nonimmune && p2.color !== c.unvax) return;
+            const dx = p1.x - p2.x, dy = p1.y - p2.y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < 12 && Math.random() < 0.12) {
+              p2.infected = true; p2.color = c.infected; p2.infectionTime = currentTime;
+              p1.infectionsCaused++;
+              totalInfections++;
+              newInfectionsPerSecond[elapsedSeconds]++;
             }
-
-            for (let i = 0; i < nonImmuneCount; i++) {
-                particles.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    dx: (Math.random() - 0.5) * 2,
-                    dy: (Math.random() - 0.5) * 2,
-                    infected: false,
-                    immune: false,
-                    vaccinated: true,
-                    infectionsCaused: 0,
-                    color: 'blue'
-                });
-            }
-
-            for (let i = 0; i < unvaccinatedCount; i++) {
-                particles.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    dx: (Math.random() - 0.5) * 2,
-                    dy: (Math.random() - 0.5) * 2,
-                    infected: false,
-                    immune: false,
-                    vaccinated: false,
-                    infectionsCaused: 0,
-                    color: 'gray'
-                });
-            }
-
-            let infectedCount = 0;
-            while (infectedCount < initialInfected) {
-                const randomIndex = Math.floor(Math.random() * particles.length);
-                if (!particles[randomIndex].infected && !particles[randomIndex].immune) {
-                    particles[randomIndex].infected = true;
-                    particles[randomIndex].color = 'red';
-                    particles[randomIndex].infectionTime = Date.now();
-                    infectedCount++;
-                }
-            }
+          });
+        } else if (timeSince >= infectionToInfectious + infectiousPeriod) {
+          p1.infected = false; p1.immune = true;
+          p1.color = c.immune;
         }
+      });
+    }
 
-        function updateAttackRatesFromTable() {
-            const initialVaccinatedCount = parseInt(document.getElementById('initial-immune-count').textContent) +
-                parseInt(document.getElementById('initial-non-immune-vaccinated-count').textContent);
-            const finalVaccinatedCount = parseInt(document.getElementById('final-immune-count').textContent) +
-                parseInt(document.getElementById('final-non-immune-vaccinated-count').textContent);
-            const initialUnvaccinatedCount = parseInt(document.getElementById('initial-unvaccinated-count').textContent);
-            const finalUnvaccinatedCount = parseInt(document.getElementById('final-unvaccinated-count').textContent);
-
-            const vaccinatedInfected = initialVaccinatedCount - finalVaccinatedCount;
-            const unvaccinatedInfected = initialUnvaccinatedCount - finalUnvaccinatedCount;
-
-            const attackRateVaccinated = initialVaccinatedCount > 0 ? (vaccinatedInfected / initialVaccinatedCount) : 0;
-            const attackRateUnvaccinated = initialUnvaccinatedCount > 0 ? (unvaccinatedInfected / initialUnvaccinatedCount) : 0;
-            const rateRatio = attackRateVaccinated > 0 ? (attackRateUnvaccinated / attackRateVaccinated) : 0;
-
-            document.getElementById('attack-rate-vaccinated').textContent = attackRateVaccinated.toFixed(8);
-            document.getElementById('attack-rate-unvaccinated').textContent = attackRateUnvaccinated.toFixed(8);
-            document.getElementById('rate-ratio').textContent = rateRatio.toFixed(8);
-
-            console.log('Vaccinated Infected:', vaccinatedInfected);
-            console.log('Unvaccinated Infected:', unvaccinatedInfected);
-            console.log('Attack Rate Vaccinated:', attackRateVaccinated);
-            console.log('Attack Rate Unvaccinated:', attackRateUnvaccinated);
-            console.log('Rate Ratio:', rateRatio);
+    function checkSimulationEnd(infectionToInfectiousTime) {
+      const currentTime = Date.now();
+      const noRed = particles.every(p => !p.infected);
+      if (noRed) {
+        if (!checkEndRef.lastRedTime) checkEndRef.lastRedTime = currentTime;
+        const since = (currentTime - checkEndRef.lastRedTime) / 1000;
+        if (since >= 2 * infectionToInfectiousTime) {
+          simulationRunning = false;
+          return (currentTime - simulationStartTime) / 1000;
         }
+      } else {
+        checkEndRef.lastRedTime = null;
+      }
+      return null;
+    }
 
-        function drawParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+    function countFinalParticles() {
+      const c = getParticleColors();
+      let finalBlue = 0, finalGray = 0, finalGreen = 0;
+      particles.forEach(p => {
+        if (p.color === c.nonimmune) finalBlue++;
+        else if (p.color === c.unvax) finalGray++;
+        else if (p.color === c.immune) finalGreen++;
+      });
 
-            particles.forEach(p => {
-                let radius = 5;
-                if (p.color === 'red') {
-                    // Active cases appear larger until recovery
-                    radius = 7;
-                }
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
-                ctx.fillStyle = p.color;
-                ctx.fill();
-                ctx.closePath();
+      const totalVaxStart = initialGreenCount + parseInt(document.getElementById('initial-non-immune-vaccinated-count').textContent);
+      const totalUnvaxStart = parseInt(document.getElementById('initial-unvaccinated-count').textContent);
+      const recoveredCount = finalGreen > initialGreenCount ? finalGreen - initialGreenCount : 0;
 
-                p.x += p.dx;
-                if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
-                if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
-                p.dx += (Math.random() - 0.5) * 0.2;
-                p.dy += (Math.random() - 0.5) * 0.2;
-                const maxSpeed = 2;
-                p.dx = Math.max(-maxSpeed, Math.min(maxSpeed, p.dx));
-                p.dy = Math.max(-maxSpeed, Math.min(maxSpeed, p.dy));
-                p.x += p.dx;
-                p.y += p.dy;
-                if (p.x < 0) {
-                    p.x = 0;
-                    p.dx *= -1;
-                } else if (p.x > canvas.width) {
-                    p.x = canvas.width;
-                    p.dx *= -1;
-                }
+      document.getElementById('final-immune-count').textContent = initialGreenCount;
+      document.getElementById('final-non-immune-vaccinated-count').textContent = finalBlue;
+      document.getElementById('final-unvaccinated-count').textContent = finalGray;
+      document.getElementById('final-infected-count').textContent = totalInfections;
+      document.getElementById('final-recovered-count').textContent = recoveredCount;
 
-                if (p.y < 0) {
-                    p.y = 0;
-                    p.dy *= -1;
-                } else if (p.y > canvas.height) {
-                    p.y = canvas.height;
-                    p.dy *= -1;
-                }
-            });
+      // Attack rates
+      const vaxInfected = totalVaxStart - (initialGreenCount + finalBlue);
+      const unvaxInfected = totalUnvaxStart - finalGray;
+      const arVax  = totalVaxStart   > 0 ? vaxInfected / totalVaxStart   : 0;
+      const arUnvax = totalUnvaxStart > 0 ? unvaxInfected / totalUnvaxStart : 0;
+      const rr = arVax > 0.0001 ? arUnvax / arVax : (arUnvax > 0 ? '∞' : '—');
+
+      document.getElementById('attack-rate-vaccinated').textContent   = (arVax * 100).toFixed(1) + '%';
+      document.getElementById('attack-rate-unvaccinated').textContent  = (arUnvax * 100).toFixed(1) + '%';
+      document.getElementById('rate-ratio').textContent = typeof rr === 'number' ? rr.toFixed(1) + '×' : rr;
+
+      // Complications (measles)
+      const s = scenarios[currentScenario];
+      if (s && s.showComplications) {
+        document.getElementById('ear-infections').textContent  = Math.ceil(totalInfections / 10);
+        document.getElementById('diarrhea').textContent        = Math.ceil(totalInfections / 10);
+        document.getElementById('pneumonia').textContent       = Math.ceil(totalInfections / 20);
+        document.getElementById('hospitalization').textContent = Math.ceil(unvaxInfected / 5);
+        document.getElementById('encephalitis').textContent    = Math.ceil(totalInfections / 1000);
+        document.getElementById('death').textContent           = Math.ceil(totalInfections / 500);
+      }
+      drawEpiCurve();
+    }
+
+    function drawEpiCurve() {
+      const histSec = document.getElementById('histogram-section');
+      histSec.classList.add('show');
+
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const textColor = isDark ? '#7a8fa8' : '#5a6778';
+      const barColor  = isDark ? '#4da8e0' : '#0571a8';
+      const gridColor = isDark ? '#253040' : '#dde3eb';
+      const bgColor   = isDark ? '#161e2d' : '#ffffff';
+
+      const data = newInfectionsPerSecond.filter(v => v !== undefined);
+      const maxVal = Math.max(1, ...data);
+      const W = histCanvas.width, H = histCanvas.height;
+      const padL = 40, padR = 20, padT = 20, padB = 36;
+      const chartW = W - padL - padR;
+      const chartH = H - padT - padB;
+      const barW = Math.max(1, chartW / Math.max(data.length, 1));
+
+      histCtx.clearRect(0, 0, W, H);
+      histCtx.fillStyle = bgColor;
+      histCtx.fillRect(0, 0, W, H);
+
+      // Grid lines
+      const gridLines = 5;
+      histCtx.strokeStyle = gridColor;
+      histCtx.lineWidth = 1;
+      for (let i = 0; i <= gridLines; i++) {
+        const y = padT + chartH - (i / gridLines) * chartH;
+        histCtx.beginPath(); histCtx.moveTo(padL, y); histCtx.lineTo(padL + chartW, y); histCtx.stroke();
+        histCtx.fillStyle = textColor;
+        histCtx.font = '11px General Sans, sans-serif';
+        histCtx.textAlign = 'right';
+        histCtx.fillText(Math.round(i / gridLines * maxVal), padL - 6, y + 4);
+      }
+
+      // Bars
+      data.forEach((val, i) => {
+        if (!val) return;
+        const bH = (val / maxVal) * chartH;
+        const x  = padL + i * barW;
+        const y  = padT + chartH - bH;
+        histCtx.fillStyle = barColor;
+        const rr = Math.min(3, barW / 2);
+        histCtx.beginPath();
+        histCtx.moveTo(x + rr, y); histCtx.lineTo(x + barW - rr - 1, y);
+        histCtx.quadraticCurveTo(x + barW - 1, y, x + barW - 1, y + rr);
+        histCtx.lineTo(x + barW - 1, y + bH); histCtx.lineTo(x, y + bH);
+        histCtx.lineTo(x, y + rr);
+        histCtx.quadraticCurveTo(x, y, x + rr, y);
+        histCtx.fill();
+      });
+
+      // Axis labels
+      histCtx.fillStyle = textColor;
+      histCtx.font = '12px General Sans, sans-serif';
+      histCtx.textAlign = 'center';
+      histCtx.fillText('Days from First Case', padL + chartW / 2, H - 6);
+      histCtx.save();
+      histCtx.translate(12, padT + chartH / 2);
+      histCtx.rotate(-Math.PI / 2);
+      histCtx.fillText('New Cases', 0, 0);
+      histCtx.restore();
+
+      // X axis ticks (sample every N days)
+      const step = Math.max(1, Math.floor(data.length / 10));
+      histCtx.font = '10px General Sans, sans-serif';
+      histCtx.textAlign = 'center';
+      for (let i = 0; i < data.length; i += step) {
+        histCtx.fillText(i, padL + i * barW + barW / 2, padT + chartH + 14);
+      }
+    }
+
+    function updateTimer() {
+      const now = Date.now();
+      const elapsed = Math.floor((now - simulationStartTime) / 1000);
+      document.getElementById('simulation-timer').textContent = elapsed;
+      const infectedNow = particles.filter(p => p.infected).length;
+      document.getElementById('currently-infected').textContent = infectedNow;
+      if (infectedNow > 0) lastCaseTime = now;
+      const daysSince = lastCaseTime ? Math.floor((now - lastCaseTime) / 1000) : 0;
+      document.getElementById('days-since-last-case').textContent = daysSince;
+    }
+
+    function startSimulation() {
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      simulationRunning = true;
+      checkEndRef.lastRedTime = null;
+      lastCaseTime = null;
+      newInfectionsPerSecond = [];
+      lastElapsedSeconds = -1;
+      totalInfections = 0;
+      document.getElementById('histogram-section').classList.remove('show');
+      document.getElementById('resultBanner').classList.remove('show');
+
+      // Reset all output cells
+      ['final-immune-count','final-non-immune-vaccinated-count','final-unvaccinated-count','final-infected-count','final-recovered-count'].forEach(id => {
+        document.getElementById(id).textContent = '—';
+      });
+      ['attack-rate-vaccinated','attack-rate-unvaccinated','rate-ratio'].forEach(id => {
+        document.getElementById(id).textContent = '—';
+      });
+      document.getElementById('currently-infected').textContent = '0';
+      document.getElementById('simulation-timer').textContent = '0';
+      document.getElementById('days-since-last-case').textContent = '0';
+
+      const population       = parseInt(document.getElementById('population').value);
+      const vaccinatedPct    = parseFloat(document.getElementById('vaccinated').value);
+      const r0               = parseFloat(document.getElementById('r0').value);
+      const initialInfected  = parseInt(document.getElementById('initial-infected').value);
+      const vaccineEff       = parseFloat(document.getElementById('vaccine-effectiveness').value);
+      const incubation       = parseFloat(document.getElementById('infection-to-infectious').value);
+      const infectiousPeriod = parseFloat(document.getElementById('infectious-period').value);
+
+      const startBtn = document.getElementById('startBtn');
+      startBtn.disabled = true;
+      startBtn.textContent = '⏹ Simulation Running…';
+
+      createParticles(population, vaccinatedPct, initialInfected, vaccineEff);
+      simulationStartTime = Date.now();
+
+      function animate() {
+        if (!simulationRunning) return;
+        updateTimer();
+        drawParticles();
+        updateParticles(r0, incubation, infectiousPeriod);
+        const ended = checkSimulationEnd(incubation);
+        if (ended !== null) {
+          countFinalParticles();
+          const banner = document.getElementById('resultBanner');
+          const elapsed = Math.floor(ended);
+          banner.classList.add('show');
+          document.getElementById('resultTitle').textContent = `Outbreak over — lasted ${elapsed} day${elapsed !== 1 ? 's' : ''}`;
+          document.getElementById('resultText').textContent = `The simulation ended after ${elapsed} days from the first case. There were ${totalInfections} total infections across all groups. Scroll down to review the summary tables and epidemic curve.`;
+          startBtn.disabled = false;
+          startBtn.textContent = '▶ Start Simulation';
+        } else {
+          animationFrameId = requestAnimationFrame(animate);
         }
+      }
 
-        let totalInfections = 0;
-        const newInfectionsPerSecond = [];
-        let timerInterval;
+      animationFrameId = requestAnimationFrame(animate);
+    }
 
-        function resetUI() {
-            finalImmuneCountCell.textContent = "0";
-            finalNonImmuneVaccinatedCountCell.textContent = "0";
-            finalUnvaccinatedCountCell.textContent = "0";
-            finalInfectedCountCell.textContent = "0";
-            finalRecoveredCountCell.textContent = "0";
+    // ── INIT ──────────────────────────────────────────────────
+    updateThreshold();
+    // Draw empty canvas
+    (function() {
+      const c = getParticleColors();
+      ctx.fillStyle = c.bg;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    })();
+  </script>
 
-            const timerElement = document.getElementById("simulation-timer");
-            if (timerElement) {
-                timerElement.textContent = "0 Days From First Case";
-            }
-
-            const histogramContainer = document.getElementById("histogram-container");
-            histogramContainer.style.display = "none"; // Hide histogram container initially
-        }
-
-        function updateParticles(infectionRate, infectionToInfectious, infectiousPeriod) {
-            const currentTime = Date.now();
-            const elapsedSeconds = Math.floor((currentTime - simulationStartTime) / 1000);
-
-            if (!newInfectionsPerSecond[elapsedSeconds]) {
-                newInfectionsPerSecond[elapsedSeconds] = 0;
-            }
-
-            particles.forEach(p1 => {
-                if (p1.infected) {
-                    const timeSinceInfection = (currentTime - p1.infectionTime) / 1000;
-
-                    if (timeSinceInfection >= infectionToInfectious && timeSinceInfection < infectionToInfectious + infectiousPeriod) {
-                        particles.forEach(p2 => {
-                            if (!p2.infected && (p2.color === 'blue' || p2.color === 'gray') && p1.infectionsCaused < infectionRate) {
-                                const dx = p1.x - p2.x;
-                                const dy = p1.y - p2.y;
-                                const distance = Math.sqrt(dx * dx + dy * dy);
-
-                                if (distance < 10 && Math.random() < 0.1) {
-                                    p2.infected = true;
-                                    p2.color = 'red';
-                                    p2.infectionTime = currentTime;
-                                    p1.infectionsCaused++;
-                                    totalInfections++;
-                                    newInfectionsPerSecond[elapsedSeconds]++;
-                                }
-                            }
-                        });
-                    } else if (timeSinceInfection >= infectionToInfectious + infectiousPeriod) {
-                        p1.infected = false;
-                        p1.immune = true;
-                        p1.color = 'green';
-                    }
-                }
-            });
-        }
-
-        function checkSimulationEnd(maxTime, infectionToInfectiousTime) {
-            const currentTime = Date.now();
-            const elapsedTime = (currentTime - simulationStartTime) / 1000;
-
-            const noMoreRed = particles.every(p => p.color !== 'red');
-
-            if (noMoreRed) {
-                if (!checkSimulationEnd.lastRedTime) {
-                    checkSimulationEnd.lastRedTime = currentTime;
-                }
-
-                const timeSinceLastRed = (currentTime - checkSimulationEnd.lastRedTime) / 1000;
-                if (timeSinceLastRed >= 2 * infectionToInfectiousTime) {
-                    simulationRunning = false;
-                    clearInterval(timerInterval);
-                    return elapsedTime;
-                }
-            } else {
-                checkSimulationEnd.lastRedTime = null;
-            }
-
-            if (elapsedTime >= maxTime) {
-                simulationRunning = false;
-                clearInterval(timerInterval);
-                return elapsedTime;
-            }
-
-            return null;
-        }
-
-        function countFinalParticles(initialGreenCount) {
-            const finalCounts = {
-                green: 0,
-                blue: 0,
-                gray: 0,
-                red: 0,
-                recovered: 0
-            };
-
-            particles.forEach(p => {
-                if (p.color === 'green') {
-                    finalCounts.green++;
-                }
-                if (p.color === 'blue') {
-                    finalCounts.blue++;
-                }
-                if (p.color === 'gray') {
-                    finalCounts.gray++;
-                }
-                if (p.color === 'red') {
-                    finalCounts.red++;
-                }
-                if (!p.infected && p.immune && p.color === 'green' && finalCounts.green > initialGreenCount) {
-                    finalCounts.recovered++;
-                }
-            });
-
-            finalCounts.green = initialGreenCount;
-
-            finalImmuneCountCell.textContent = initialGreenCount;
-            finalNonImmuneVaccinatedCountCell.textContent = finalCounts.blue;
-            finalUnvaccinatedCountCell.textContent = finalCounts.gray;
-            finalInfectedCountCell.textContent = totalInfections;
-            finalRecoveredCountCell.textContent = Math.min(finalCounts.recovered, totalInfections);
-
-            // Calculate complications
-            const earInfections = Math.ceil(totalInfections / 10);
-            const diarrhea = Math.ceil(totalInfections / 10);
-            const hospitalization = Math.ceil(finalCounts.gray / 5);
-            const pneumonia = Math.ceil(totalInfections / 20);
-            const encephalitis = Math.ceil(totalInfections / 1000);
-            const death = Math.ceil(totalInfections / 333);
-
-            // Update complications table
-            document.getElementById('ear-infections').textContent = earInfections;
-            document.getElementById('diarrhea').textContent = diarrhea;
-            document.getElementById('hospitalization').textContent = hospitalization;
-            document.getElementById('pneumonia').textContent = pneumonia;
-            document.getElementById('encephalitis').textContent = encephalitis;
-            document.getElementById('death').textContent = death;
-
-            // Ensure attack rates and rate ratio are updated
-            updateAttackRatesFromTable();
-            console.log("New infections per second:", newInfectionsPerSecond);
-            drawHistogram(); // Ensure the histogram is drawn at the end of the simulation
-        }
-
-        function drawHistogram() {
-            const histogramContainer = document.getElementById("histogram-container");
-            const histogramCanvas = document.getElementById("histogramCanvas");
-            const ctx = histogramCanvas.getContext("2d");
-            const maxInfections = Math.max(1, ...newInfectionsPerSecond);
-            const barWidth = histogramCanvas.width / newInfectionsPerSecond.length;
-            const canvasHeight = histogramCanvas.height;
-
-            histogramContainer.style.display = "block"; // Ensure histogram container is visible
-
-            ctx.clearRect(0, 0, histogramCanvas.width, histogramCanvas.height);
-
-            // Draw bars for new infections per second
-            newInfectionsPerSecond.forEach((count, index) => {
-                const barHeight = (count / maxInfections) * (canvasHeight - 50);
-                ctx.fillStyle = "blue";
-                ctx.fillRect(index * barWidth, canvasHeight - barHeight - 20, barWidth - 2, barHeight);
-
-                ctx.fillStyle = "black";
-                ctx.font = "10px Arial";
-                ctx.fillText(count, index * barWidth + 2, canvasHeight - barHeight - 25);
-            });
-
-            ctx.fillStyle = "black";
-            ctx.font = "12px Arial";
-            ctx.fillText("Days", histogramCanvas.width / 2 - 20, canvasHeight - 5);
-            console.log("Drawing histogram...");
-        }
-
-        function startSimulation() {
-            resetUI();
-
-            if (animationFrameId) {
-                cancelAnimationFrame(animationFrameId);
-            }
-
-            particles = [];
-
-            const populationSize = parseInt(populationInput.value);
-            const vaccinatedPercentage = parseFloat(vaccinatedInput.value);
-            const infectionRate = parseFloat(r0Input.value);
-            const initialInfected = parseInt(initialInfectedInput.value);
-            const vaccineEffectiveness = parseFloat(vaccineEffectivenessInput.value);
-            const infectionToInfectious = parseFloat(infectionToInfectiousInput.value);
-            const infectiousPeriod = parseFloat(infectiousPeriodInput.value);
-
-            totalInfections = initialInfected;
-            newInfectionsPerSecond.length = 0;
-
-            const initialGreenCount = Math.floor(populationSize * (vaccinatedPercentage / 100) * (vaccineEffectiveness / 100));
-
-            createParticles(populationSize, vaccinatedPercentage, initialInfected, vaccineEffectiveness);
-            simulationStartTime = Date.now();
-            simulationRunning = true;
-
-            function updateTimer() {
-                const currentTime = Date.now();
-                const elapsedSeconds = Math.floor((currentTime - simulationStartTime) / 1000);
-                document.getElementById("simulation-timer").textContent = `${elapsedSeconds}`;
-
-                // Update the currently infected count
-                const currentlyInfectedCount = particles.filter(p => p.color === 'red').length;
-                document.getElementById("currently-infected").textContent = `${currentlyInfectedCount}`;
-
-                // Update the days since the last case
-                if (currentlyInfectedCount > 0) {
-                    lastCaseTime = currentTime;
-                }
-                const daysSinceLastCase = lastCaseTime ? Math.floor((currentTime - lastCaseTime) / 1000) : 0;
-                document.getElementById("days-since-last-case").textContent = `${daysSinceLastCase}`;
-            }
-
-            function animate() {
-                if (!simulationRunning) return;
-
-                updateTimer();
-                drawParticles();
-                updateParticles(infectionRate, infectionToInfectious, infectiousPeriod);
-
-                const elapsedTime = checkSimulationEnd(120, infectionToInfectious);
-                if (elapsedTime !== null) {
-                    countFinalParticles(initialGreenCount);
-                    resultDiv.textContent = `Simulation Ended After ${Math.floor(elapsedTime)} Days From First Case.`;
-                } else {
-                    animationFrameId = requestAnimationFrame(animate);
-                }
-            }
-
-            resultDiv.textContent = "";
-            animationFrameId = requestAnimationFrame(animate);
-        }
-
-        function updateSliderValue(id, value) {
-            document.getElementById(`${id}-value`).textContent = value;
-        }
-    </script>
 </body>
 </html>
