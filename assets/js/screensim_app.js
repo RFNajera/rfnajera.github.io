@@ -67,6 +67,8 @@
     "flu-winter": { prevalence: 20, sensitivity: 70, specificity: 95 },
     "hiv-high": { prevalence: 15, sensitivity: 99.5, specificity: 99.5 },
     mammogram: { prevalence: 1.5, sensitivity: 85, specificity: 90 },
+    hivLowRisk: { prevalence: 0.4, sensitivity: 99.9, specificity: 99.8 },
+    brcaMammogram: { prevalence: 55, sensitivity: 75, specificity: 93 },
   };
 
   // ---- Sliders & state ----
