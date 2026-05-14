@@ -346,6 +346,13 @@
       color: var(--danger);
     }
 
+    .status.truth-revealed {
+      font-weight: 950;
+      border-color: #fbbf24;
+      background: var(--gold-soft);
+      color: #78350f;
+    }
+
     .summary-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -393,6 +400,22 @@
     }
     .truth-marker { background: #111827; display: none; }
     .estimate-marker { background: var(--blue); display: none; }
+    .ci-marker {
+      position: absolute;
+      top: 50%;
+      left: 0%;
+      width: 0%;
+      height: 10px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #f97316, var(--gold));
+      border: 2px solid rgba(146, 64, 14, 0.55);
+      transform: translateY(-50%);
+      box-shadow: 0 0 0 3px rgba(255, 243, 196, 0.8);
+      display: none;
+      z-index: 2;
+    }
+    .estimate-marker,
+    .truth-marker { z-index: 3; }
 
     .legend {
       display: flex;
@@ -405,6 +428,7 @@
     .legend span { display: inline-flex; align-items: center; gap: 0.35rem; }
     .dot { width: 0.8rem; height: 0.8rem; border-radius: 999px; display: inline-block; }
     .dot.estimate { background: var(--blue); }
+    .dot.ci { background: var(--gold); }
     .dot.truth { background: #111827; }
     .dot.hershey { background: var(--pink); }
     .dot.werther { background: var(--gold); }
@@ -517,6 +541,8 @@
       to { transform: translateY(110vh) rotate(360deg); opacity: 1; }
     }
 
+    .bottom-notes { margin-top: 1.25rem; }
+
     @media (max-width: 900px) {
       header.hero,
       main { grid-template-columns: 1fr; }
@@ -616,33 +642,12 @@
           <div id="sampleStatus" class="status hidden" role="status" aria-live="polite"></div>
         </section>
 
-        <section class="card" id="teacher-notes" aria-labelledby="teacher-title">
-          <h2 class="section-title" id="teacher-title">Teacher notes</h2>
-          <details open>
-            <summary>What this game teaches</summary>
-            <p>Random samples can give useful estimates of a population proportion. As students collect more sampled candies, the estimate usually gets closer to the true jar proportion and the interval gets narrower.</p>
-          </details>
-          <details>
-            <summary>Plain-language note about the interval</summary>
-            <p>The 95% interval shown here is a simple teaching tool based on repeated random draws. It helps students see uncertainty, but it should not be treated as a perfect statistical method for every situation.</p>
-          </details>
-          <details>
-            <summary>Discussion questions</summary>
-            <ol class="question-list">
-              <li>How close was your first sample to the true candy mix?</li>
-              <li>What happened when you collected more samples?</li>
-              <li>Did a larger total sample make the interval wider or narrower?</li>
-              <li>Where do people use samples instead of counting every single person or item?</li>
-              <li>What could go wrong if the sample was not random?</li>
-            </ol>
-          </details>
-        </section>
       </div>
 
       <div>
         <section class="card" aria-labelledby="dashboard-title">
           <h2 class="section-title" id="dashboard-title"><span class="badge">3</span> Watch the estimate</h2>
-          <p class="hint">The pink bar shows the estimated percentage of Hershey's Kisses. After you reveal the truth, the black line shows the real percentage.</p>
+          <p class="hint">The pink bar shows the estimated percentage of Hershey's Kisses. The orange line shows the 95% confidence interval. After you reveal the truth, the black line shows the real percentage.</p>
 
           <div class="summary-grid" aria-label="Sampling summary">
             <div class="stat"><b id="totalSampled">0</b><span>Total candies sampled</span></div>
@@ -652,11 +657,13 @@
 
           <div class="meter" aria-hidden="true">
             <div class="meter-fill" id="estimateBar"></div>
+            <div class="ci-marker" id="ciMarker"></div>
             <div class="estimate-marker" id="estimateMarker"></div>
             <div class="truth-marker" id="truthMarker"></div>
           </div>
           <div class="legend" aria-hidden="true">
             <span><i class="dot hershey"></i> Estimated Kisses</span>
+            <span><i class="dot ci"></i> 95% confidence interval</span>
             <span><i class="dot estimate"></i> Estimate line</span>
             <span><i class="dot truth"></i> True value after reveal</span>
           </div>
@@ -694,6 +701,31 @@
         </section>
       </div>
     </main>
+
+    <div class="bottom-notes">
+        <section class="card" id="teacher-notes" aria-labelledby="teacher-title">
+          <h2 class="section-title" id="teacher-title">Teacher notes</h2>
+          <details open>
+            <summary>What this game teaches</summary>
+            <p>Random samples can give useful estimates of a population proportion. As students collect more sampled candies, the estimate usually gets closer to the true jar proportion and the interval gets narrower.</p>
+          </details>
+          <details>
+            <summary>Plain-language note about the interval</summary>
+            <p>The 95% interval shown here is a simple teaching tool based on repeated random draws. It helps students see uncertainty, but it should not be treated as a perfect statistical method for every situation.</p>
+          </details>
+          <details>
+            <summary>Discussion questions</summary>
+            <ol class="question-list">
+              <li>How close was your first sample to the true candy mix?</li>
+              <li>What happened when you collected more samples?</li>
+              <li>Did a larger total sample make the interval wider or narrower?</li>
+              <li>Where do people use samples instead of counting every single person or item?</li>
+              <li>What could go wrong if the sample was not random?</li>
+            </ol>
+          </details>
+        </section>
+
+    </div>
   </div>
 
   <div id="confetti" class="confetti hidden" aria-hidden="true"></div>
@@ -727,6 +759,7 @@
       estimatePercent: document.getElementById('estimatePercent'),
       moePercent: document.getElementById('moePercent'),
       estimateBar: document.getElementById('estimateBar'),
+      ciMarker: document.getElementById('ciMarker'),
       estimateMarker: document.getElementById('estimateMarker'),
       truthMarker: document.getElementById('truthMarker'),
       estimateText: document.getElementById('estimateText'),
@@ -750,12 +783,14 @@
 
     function showStatus(element, message, type = 'info') {
       element.textContent = message;
-      element.classList.remove('hidden', 'error');
+      element.classList.remove('hidden', 'error', 'truth-revealed');
       if (type === 'error') element.classList.add('error');
+      if (type === 'truth') element.classList.add('truth-revealed');
     }
 
     function hideStatus(element) {
       element.classList.add('hidden');
+      element.classList.remove('error', 'truth-revealed');
       element.textContent = '';
     }
 
@@ -820,6 +855,7 @@
       els.resultsCard.classList.add('hidden');
       els.samplePreviewCard.classList.add('hidden');
       els.truthMarker.style.display = 'none';
+      els.ciMarker.style.display = 'none';
 
       const maxSample = Math.max(1, state.totalCandy * 2);
       els.sampleSize.max = String(Math.min(maxSample, 500));
@@ -932,6 +968,7 @@
         els.estimatePercent.textContent = '—';
         els.moePercent.textContent = '—';
         els.estimateBar.style.width = '0%';
+        els.ciMarker.style.display = 'none';
         els.estimateMarker.style.display = 'none';
         els.estimateText.textContent = state.totalCandy ? 'Draw a sample to estimate the candy mix.' : 'Enter the secret candy numbers, then draw a sample to begin.';
         return;
@@ -947,6 +984,9 @@
       els.estimatePercent.textContent = percent(estimate.p);
       els.moePercent.textContent = `±${percent(estimate.margin)}`;
       els.estimateBar.style.width = `${estimate.p * 100}%`;
+      els.ciMarker.style.left = `${estimate.lower * 100}%`;
+      els.ciMarker.style.width = `${(estimate.upper - estimate.lower) * 100}%`;
+      els.ciMarker.style.display = 'block';
       els.estimateMarker.style.left = `${estimate.p * 100}%`;
       els.estimateMarker.style.display = 'block';
 
@@ -967,7 +1007,7 @@
       const trueP = state.originalHersheys / state.totalCandy;
       els.truthMarker.style.left = `${trueP * 100}%`;
       els.truthMarker.style.display = 'block';
-      showStatus(els.setupStatus, `Truth revealed: ${state.originalHersheys.toLocaleString()} Hershey's Kisses (${percent(trueP)}) and ${state.originalWerthers.toLocaleString()} Werther's Originals (${percent(1 - trueP)}).`);
+      showStatus(els.setupStatus, `Truth revealed: ${state.originalHersheys.toLocaleString()} Hershey's Kisses (${percent(trueP)}) and ${state.originalWerthers.toLocaleString()} Werther's Originals (${percent(1 - trueP)}).`, 'truth');
       els.hersheys.type = 'number';
       els.werthers.type = 'number';
       updateDashboard();
@@ -982,6 +1022,7 @@
       els.samplePreviewCard.classList.add('hidden');
       els.resultsCard.classList.add('hidden');
       els.truthMarker.style.display = 'none';
+      els.ciMarker.style.display = 'none';
       hideStatus(els.sampleStatus);
       updateResultsTable();
       updateDashboard();
@@ -1009,6 +1050,7 @@
       els.sampleStrip.innerHTML = '';
       els.resultsTable.innerHTML = '';
       els.truthMarker.style.display = 'none';
+      els.ciMarker.style.display = 'none';
       setSampleSize(10);
       drawJar(0.5);
       updateDashboard();
