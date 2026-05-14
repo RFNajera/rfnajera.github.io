@@ -1,300 +1,1071 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
-    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
-    <title>Candy Proportion Simulator</title>
-    <style>
-        body {
-            font-family: 'Comic Neue', 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
-            background-color: #f9f9f9;
-            margin: 20px;
-            padding: 20px;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Candy Sampling Quest</title>
+  <style>
+    :root {
+      --bg: #fff7e8;
+      --panel: #ffffff;
+      --ink: #1f2937;
+      --muted: #5b6472;
+      --brand: #7c3aed;
+      --brand-dark: #5b21b6;
+      --brand-soft: #ede9fe;
+      --green: #13795b;
+      --green-soft: #dff7ec;
+      --gold: #f59e0b;
+      --gold-soft: #fff3c4;
+      --pink: #db2777;
+      --pink-soft: #fce7f3;
+      --blue: #2563eb;
+      --blue-soft: #dbeafe;
+      --danger: #b42318;
+      --danger-soft: #fee4e2;
+      --border: #d7dee8;
+      --shadow: 0 18px 45px rgba(31, 41, 55, 0.14);
+      --radius: 24px;
+      --focus: 0 0 0 4px rgba(124, 58, 237, 0.25);
+    }
 
-        h1 {
-            font-family: 'Comic Neue', 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
-            color: #ffffff;
-            background-color: #ffcc00;
-            padding: 20px;
-            text-align: center;
-            border-radius: 10px;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-        }
+    * { box-sizing: border-box; }
 
-        .instructions {
-            background-color: #fff8dc;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-        }
+    html { scroll-behavior: smooth; }
 
-        button {
-            background-color: #90ee90;
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            font-size: 1rem;
-            cursor: pointer;
-            border-radius: 10px;
-            margin: 10px 0;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-        }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: ui-rounded, "Comic Neue", "Comic Sans MS", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(124, 58, 237, 0.18), transparent 34rem),
+        radial-gradient(circle at bottom right, rgba(245, 158, 11, 0.2), transparent 30rem),
+        var(--bg);
+      line-height: 1.55;
+    }
 
-        button:hover {
-            background-color: #76c776;
-        }
+    a { color: var(--brand-dark); }
 
-        #results {
-            background-color: #f0f8ff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-        }
+    button,
+    input,
+    select { font: inherit; }
 
-        #results h2,
-        #results h3 {
-            color: #4682b4;
-        }
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    [tabindex]:focus-visible {
+      outline: none;
+      box-shadow: var(--focus);
+    }
 
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            margin: 20px 0;
-            background-color: white;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            overflow: hidden;
-        }
+    .skip-link {
+      position: absolute;
+      left: 1rem;
+      top: 1rem;
+      z-index: 10;
+      transform: translateY(-160%);
+      background: var(--ink);
+      color: white;
+      padding: 0.6rem 0.85rem;
+      border-radius: 999px;
+    }
 
-        table,
-        th,
-        td {
-            border: 1px solid #ddd;
-        }
+    .skip-link:focus { transform: translateY(0); }
 
-        th,
-        td {
-            padding: 10px;
-            text-align: center;
-        }
+    .page {
+      width: min(1180px, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 1rem 0 3rem;
+    }
 
-        ul {
-            padding: 10px;
-            background-color: #fffacd;
-            border-radius: 10px;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-        }
-    </style>
+    header.hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 1.25rem;
+      align-items: stretch;
+      margin-top: 1rem;
+    }
+
+    .hero-card,
+    .card {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(215, 222, 232, 0.85);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card { padding: clamp(1.3rem, 3vw, 2.4rem); }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0 0 0.75rem;
+      color: var(--brand-dark);
+      background: var(--brand-soft);
+      border: 1px solid #ddd6fe;
+      border-radius: 999px;
+      padding: 0.35rem 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 13ch;
+      font-size: clamp(2.2rem, 6vw, 5rem);
+      line-height: 0.96;
+      letter-spacing: -0.06em;
+    }
+
+    .lede {
+      max-width: 64ch;
+      color: var(--muted);
+      font-size: clamp(1rem, 2vw, 1.18rem);
+      margin: 1rem 0 0;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1.4rem;
+    }
+
+    .visual-card {
+      display: grid;
+      place-items: center;
+      min-height: 320px;
+      padding: 1.25rem;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .jar-wrap {
+      position: relative;
+      width: min(330px, 90%);
+      aspect-ratio: 0.82;
+      display: grid;
+      place-items: end center;
+    }
+
+    .jar-lid {
+      position: absolute;
+      top: 2%;
+      width: 66%;
+      height: 11%;
+      border-radius: 18px 18px 8px 8px;
+      background: linear-gradient(180deg, #475569, #1f2937);
+      box-shadow: inset 0 8px 0 rgba(255,255,255,0.2);
+      z-index: 3;
+    }
+
+    .jar {
+      position: absolute;
+      bottom: 0;
+      width: 82%;
+      height: 84%;
+      border: 8px solid rgba(79, 70, 229, 0.55);
+      border-top-width: 18px;
+      border-radius: 42% 42% 18% 18% / 10% 10% 12% 12%;
+      background: linear-gradient(135deg, rgba(255,255,255,0.76), rgba(219,234,254,0.42));
+      box-shadow: inset 18px 0 35px rgba(255,255,255,0.7), inset -18px -18px 35px rgba(79,70,229,0.11), 0 18px 50px rgba(31,41,55,0.16);
+      overflow: hidden;
+    }
+
+    .jar::before {
+      content: "";
+      position: absolute;
+      inset: 9% 10% auto auto;
+      width: 18%;
+      height: 62%;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.55);
+      transform: rotate(10deg);
+    }
+
+    .candy {
+      position: absolute;
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border: 2px solid rgba(31,41,55,0.17);
+      box-shadow: 0 5px 0 rgba(31,41,55,0.08);
+      font-size: 0.78rem;
+      font-weight: 900;
+      user-select: none;
+      animation: pop 280ms ease-out both;
+    }
+
+    .candy.h { background: var(--pink-soft); color: #9d174d; border-radius: 50% 50% 46% 48%; }
+    .candy.w { background: var(--gold-soft); color: #92400e; border-radius: 9px; transform: rotate(45deg); }
+    .candy.w span { transform: rotate(-45deg); }
+
+    @keyframes pop {
+      from { opacity: 0; transform: scale(0.45) rotate(var(--rot, 0deg)); }
+      to { opacity: 1; transform: scale(1) rotate(var(--rot, 0deg)); }
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(320px, 1.05fr);
+      gap: 1.25rem;
+      margin-top: 1.25rem;
+      align-items: start;
+    }
+
+    .card { padding: clamp(1rem, 2vw, 1.5rem); }
+
+    .card + .card { margin-top: 1rem; }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin: 0 0 0.75rem;
+      font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+      letter-spacing: -0.03em;
+    }
+
+    .badge {
+      display: inline-grid;
+      place-items: center;
+      min-width: 2.15rem;
+      height: 2.15rem;
+      padding: 0 0.45rem;
+      border-radius: 999px;
+      background: var(--brand);
+      color: #fff;
+      font-weight: 900;
+      box-shadow: 0 8px 18px rgba(124, 58, 237, 0.25);
+    }
+
+    .hint,
+    .small {
+      color: var(--muted);
+      margin-top: 0.2rem;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.85rem;
+      margin-top: 1rem;
+    }
+
+    .field {
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    label { font-weight: 900; }
+
+    input[type="number"] {
+      width: 100%;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 0.85rem 0.95rem;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    input[type="range"] { width: 100%; accent-color: var(--brand); }
+
+    .sample-control {
+      display: grid;
+      gap: 0.55rem;
+      margin-top: 1rem;
+    }
+
+    .button-row,
+    .preset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      margin-top: 1rem;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 0.85rem 1.05rem;
+      min-height: 48px;
+      cursor: pointer;
+      color: #fff;
+      background: var(--brand);
+      font-weight: 900;
+      box-shadow: 0 12px 22px rgba(124, 58, 237, 0.24);
+      transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+    }
+
+    .btn:hover { background: var(--brand-dark); transform: translateY(-1px); }
+    .btn:active { transform: translateY(1px) scale(0.99); }
+    .btn.secondary { background: #0f766e; box-shadow: 0 12px 22px rgba(15,118,110,0.2); }
+    .btn.secondary:hover { background: #115e59; }
+    .btn.ghost {
+      color: var(--ink);
+      background: #fff;
+      border: 2px solid var(--border);
+      box-shadow: none;
+    }
+    .btn.ghost:hover { background: #f8fafc; }
+    .btn.danger { background: var(--danger); box-shadow: 0 12px 22px rgba(180,35,24,0.18); }
+    .btn.danger:hover { background: #8f1d14; }
+    .btn[disabled] {
+      opacity: 0.52;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .preset {
+      border: 2px solid var(--border);
+      background: #fff;
+      border-radius: 999px;
+      padding: 0.55rem 0.8rem;
+      cursor: pointer;
+      font-weight: 800;
+    }
+    .preset:hover { border-color: var(--brand); }
+
+    .status {
+      margin-top: 1rem;
+      border-radius: 18px;
+      padding: 0.85rem 1rem;
+      background: var(--blue-soft);
+      border: 1px solid #bfdbfe;
+      color: #1e3a8a;
+      font-weight: 800;
+    }
+
+    .status.error {
+      background: var(--danger-soft);
+      border-color: #fecdca;
+      color: var(--danger);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .stat {
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: #fff;
+      padding: 1rem;
+    }
+    .stat b {
+      display: block;
+      font-size: clamp(1.45rem, 3vw, 2.2rem);
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+    .stat span { color: var(--muted); font-weight: 800; }
+
+    .meter {
+      position: relative;
+      margin-top: 1rem;
+      height: 36px;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 2px solid var(--border);
+      background: #fff;
+    }
+    .meter-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--pink), #ec4899);
+      transition: width 320ms ease;
+    }
+    .truth-marker,
+    .estimate-marker {
+      position: absolute;
+      top: -6px;
+      width: 4px;
+      height: 48px;
+      border-radius: 999px;
+      transform: translateX(-2px);
+    }
+    .truth-marker { background: #111827; display: none; }
+    .estimate-marker { background: var(--blue); display: none; }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+      margin: 0.75rem 0 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .legend span { display: inline-flex; align-items: center; gap: 0.35rem; }
+    .dot { width: 0.8rem; height: 0.8rem; border-radius: 999px; display: inline-block; }
+    .dot.estimate { background: var(--blue); }
+    .dot.truth { background: #111827; }
+    .dot.hershey { background: var(--pink); }
+    .dot.werther { background: var(--gold); }
+
+    .sample-strip {
+      min-height: 70px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      align-content: flex-start;
+      margin-top: 1rem;
+      padding: 0.85rem;
+      border-radius: 18px;
+      border: 2px dashed #c4b5fd;
+      background: rgba(237, 233, 254, 0.65);
+    }
+
+    .sample-token {
+      display: inline-grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      font-weight: 900;
+      border-radius: 50%;
+      border: 2px solid rgba(31,41,55,0.15);
+      animation: tokenDrop 300ms ease-out both;
+    }
+    .sample-token.h { background: var(--pink-soft); color: #9d174d; }
+    .sample-token.w { background: var(--gold-soft); color: #92400e; border-radius: 9px; }
+    @keyframes tokenDrop {
+      from { opacity: 0; transform: translateY(-8px) scale(0.75); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .table-wrap {
+      margin-top: 1rem;
+      overflow-x: auto;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 560px;
+    }
+    caption {
+      text-align: left;
+      padding: 0.8rem 1rem;
+      color: var(--muted);
+      font-weight: 800;
+    }
+    th,
+    td {
+      padding: 0.85rem 1rem;
+      text-align: left;
+      border-top: 1px solid var(--border);
+      vertical-align: top;
+    }
+    th { background: #f8fafc; }
+    tbody tr:nth-child(even) { background: #fbfdff; }
+
+    details {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: #fff;
+      padding: 0.2rem 0.85rem;
+    }
+    details + details { margin-top: 0.65rem; }
+    summary {
+      cursor: pointer;
+      font-weight: 900;
+      padding: 0.7rem 0;
+    }
+
+    .question-list { margin-bottom: 0; }
+    .question-list li { margin-bottom: 0.7rem; }
+
+    .hidden { display: none !important; }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .confetti {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 999;
+    }
+    .confetti i {
+      position: absolute;
+      width: 10px;
+      height: 16px;
+      top: -20px;
+      background: var(--brand);
+      opacity: 0.8;
+      animation: fall 900ms ease-in forwards;
+    }
+    @keyframes fall {
+      to { transform: translateY(110vh) rotate(360deg); opacity: 1; }
+    }
+
+    @media (max-width: 900px) {
+      header.hero,
+      main { grid-template-columns: 1fr; }
+      .visual-card { min-height: 270px; }
+      h1 { max-width: none; }
+    }
+
+    @media (max-width: 620px) {
+      .page { width: min(100% - 1rem, 1180px); }
+      .field-grid,
+      .summary-grid { grid-template-columns: 1fr; }
+      .hero-actions .btn,
+      .button-row .btn { width: 100%; }
+      .jar-wrap { width: min(280px, 95%); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+  </style>
 </head>
-
 <body>
-    <h1>Candy Proportion Simulator (v0.1)</h1>
-
-    <div class="instructions">
-        <p><strong>Instructions:</strong> This is a fun game for a child and a parent to play together! Here's what to
-            do:</p>
-        <p><strong>Child:</strong> Enter the number of Hershey's Kisses and Werther's Originals in the bag. Then click
-            the "Hide Your Numbers" button to keep your numbers a secret from the parent.</p>
-        <p><strong>Parent:</strong> Choose the number of candies to sample and click the "Parent Sample" button to draw
-            random samples from the bag. You can click it as many times as you wish to draw multiple samples. Use the results to estimate the proportions of each candy type. When you're
-            ready, click "Reveal The Truth" to see how close your estimates were to the actual numbers.</p>
-    </div>
-
-    <div id="child-input">
-        <label for="hersheys">Number of Hershey's Kisses:</label>
-        <input type="number" id="hersheys" min="0">
-        <br>
-        <label for="werthers">Number of Werther's Originals:</label>
-        <input type="number" id="werthers" min="0">
-        <br>
-        <button onclick="hideNumbers()">Step 1: Hide Your Numbers</button>
-    </div>
-
-    <div id="parent-sampling" style="display: none;">
-        <p>Total candies in the bag: <span id="total-candies"></span></p>
-        <label for="sample-size">Number of candies to sample:</label>
-        <input type="number" id="sample-size" min="1">
-        <br>
-        <button onclick="drawSample()">Step 2: Parent Sample</button>
-    </div>
-
-    <div id="results" style="display: none;">
-        <h2>Step 3: Results</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Sample #</th>
-                    <th>Hershey's Kisses</th>
-                    <th>Werther's Originals</th>
-                </tr>
-            </thead>
-            <tbody id="results-table"></tbody>
-        </table>
-
-        <div id="summary">
-            <h3>Point Estimate and 95% Confidence Interval</h3>
-            <p id="estimates"></p>
-            <p id="translated-estimates"></p>
+  <a href="#game" class="skip-link">Skip to the game</a>
+  <div class="page">
+    <header class="hero" aria-labelledby="page-title">
+      <section class="hero-card">
+        <p class="eyebrow" aria-label="Game version">🍬 Sampling game v1.0</p>
+        <h1 id="page-title">Candy Sampling Quest</h1>
+        <p class="lede">Can a small handful of candy tell you what is inside the whole jar? Set up a secret candy mix, take random samples, and watch the estimate get better as the sample grows.</p>
+        <div class="hero-actions">
+          <a class="btn" href="#game">Start playing</a>
+          <a class="btn ghost" href="#teacher-notes">Teacher notes</a>
         </div>
+      </section>
 
-        <button onclick="revealTruth()">Reveal The Truth</button>
-        <h3>Discussion Questions</h3>
-        <ul>
-            <li>How did the 95% confidence interval change as the parent picked a bigger sample size? Did the margin of
-                error change because of the sample size?</li>
-            <li>How did the margin of error change with the number of samples taken?</li>
-            <li>Can you give some examples where you might want to only sample a big group instead of asking the whole
-                group the same question or take the same measurement?</li>
-        </ul>
-    </div>
+      <section class="visual-card hero-card" aria-label="Decorative candy jar with candies">
+        <div class="jar-wrap" aria-hidden="true">
+          <div class="jar-lid"></div>
+          <div class="jar" id="jarGraphic"></div>
+        </div>
+      </section>
+    </header>
 
-    <div id="reset" style="display: none;">
-        <button onclick="resetSimulation()">Reset</button>
-    </div>
+    <main id="game">
+      <div>
+        <section class="card" aria-labelledby="step-one-title">
+          <h2 class="section-title" id="step-one-title"><span class="badge">1</span> Build the secret candy jar</h2>
+          <p class="hint">One player enters the real numbers. Then hide them so the sampler only sees the total.</p>
 
-    <script>
-        let originalHersheys, originalWerthers, totalCandy;
-        let sampleResults = [];
+          <div class="preset-row" aria-label="Quick candy jar presets">
+            <button class="preset" type="button" data-preset="30,70">Mostly Werther's</button>
+            <button class="preset" type="button" data-preset="50,50">Half and half</button>
+            <button class="preset" type="button" data-preset="75,25">Mostly Kisses</button>
+            <button class="preset" type="button" data-preset="random">Surprise me</button>
+          </div>
 
-        function hideNumbers() {
-            originalHersheys = parseInt(document.getElementById('hersheys').value);
-            originalWerthers = parseInt(document.getElementById('werthers').value);
+          <form id="setupForm" novalidate>
+            <div class="field-grid">
+              <div class="field">
+                <label for="hersheys">Hershey's Kisses</label>
+                <input type="number" id="hersheys" name="hersheys" min="0" inputmode="numeric" autocomplete="off" required />
+              </div>
+              <div class="field">
+                <label for="werthers">Werther's Originals</label>
+                <input type="number" id="werthers" name="werthers" min="0" inputmode="numeric" autocomplete="off" required />
+              </div>
+            </div>
+            <div class="button-row">
+              <button class="btn" type="submit">Hide the numbers</button>
+              <button class="btn ghost" type="button" id="clearSetup">Clear</button>
+            </div>
+          </form>
+          <div id="setupStatus" class="status hidden" role="status" aria-live="polite"></div>
+        </section>
 
-            if (isNaN(originalHersheys) || isNaN(originalWerthers) || originalHersheys < 0 || originalWerthers < 0) {
-                alert('Please enter valid non-negative numbers for both candies.');
-                return;
-            }
+        <section class="card hidden" id="samplingCard" aria-labelledby="step-two-title">
+          <h2 class="section-title" id="step-two-title"><span class="badge">2</span> Take a random sample</h2>
+          <p id="bagSummary" class="hint"></p>
 
-            totalCandy = originalHersheys + originalWerthers;
+          <div class="sample-control">
+            <label for="sampleSize">Sample size: <span id="sampleSizeLabel">10</span> candies</label>
+            <input type="range" id="sampleSize" min="1" max="100" value="10" />
+            <input type="number" id="sampleSizeNumber" min="1" value="10" aria-label="Sample size as a number" />
+          </div>
 
-            if (totalCandy === 0) {
-                alert('The total number of candies must be greater than zero.');
-                return;
-            }
+          <div class="button-row">
+            <button class="btn secondary" type="button" id="drawSampleBtn">Draw one sample</button>
+            <button class="btn ghost" type="button" id="drawFiveBtn">Draw five samples</button>
+            <button class="btn ghost" type="button" id="clearSamplesBtn">Clear samples</button>
+          </div>
 
-            document.getElementById('child-input').style.display = 'none';
-            document.getElementById('parent-sampling').style.display = 'block';
-            document.getElementById('total-candies').textContent = totalCandy;
+          <div id="sampleStatus" class="status hidden" role="status" aria-live="polite"></div>
+        </section>
+
+        <section class="card" id="teacher-notes" aria-labelledby="teacher-title">
+          <h2 class="section-title" id="teacher-title">Teacher notes</h2>
+          <details open>
+            <summary>What this game teaches</summary>
+            <p>Random samples can give useful estimates of a population proportion. As students collect more sampled candies, the estimate usually gets closer to the true jar proportion and the interval gets narrower.</p>
+          </details>
+          <details>
+            <summary>Plain-language note about the interval</summary>
+            <p>The 95% interval shown here is a simple teaching tool based on repeated random draws. It helps students see uncertainty, but it should not be treated as a perfect statistical method for every situation.</p>
+          </details>
+          <details>
+            <summary>Discussion questions</summary>
+            <ol class="question-list">
+              <li>How close was your first sample to the true candy mix?</li>
+              <li>What happened when you collected more samples?</li>
+              <li>Did a larger total sample make the interval wider or narrower?</li>
+              <li>Where do people use samples instead of counting every single person or item?</li>
+              <li>What could go wrong if the sample was not random?</li>
+            </ol>
+          </details>
+        </section>
+      </div>
+
+      <div>
+        <section class="card" aria-labelledby="dashboard-title">
+          <h2 class="section-title" id="dashboard-title"><span class="badge">3</span> Watch the estimate</h2>
+          <p class="hint">The pink bar shows the estimated percentage of Hershey's Kisses. After you reveal the truth, the black line shows the real percentage.</p>
+
+          <div class="summary-grid" aria-label="Sampling summary">
+            <div class="stat"><b id="totalSampled">0</b><span>Total candies sampled</span></div>
+            <div class="stat"><b id="estimatePercent">—</b><span>Estimated Kisses</span></div>
+            <div class="stat"><b id="moePercent">—</b><span>Margin of error</span></div>
+          </div>
+
+          <div class="meter" aria-hidden="true">
+            <div class="meter-fill" id="estimateBar"></div>
+            <div class="estimate-marker" id="estimateMarker"></div>
+            <div class="truth-marker" id="truthMarker"></div>
+          </div>
+          <div class="legend" aria-hidden="true">
+            <span><i class="dot hershey"></i> Estimated Kisses</span>
+            <span><i class="dot estimate"></i> Estimate line</span>
+            <span><i class="dot truth"></i> True value after reveal</span>
+          </div>
+
+          <div id="estimateText" class="status" role="status" aria-live="polite">Enter the secret candy numbers, then draw a sample to begin.</div>
+
+          <div class="button-row">
+            <button class="btn" type="button" id="revealBtn" disabled>Reveal the truth</button>
+            <button class="btn danger" type="button" id="resetBtn">Reset game</button>
+          </div>
+        </section>
+
+        <section class="card hidden" id="samplePreviewCard" aria-labelledby="sample-preview-title">
+          <h2 class="section-title" id="sample-preview-title">Latest sample</h2>
+          <p class="hint">Each token represents one candy in the most recent sample. H = Hershey's Kiss. W = Werther's Original.</p>
+          <div class="sample-strip" id="sampleStrip" aria-label="Latest sample candies"></div>
+        </section>
+
+        <section class="card hidden" id="resultsCard" aria-labelledby="results-title">
+          <h2 class="section-title" id="results-title">Sample history</h2>
+          <div class="table-wrap">
+            <table>
+              <caption>Results from each random sample</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Sample</th>
+                  <th scope="col">Size</th>
+                  <th scope="col">Kisses</th>
+                  <th scope="col">Werther's</th>
+                </tr>
+              </thead>
+              <tbody id="resultsTable"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div id="confetti" class="confetti hidden" aria-hidden="true"></div>
+
+  <script>
+    const state = {
+      originalHersheys: null,
+      originalWerthers: null,
+      totalCandy: null,
+      sampleResults: [],
+      truthRevealed: false,
+      latestSample: []
+    };
+
+    const els = {
+      setupForm: document.getElementById('setupForm'),
+      hersheys: document.getElementById('hersheys'),
+      werthers: document.getElementById('werthers'),
+      clearSetup: document.getElementById('clearSetup'),
+      setupStatus: document.getElementById('setupStatus'),
+      samplingCard: document.getElementById('samplingCard'),
+      bagSummary: document.getElementById('bagSummary'),
+      sampleSize: document.getElementById('sampleSize'),
+      sampleSizeNumber: document.getElementById('sampleSizeNumber'),
+      sampleSizeLabel: document.getElementById('sampleSizeLabel'),
+      drawSampleBtn: document.getElementById('drawSampleBtn'),
+      drawFiveBtn: document.getElementById('drawFiveBtn'),
+      clearSamplesBtn: document.getElementById('clearSamplesBtn'),
+      sampleStatus: document.getElementById('sampleStatus'),
+      totalSampled: document.getElementById('totalSampled'),
+      estimatePercent: document.getElementById('estimatePercent'),
+      moePercent: document.getElementById('moePercent'),
+      estimateBar: document.getElementById('estimateBar'),
+      estimateMarker: document.getElementById('estimateMarker'),
+      truthMarker: document.getElementById('truthMarker'),
+      estimateText: document.getElementById('estimateText'),
+      revealBtn: document.getElementById('revealBtn'),
+      resetBtn: document.getElementById('resetBtn'),
+      samplePreviewCard: document.getElementById('samplePreviewCard'),
+      sampleStrip: document.getElementById('sampleStrip'),
+      resultsCard: document.getElementById('resultsCard'),
+      resultsTable: document.getElementById('resultsTable'),
+      jarGraphic: document.getElementById('jarGraphic'),
+      confetti: document.getElementById('confetti')
+    };
+
+    function clamp(value, min, max) {
+      return Math.min(Math.max(value, min), max);
+    }
+
+    function percent(value) {
+      return `${(value * 100).toFixed(1)}%`;
+    }
+
+    function showStatus(element, message, type = 'info') {
+      element.textContent = message;
+      element.classList.remove('hidden', 'error');
+      if (type === 'error') element.classList.add('error');
+    }
+
+    function hideStatus(element) {
+      element.classList.add('hidden');
+      element.textContent = '';
+    }
+
+    function makeCandy(type, left, top, rotation = 0) {
+      const candy = document.createElement('span');
+      candy.className = `candy ${type}`;
+      candy.style.left = `${left}%`;
+      candy.style.top = `${top}%`;
+      candy.style.setProperty('--rot', `${rotation}deg`);
+      candy.innerHTML = type === 'h' ? 'H' : '<span>W</span>';
+      return candy;
+    }
+
+    function drawJar(proportionHersheys = 0.5) {
+      els.jarGraphic.querySelectorAll('.candy').forEach(candy => candy.remove());
+      const count = 35;
+      for (let i = 0; i < count; i++) {
+        const type = Math.random() < proportionHersheys ? 'h' : 'w';
+        const left = 10 + Math.random() * 74;
+        const top = 28 + Math.random() * 58;
+        const rotation = Math.round(Math.random() * 70 - 35);
+        els.jarGraphic.appendChild(makeCandy(type, left, top, rotation));
+      }
+    }
+
+    function validateSetup(h, w) {
+      if (!Number.isInteger(h) || !Number.isInteger(w) || h < 0 || w < 0) {
+        return 'Please enter whole numbers that are zero or greater for both candies.';
+      }
+      if (h + w === 0) {
+        return 'The jar needs at least one candy. Add some Kisses, some Werther\'s, or both.';
+      }
+      if (h + w > 10000) {
+        return 'Try a total of 10,000 candies or fewer so the game stays easy to read.';
+      }
+      return '';
+    }
+
+    function setupGame(event) {
+      event.preventDefault();
+      const h = Number(els.hersheys.value);
+      const w = Number(els.werthers.value);
+      const error = validateSetup(h, w);
+      if (error) {
+        showStatus(els.setupStatus, error, 'error');
+        return;
+      }
+
+      state.originalHersheys = h;
+      state.originalWerthers = w;
+      state.totalCandy = h + w;
+      state.sampleResults = [];
+      state.latestSample = [];
+      state.truthRevealed = false;
+
+      els.hersheys.type = 'password';
+      els.werthers.type = 'password';
+      els.hersheys.disabled = true;
+      els.werthers.disabled = true;
+      els.revealBtn.disabled = false;
+      els.samplingCard.classList.remove('hidden');
+      els.resultsCard.classList.add('hidden');
+      els.samplePreviewCard.classList.add('hidden');
+      els.truthMarker.style.display = 'none';
+
+      const maxSample = Math.max(1, state.totalCandy * 2);
+      els.sampleSize.max = String(Math.min(maxSample, 500));
+      els.sampleSizeNumber.max = String(Math.min(maxSample, 500));
+      setSampleSize(Math.min(10, Math.min(maxSample, 500)));
+
+      showStatus(els.setupStatus, 'Numbers hidden. Sampler, your turn! You can see the total number of candies, but not the secret mix.');
+      els.bagSummary.textContent = `The secret jar has ${state.totalCandy.toLocaleString()} total candies. Samples are drawn randomly, like shaking the jar and picking without looking.`;
+      drawJar(h / state.totalCandy);
+      updateDashboard();
+      els.samplingCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function setSampleSize(value) {
+      const max = Number(els.sampleSize.max || 500);
+      const clean = clamp(Math.round(Number(value) || 1), 1, max);
+      els.sampleSize.value = String(clean);
+      els.sampleSizeNumber.value = String(clean);
+      els.sampleSizeLabel.textContent = clean.toLocaleString();
+    }
+
+    function drawSample(times = 1) {
+      if (!state.totalCandy) {
+        showStatus(els.sampleStatus, 'First, build and hide the secret candy jar.', 'error');
+        return;
+      }
+
+      const sampleSize = Number(els.sampleSizeNumber.value);
+      if (!Number.isInteger(sampleSize) || sampleSize <= 0) {
+        showStatus(els.sampleStatus, 'Please choose a sample size of at least 1.', 'error');
+        return;
+      }
+
+      for (let t = 0; t < times; t++) {
+        const sample = [];
+        let hersheysCount = 0;
+        for (let i = 0; i < sampleSize; i++) {
+          const candy = Math.random() < state.originalHersheys / state.totalCandy ? 'H' : 'W';
+          sample.push(candy);
+          if (candy === 'H') hersheysCount += 1;
         }
+        state.latestSample = sample;
+        state.sampleResults.push({
+          hersheysCount,
+          werthersCount: sampleSize - hersheysCount,
+          sampleSize
+        });
+      }
 
-        function drawSample() {
-            const sampleSize = parseInt(document.getElementById('sample-size').value);
+      const word = times === 1 ? 'sample' : 'samples';
+      showStatus(els.sampleStatus, `Drew ${times} random ${word}. Check the estimate dashboard to see what changed.`);
+      renderLatestSample();
+      updateResultsTable();
+      updateDashboard();
+    }
 
-            if (isNaN(sampleSize) || sampleSize <= 0) {
-                alert('Please enter a valid sample size.');
-                return;
-            }
+    function renderLatestSample() {
+      els.sampleStrip.innerHTML = '';
+      const maxToShow = 80;
+      state.latestSample.slice(0, maxToShow).forEach((candy, index) => {
+        const token = document.createElement('span');
+        token.className = `sample-token ${candy.toLowerCase()}`;
+        token.textContent = candy;
+        token.style.animationDelay = `${Math.min(index * 12, 400)}ms`;
+        token.setAttribute('aria-label', candy === 'H' ? 'Hershey\'s Kiss' : 'Werther\'s Original');
+        els.sampleStrip.appendChild(token);
+      });
+      if (state.latestSample.length > maxToShow) {
+        const more = document.createElement('span');
+        more.className = 'sample-token';
+        more.textContent = `+${state.latestSample.length - maxToShow}`;
+        more.setAttribute('aria-label', `${state.latestSample.length - maxToShow} more candies not shown`);
+        els.sampleStrip.appendChild(more);
+      }
+      els.samplePreviewCard.classList.remove('hidden');
+    }
 
-            let sample = [];
-            for (let i = 0; i < sampleSize; i++) {
-                sample.push(Math.random() < originalHersheys / totalCandy ? 'H' : 'W');
-            }
+    function updateResultsTable() {
+      els.resultsTable.innerHTML = '';
+      state.sampleResults.forEach((result, index) => {
+        const row = document.createElement('tr');
+        const hPct = result.hersheysCount / result.sampleSize;
+        const wPct = result.werthersCount / result.sampleSize;
+        row.innerHTML = `
+          <th scope="row">${index + 1}</th>
+          <td>${result.sampleSize.toLocaleString()}</td>
+          <td>${result.hersheysCount.toLocaleString()} (${percent(hPct)})</td>
+          <td>${result.werthersCount.toLocaleString()} (${percent(wPct)})</td>
+        `;
+        els.resultsTable.appendChild(row);
+      });
+      els.resultsCard.classList.toggle('hidden', state.sampleResults.length === 0);
+    }
 
-            const hersheysCount = sample.filter(c => c === 'H').length;
-            const werthersCount = sampleSize - hersheysCount;
+    function getEstimate() {
+      const totalSampled = state.sampleResults.reduce((sum, result) => sum + result.sampleSize, 0);
+      const totalHersheys = state.sampleResults.reduce((sum, result) => sum + result.hersheysCount, 0);
+      if (totalSampled === 0) return null;
+      const p = totalHersheys / totalSampled;
+      const margin = 1.96 * Math.sqrt((p * (1 - p)) / totalSampled);
+      const lower = clamp(p - margin, 0, 1);
+      const upper = clamp(p + margin, 0, 1);
+      return { totalSampled, totalHersheys, p, margin, lower, upper };
+    }
 
-            sampleResults.push({ hersheysCount, werthersCount, sampleSize });
-            updateResultsTable();
-            calculateEstimates(); // Ensure estimates are updated for every new sample
+    function updateDashboard() {
+      const estimate = getEstimate();
+      if (!estimate) {
+        els.totalSampled.textContent = '0';
+        els.estimatePercent.textContent = '—';
+        els.moePercent.textContent = '—';
+        els.estimateBar.style.width = '0%';
+        els.estimateMarker.style.display = 'none';
+        els.estimateText.textContent = state.totalCandy ? 'Draw a sample to estimate the candy mix.' : 'Enter the secret candy numbers, then draw a sample to begin.';
+        return;
+      }
+
+      const estimatedH = Math.round(estimate.p * state.totalCandy);
+      const estimatedW = state.totalCandy - estimatedH;
+      const lowerCount = Math.round(estimate.lower * state.totalCandy);
+      const upperCount = Math.round(estimate.upper * state.totalCandy);
+      const marginCount = Math.round(estimate.margin * state.totalCandy);
+
+      els.totalSampled.textContent = estimate.totalSampled.toLocaleString();
+      els.estimatePercent.textContent = percent(estimate.p);
+      els.moePercent.textContent = `±${percent(estimate.margin)}`;
+      els.estimateBar.style.width = `${estimate.p * 100}%`;
+      els.estimateMarker.style.left = `${estimate.p * 100}%`;
+      els.estimateMarker.style.display = 'block';
+
+      let message = `Based on ${estimate.totalSampled.toLocaleString()} sampled candies, the jar probably has about ${estimatedH.toLocaleString()} Hershey's Kisses and ${estimatedW.toLocaleString()} Werther's Originals. The confidence interval puts the number of Kisses between ${lowerCount.toLocaleString()} and ${upperCount.toLocaleString()}, with a margin of error of about ±${marginCount.toLocaleString()} candies.`;
+
+      if (state.truthRevealed) {
+        const trueP = state.originalHersheys / state.totalCandy;
+        const difference = Math.abs(estimate.p - trueP);
+        message += ` The real percentage of Kisses is ${percent(trueP)}, so this estimate is off by ${percent(difference)}.`;
+      }
+
+      els.estimateText.textContent = message;
+    }
+
+    function revealTruth() {
+      if (!state.totalCandy) return;
+      state.truthRevealed = true;
+      const trueP = state.originalHersheys / state.totalCandy;
+      els.truthMarker.style.left = `${trueP * 100}%`;
+      els.truthMarker.style.display = 'block';
+      showStatus(els.setupStatus, `Truth revealed: ${state.originalHersheys.toLocaleString()} Hershey's Kisses (${percent(trueP)}) and ${state.originalWerthers.toLocaleString()} Werther's Originals (${percent(1 - trueP)}).`);
+      els.hersheys.type = 'number';
+      els.werthers.type = 'number';
+      updateDashboard();
+      celebrate();
+    }
+
+    function clearSamples() {
+      state.sampleResults = [];
+      state.latestSample = [];
+      state.truthRevealed = false;
+      els.sampleStrip.innerHTML = '';
+      els.samplePreviewCard.classList.add('hidden');
+      els.resultsCard.classList.add('hidden');
+      els.truthMarker.style.display = 'none';
+      hideStatus(els.sampleStatus);
+      updateResultsTable();
+      updateDashboard();
+    }
+
+    function resetGame() {
+      state.originalHersheys = null;
+      state.originalWerthers = null;
+      state.totalCandy = null;
+      state.sampleResults = [];
+      state.latestSample = [];
+      state.truthRevealed = false;
+      els.setupForm.reset();
+      els.hersheys.type = 'number';
+      els.werthers.type = 'number';
+      els.hersheys.disabled = false;
+      els.werthers.disabled = false;
+      els.revealBtn.disabled = true;
+      els.samplingCard.classList.add('hidden');
+      els.samplePreviewCard.classList.add('hidden');
+      els.resultsCard.classList.add('hidden');
+      hideStatus(els.setupStatus);
+      hideStatus(els.sampleStatus);
+      els.bagSummary.textContent = '';
+      els.sampleStrip.innerHTML = '';
+      els.resultsTable.innerHTML = '';
+      els.truthMarker.style.display = 'none';
+      setSampleSize(10);
+      drawJar(0.5);
+      updateDashboard();
+      els.hersheys.focus();
+    }
+
+    function celebrate() {
+      els.confetti.innerHTML = '';
+      els.confetti.classList.remove('hidden');
+      const colors = ['#7c3aed', '#db2777', '#f59e0b', '#2563eb', '#13795b'];
+      for (let i = 0; i < 42; i++) {
+        const piece = document.createElement('i');
+        piece.style.left = `${Math.random() * 100}%`;
+        piece.style.background = colors[i % colors.length];
+        piece.style.animationDelay = `${Math.random() * 240}ms`;
+        piece.style.transform = `rotate(${Math.random() * 180}deg)`;
+        els.confetti.appendChild(piece);
+      }
+      window.setTimeout(() => els.confetti.classList.add('hidden'), 1300);
+    }
+
+    document.querySelectorAll('[data-preset]').forEach(button => {
+      button.addEventListener('click', () => {
+        const preset = button.dataset.preset;
+        if (preset === 'random') {
+          const total = 50 + Math.floor(Math.random() * 151);
+          const h = 5 + Math.floor(Math.random() * (total - 10));
+          els.hersheys.value = h;
+          els.werthers.value = total - h;
+        } else {
+          const [h, w] = preset.split(',').map(Number);
+          els.hersheys.value = h;
+          els.werthers.value = w;
         }
+        hideStatus(els.setupStatus);
+        drawJar(Number(els.hersheys.value) / (Number(els.hersheys.value) + Number(els.werthers.value)));
+      });
+    });
 
-        function updateResultsTable() {
-            const tableBody = document.getElementById('results-table');
-            tableBody.innerHTML = '';
+    els.setupForm.addEventListener('submit', setupGame);
+    els.clearSetup.addEventListener('click', () => {
+      els.hersheys.value = '';
+      els.werthers.value = '';
+      hideStatus(els.setupStatus);
+      drawJar(0.5);
+      els.hersheys.focus();
+    });
+    els.sampleSize.addEventListener('input', event => setSampleSize(event.target.value));
+    els.sampleSizeNumber.addEventListener('input', event => setSampleSize(event.target.value));
+    els.drawSampleBtn.addEventListener('click', () => drawSample(1));
+    els.drawFiveBtn.addEventListener('click', () => drawSample(5));
+    els.clearSamplesBtn.addEventListener('click', clearSamples);
+    els.revealBtn.addEventListener('click', revealTruth);
+    els.resetBtn.addEventListener('click', resetGame);
 
-            sampleResults.forEach((result, index) => {
-                const row = document.createElement('tr');
-
-                const sampleCell = document.createElement('td');
-                sampleCell.textContent = index + 1;
-                row.appendChild(sampleCell);
-
-                const hersheysCell = document.createElement('td');
-                hersheysCell.textContent = `${result.hersheysCount} (${((result.hersheysCount / result.sampleSize) * 100).toFixed(1)}%)`;
-                row.appendChild(hersheysCell);
-
-                const werthersCell = document.createElement('td');
-                werthersCell.textContent = `${result.werthersCount} (${((result.werthersCount / result.sampleSize) * 100).toFixed(1)}%)`;
-                row.appendChild(werthersCell);
-
-                tableBody.appendChild(row);
-            });
-
-            document.getElementById('results').style.display = 'block';
-        }
-
-        function calculateEstimates() {
-            if (sampleResults.length === 0) {
-                document.getElementById('estimates').textContent = '';
-                document.getElementById('translated-estimates').textContent = '';
-                return;
-            }
-
-            const totalSamples = sampleResults.reduce((sum, result) => sum + result.sampleSize, 0);
-            const totalHersheys = sampleResults.reduce((sum, result) => sum + result.hersheysCount, 0);
-            const proportionHersheys = totalHersheys / totalSamples;
-
-            const marginOfError = 1.96 * Math.sqrt((proportionHersheys * (1 - proportionHersheys)) / totalSamples);
-            const lowerBound = (proportionHersheys - marginOfError).toFixed(3);
-            const upperBound = (proportionHersheys + marginOfError).toFixed(3);
-
-            const estimatedCountHersheys = Math.round(proportionHersheys * totalCandy);
-            const lowerCountHersheys = Math.round(lowerBound * totalCandy);
-            const upperCountHersheys = Math.round(upperBound * totalCandy);
-            const marginOfErrorCount = Math.round(marginOfError * totalCandy);
-            const estimatedCountWerthers = totalCandy - estimatedCountHersheys;
-
-            document.getElementById('estimates').textContent = `Proportion of Hershey's Kisses: ${proportionHersheys.toFixed(3)}
-            (95% CI: ${lowerBound} to ${upperBound}), Margin of Error: ${marginOfError.toFixed(3)}`;
-            document.getElementById('translated-estimates').textContent = `There are about ${estimatedCountHersheys} Hershey's Kisses and ${estimatedCountWerthers} Werther's Originals in the bag. We are 95% confident the true number of Hershey's Kisses is between ${lowerCountHersheys} and ${upperCountHersheys} in your total of ${totalCandy} candies. The margin of error is ±${marginOfErrorCount} candies.`;
-        }
-
-        function revealTruth() {
-            const hersheysProportion = ((originalHersheys / totalCandy) * 100).toFixed(1);
-            const werthersProportion = ((originalWerthers / totalCandy) * 100).toFixed(1);
-
-            const truthDiv = document.createElement('div');
-            truthDiv.innerHTML = `<h3>The Original Numbers</h3>
-                                  <p>Hershey's Kisses: ${originalHersheys} (${hersheysProportion}%)</p>
-                                  <p>Werther's Originals: ${originalWerthers} (${werthersProportion}%)</p>`;
-            document.getElementById('results').appendChild(truthDiv);
-            document.getElementById('reset').style.display = 'block';
-        }
-
-        function resetSimulation() {
-            document.getElementById('child-input').style.display = 'block';
-            document.getElementById('parent-sampling').style.display = 'none';
-            document.getElementById('results').style.display = 'none';
-            document.getElementById('reset').style.display = 'none';
-
-            document.getElementById('hersheys').value = '';
-            document.getElementById('werthers').value = '';
-            document.getElementById('sample-size').value = '';
-
-            // Reset variables
-            originalHersheys = null;
-            originalWerthers = null;
-            totalCandy = null;
-
-            // Clear sample results
-            sampleResults = [];
-
-            // Clear results and truth sections
-            document.getElementById('results-table').innerHTML = '';
-            document.getElementById('estimates').textContent = '';
-            document.getElementById('translated-estimates').textContent = '';
-
-            // Remove the dynamically appended "The Original Numbers" section
-            const truthDivs = document.querySelectorAll('#results > div:not(#summary)');
-            truthDivs.forEach(div => div.remove());
-        }
-
-    </script>
+    drawJar(0.5);
+    updateDashboard();
+  </script>
 </body>
-
 </html>
