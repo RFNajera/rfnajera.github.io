@@ -4,458 +4,882 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:title" content="Roulette Game - Learn the Odds!">
+    <meta property="og:title" content="Roulette Odds Lab">
     <meta property="og:description"
-        content="Play this electronic version of roulette and learn how games of chance work. Understand why the house always wins in the long run.">
+        content="Try a classroom-friendly roulette simulator and learn how chance, payouts, and the house edge work.">
     <meta property="og:image" content="assets/images/gambling_image.jpg">
     <meta property="og:url" content="https://rfnajera.github.io/gambling_kids.html">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Roulette Game - Learn the Odds!">
+    <meta name="twitter:title" content="Roulette Odds Lab">
     <meta name="twitter:description"
-        content="Play this electronic version of roulette and learn how games of chance work. Understand why the house always wins in the long run.">
+        content="Try a classroom-friendly roulette simulator and learn how chance, payouts, and the house edge work.">
     <meta name="twitter:image" content="https://rfnajera.github.io/assets/images/gambling_image.jpg">
 
-    <title>Roulette Game</title>
-    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <title>Roulette Odds Lab</title>
     <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
     <style>
-        body {
-            font-family: 'Comic Neue', 'Comic Sans MS', 'Arial Rounded MT Bold', cursive;
-            background-color: #f9f9f9;
-            text-align: center;
-            margin: 20px;
+        :root {
+            color-scheme: light;
+            --bg: #f4f7f3;
+            --surface: #ffffff;
+            --surface-soft: #eef5ec;
+            --ink: #1f2933;
+            --muted: #5d6b78;
+            --line: #d5ddd2;
+            --accent: #256f5a;
+            --accent-strong: #15543f;
+            --focus: #f5b700;
+            --red: #b82331;
+            --black: #20262d;
+            --green: #177245;
+            --win: #137547;
+            --lose: #b4232f;
+            --shadow: 0 18px 45px rgba(31, 41, 51, 0.12);
         }
 
-        #game-container {
-            max-width: 800px;
-            margin: auto;
-            background-color: #fffbe6;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-        }
-
-        h1 {
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-
-        #instructions {
-            font-size: 1.2em;
-            margin-bottom: 20px;
-            color: #555;
-            text-align: left;
-        }
-
-        #credit-card {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #fff;
-            background-color: #28a745;
-            padding: 10px;
-            border-radius: 10px;
-            display: inline-block;
-            margin-bottom: 20px;
-        }
-
-        #roulette-table {
-            margin: 20px auto;
-            display: grid;
-            grid-template-columns: repeat(6, minmax(40px, 1fr));
-            gap: 5px;
-            justify-content: center;
-            overflow-x: auto;
-            width: 100%;
-            max-width: 100%;
+        * {
             box-sizing: border-box;
         }
 
-        .roulette-cell {
-            width: 100%;
-            height: 50px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1em;
-            font-weight: bold;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
+        body {
+            min-height: 100vh;
+            margin: 0;
+            background:
+                radial-gradient(circle at top left, rgba(37, 111, 90, 0.12), transparent 36rem),
+                linear-gradient(180deg, #fbfcfa 0%, var(--bg) 100%);
+            color: var(--ink);
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            line-height: 1.5;
         }
 
-        .red {
-            background-color: red;
-        }
-
-        .black {
-            background-color: black;
-        }
-
-        .green {
-            background-color: green;
-        }
-
-        .roulette-cell:hover {
-            transform: scale(1.1);
-            transition: transform 0.2s;
-        }
-
-        #bet-options {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 10px auto;
-        }
-
-        .bet-option {
-            padding: 10px 20px;
-            background-color: #e6ffe6;
-            border: 2px solid #333;
-            border-radius: 5px;
-            font-size: 1em;
-            font-weight: bold;
-            cursor: pointer;
-            text-align: center;
-        }
-
-        .bet-option:hover {
-            background-color: #b3ffb3;
-        }
-
-        .selected {
-            border-color: #0000ff;
-        }
-
-        #flashing-box {
-            font-size: 2em;
-            margin: 20px auto;
-            width: 150px;
-            height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid #000;
-            border-radius: 10px;
-            background-color: #fff;
-            color: #333;
-        }
-
-        label {
-            font-size: 1.2em;
-        }
-
+        button,
         input {
-            font-size: 1.1em;
-            padding: 5px;
-            margin: 10px 0;
+            font: inherit;
         }
 
         button {
-            font-size: 1.2em;
-            padding: 10px 20px;
-            margin: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            border: 0;
         }
 
-        #play-button {
-            background-color: #b3ffb3;
-            color: #333;
+        .app-shell {
+            width: min(1120px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 28px 0 40px;
         }
 
-        #play-game-button {
-            background-color: #ffcccb;
-            color: #333;
+        .hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
+            gap: 24px;
+            align-items: stretch;
+            margin-bottom: 22px;
         }
 
-        button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
+        .hero-copy,
+        .scoreboard,
+        .panel {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow);
         }
 
-        #result-message {
-            margin: 10px 0;
-            font-size: 1.5em;
-            font-weight: bold;
+        .hero-copy {
+            padding: clamp(24px, 5vw, 48px);
+            border-radius: 8px;
         }
 
-        .winner {
-            color: green;
+        .eyebrow {
+            margin: 0 0 10px;
+            color: var(--accent);
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
         }
 
-        .loser {
-            color: red;
+        h1,
+        h2,
+        h3,
+        p {
+            margin-top: 0;
         }
 
-        #game-summary {
-            margin-top: 20px;
-            background-color: #fff;
-            border-radius: 10px;
-            padding: 15px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            text-align: left;
+        h1 {
+            max-width: 760px;
+            margin-bottom: 14px;
+            font-size: clamp(2.1rem, 5vw, 4.8rem);
+            line-height: 0.95;
+            letter-spacing: 0;
         }
 
-        ul {
-            list-style-type: none;
+        h2 {
+            margin-bottom: 14px;
+            font-size: clamp(1.25rem, 2vw, 1.65rem);
+            line-height: 1.15;
+        }
+
+        h3 {
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .lede {
+            max-width: 760px;
+            margin-bottom: 0;
+            color: var(--muted);
+            font-size: clamp(1rem, 1.5vw, 1.2rem);
+        }
+
+        .scoreboard {
+            display: grid;
+            gap: 14px;
+            align-content: center;
+            padding: 24px;
+            border-radius: 8px;
+        }
+
+        .credit-label,
+        .stat-label {
+            color: var(--muted);
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .credit-total {
+            font-size: clamp(2.2rem, 5vw, 4rem);
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .credit-note {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.1fr) minmax(310px, 0.9fr);
+            gap: 22px;
+            align-items: start;
+        }
+
+        .panel {
+            border-radius: 8px;
+            padding: clamp(18px, 3vw, 26px);
+        }
+
+        .steps {
+            display: grid;
+            gap: 14px;
+            margin: 0;
             padding: 0;
+            list-style: none;
         }
 
-        li {
+        .step {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 12px;
+            align-items: start;
+        }
+
+        .step-number {
+            display: grid;
+            width: 2rem;
+            height: 2rem;
+            place-items: center;
+            border-radius: 50%;
+            background: var(--surface-soft);
+            color: var(--accent-strong);
+            font-weight: 900;
+        }
+
+        .step p,
+        .summary-empty,
+        .helper-text {
+            color: var(--muted);
+        }
+
+        .odds-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .odds-card {
+            min-height: 108px;
+            padding: 14px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--surface-soft);
+        }
+
+        .odds-card strong {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .odds-card span {
+            display: block;
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        .game-card {
+            display: grid;
+            gap: 18px;
+        }
+
+        .control-group {
+            margin: 0;
+            padding: 0;
+            border: 0;
+        }
+
+        .control-label {
+            display: block;
             margin-bottom: 10px;
-            font-size: 1em;
+            font-weight: 800;
         }
 
-        .win {
-            color: green;
+        .quick-bets,
+        .number-grid {
+            display: grid;
+            gap: 8px;
         }
 
-        .lose {
-            color: red;
+        .quick-bets {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
         }
 
-        #player-choice {
-            margin-top: 20px;
-            font-size: 1.2em;
-            font-weight: bold;
-            text-align: center;
-            padding: 10px;
-            border: 2px solid #ccc;
-            border-radius: 10px;
-            background-color: #fff;
-            width: 200px;
-            margin-left: auto;
-            margin-right: auto;
+        .bet-button,
+        .number-button,
+        .primary-button,
+        .secondary-button {
+            min-height: 44px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 800;
+            transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+        }
+
+        .bet-button,
+        .number-button {
+            border: 2px solid transparent;
+            color: #ffffff;
+        }
+
+        .bet-button:hover,
+        .number-button:hover,
+        .primary-button:hover,
+        .secondary-button:hover {
+            transform: translateY(-1px);
+        }
+
+        .bet-button[aria-pressed="true"],
+        .number-button[aria-pressed="true"] {
+            border-color: var(--focus);
+            box-shadow: 0 0 0 4px rgba(245, 183, 0, 0.28);
+        }
+
+        .bet-red,
+        .cell-red {
+            background: var(--red);
+        }
+
+        .bet-black,
+        .cell-black {
+            background: var(--black);
+        }
+
+        .bet-even,
+        .bet-odd {
+            background: var(--accent);
+        }
+
+        .cell-green {
+            background: var(--green);
+        }
+
+        .number-grid {
+            grid-template-columns: repeat(6, minmax(42px, 1fr));
+        }
+
+        .number-button {
+            aspect-ratio: 1 / 0.82;
+            min-height: 42px;
+        }
+
+        .stake-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 10px;
+            align-items: end;
+        }
+
+        .stake-input {
+            width: 100%;
+            min-height: 48px;
+            padding: 10px 12px;
+            border: 2px solid var(--line);
+            border-radius: 8px;
+            background: #ffffff;
+            color: var(--ink);
+        }
+
+        .stake-input:focus,
+        button:focus-visible,
+        a:focus-visible {
+            outline: 4px solid rgba(245, 183, 0, 0.55);
+            outline-offset: 3px;
+        }
+
+        .primary-button,
+        .secondary-button {
+            padding: 0 18px;
+        }
+
+        .primary-button {
+            background: var(--accent);
+            color: #ffffff;
+        }
+
+        .secondary-button {
+            border: 2px solid var(--line);
+            background: #ffffff;
+            color: var(--ink);
+        }
+
+        .primary-button:disabled,
+        .secondary-button:disabled {
+            cursor: not-allowed;
+            opacity: 0.55;
+            transform: none;
+        }
+
+        .status-panel {
+            display: grid;
+            gap: 14px;
+            padding: 18px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--surface-soft);
+        }
+
+        .draw-display {
+            display: grid;
+            min-height: 132px;
+            place-items: center;
+            border-radius: 8px;
+            background: var(--black);
+            color: #ffffff;
+            font-size: clamp(3rem, 8vw, 5rem);
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .draw-display.is-red {
+            background: var(--red);
+        }
+
+        .draw-display.is-black {
+            background: var(--black);
+        }
+
+        .draw-display.is-green {
+            background: var(--green);
+        }
+
+        .choice-pill {
+            display: inline-flex;
+            max-width: 100%;
+            min-height: 40px;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: #ffffff;
+            color: var(--ink);
+            font-weight: 800;
+        }
+
+        .result-message {
+            min-height: 34px;
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 900;
+        }
+
+        .result-message.win {
+            color: var(--win);
+        }
+
+        .result-message.lose {
+            color: var(--lose);
+        }
+
+        .summary-list {
+            display: grid;
+            gap: 10px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .summary-list li {
+            padding: 12px;
+            border: 1px solid var(--line);
+            border-left: 5px solid var(--muted);
+            border-radius: 8px;
+            background: #ffffff;
+        }
+
+        .summary-list li.win {
+            border-left-color: var(--win);
+        }
+
+        .summary-list li.lose {
+            border-left-color: var(--lose);
+        }
+
+        .summary-list strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .share-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            margin-top: 18px;
+        }
+
+        .history-panel {
+            margin-top: 22px;
+        }
+
+        .share-link {
+            display: inline-flex;
+            min-height: 42px;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 12px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #ffffff;
+            color: var(--ink);
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        @media (max-width: 860px) {
+            .hero,
+            .main-grid,
+            .odds-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-bets {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 560px) {
+            .app-shell {
+                width: min(100% - 20px, 1120px);
+                padding-top: 10px;
+            }
+
+            .hero-copy,
+            .scoreboard,
+            .panel {
+                padding: 18px;
+            }
+
+            .number-grid {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+
+            .stake-row {
+                grid-template-columns: 1fr;
+            }
+
+            .primary-button,
+            .secondary-button {
+                width: 100%;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                transition-duration: 0.01ms !important;
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div id="game-container">
-        <h1>Roulette Game</h1>
-        <div id="instructions">
-            <p>Roulette is a popular casino game that has been played for centuries. Originating in France in the 18th
-                century, the game involves a spinning wheel divided into numbered slots, alternating between red, black,
-                and green. Players place bets on where they think a ball, spun in the opposite direction of the wheel,
-                will land. The thrill of the game comes from its blend of strategy and luck.</p>
-            <p>In a traditional casino, players can bet on a specific number, a color (red or black), or even/odd
-                numbers. Each bet has a different probability of winning and payout, making it an exciting game of
-                chance. While roulette is entertaining, it is important to remember that the house always has an edge,
-                meaning that over time, players are more likely to lose money than win.</p>
-            <p><strong>About This Version:</strong> This electronic version of roulette is designed to help you
-                understand how games of chance work and how, in the long run, they are more likely to take more of your
-                money than they return. It's a fun way to learn the odds and see why casinos are profitable!</p>
-            <p><strong>Payouts and Odds:</strong></p>
-            <ul>
-                <li>Bet on a specific number: <strong>Payout 35x</strong>, <strong>Odds: 2.70%</strong></li>
-                <li>Bet on red or black: <strong>Payout 2x</strong>, <strong>Odds: 48.65%</strong></li>
-                <li>Bet on odd or even: <strong>Payout 2x</strong>, <strong>Odds: 48.65%</strong></li>
-            </ul>
-        </div>
-        <div id="credit-card">Credit: <span id="credit">100</span> Dollarbucks</div>
-        <div id="bet-options">
-            <div class="bet-option" data-bet="red">Red</div>
-            <div class="bet-option" data-bet="black">Black</div>
-            <div class="bet-option" data-bet="odd">Odd</div>
-            <div class="bet-option" data-bet="even">Even</div>
-        </div>
-        <div id="roulette-table">
-            <div class="roulette-cell green" data-number="0">0</div>
-            <div class="roulette-cell red" data-number="1">1</div>
-            <div class="roulette-cell black" data-number="2">2</div>
-            <div class="roulette-cell red" data-number="3">3</div>
-            <div class="roulette-cell black" data-number="4">4</div>
-            <div class="roulette-cell red" data-number="5">5</div>
-            <div class="roulette-cell black" data-number="6">6</div>
-            <div class="roulette-cell red" data-number="7">7</div>
-            <div class="roulette-cell black" data-number="8">8</div>
-            <div class="roulette-cell red" data-number="9">9</div>
-            <div class="roulette-cell black" data-number="10">10</div>
-            <div class="roulette-cell red" data-number="11">11</div>
-            <div class="roulette-cell black" data-number="12">12</div>
-            <div class="roulette-cell red" data-number="13">13</div>
-            <div class="roulette-cell black" data-number="14">14</div>
-            <div class="roulette-cell red" data-number="15">15</div>
-            <div class="roulette-cell black" data-number="16">16</div>
-            <div class="roulette-cell red" data-number="17">17</div>
-            <div class="roulette-cell black" data-number="18">18</div>
-            <div class="roulette-cell red" data-number="19">19</div>
-            <div class="roulette-cell black" data-number="20">20</div>
-            <div class="roulette-cell red" data-number="21">21</div>
-            <div class="roulette-cell black" data-number="22">22</div>
-            <div class="roulette-cell red" data-number="23">23</div>
-            <div class="roulette-cell black" data-number="24">24</div>
-            <div class="roulette-cell red" data-number="25">25</div>
-            <div class="roulette-cell black" data-number="26">26</div>
-            <div class="roulette-cell red" data-number="27">27</div>
-            <div class="roulette-cell black" data-number="28">28</div>
-            <div class="roulette-cell red" data-number="29">29</div>
-            <div class="roulette-cell black" data-number="30">30</div>
-            <div class="roulette-cell black" data-number="31">31</div>
-            <div class="roulette-cell red" data-number="32">32</div>
-            <div class="roulette-cell black" data-number="33">33</div>
-            <div class="roulette-cell red" data-number="34">34</div>
-            <div class="roulette-cell black" data-number="35">35</div>
-            <div class="roulette-cell red" data-number="36">36</div>
-        </div>
-        <div id="player-choice">Your Choice: None</div>
-        <div>
-            <label for="bet-amount">Enter your bet amount:</label>
-            <input type="number" id="bet-amount" min="1" step="1">
-        </div>
-        <button id="play-button">Place Bet</button>
-        <button id="play-game-button" disabled>Play The Game!</button>
-        <div id="flashing-box">?</div>
-        <div id="result-message"></div>
-        <div id="game-summary">
-            <h2>Game Summary</h2>
-            <ul id="summary-list"></ul>
-        </div>
-        <div id="share-buttons" style="margin-top: 20px;">
-            <p>Share this game:</p>
-            <a href="https://www.facebook.com/sharer/sharer.php?u=URL_TO_YOUR_GAME_PAGE" target="_blank">
-                <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" width="30">
-            </a>
-            <a href="https://twitter.com/intent/tweet?url=URL_TO_YOUR_GAME_PAGE&text=Play%20this%20Roulette%20Game%20and%20Learn%20the%20Odds!"
-                target="_blank">
-                <img src="https://cdn-icons-png.flaticon.com/512/733/733579.png" alt="Twitter" width="30">
-            </a>
-            <a href="https://www.linkedin.com/sharing/share-offsite/?url=URL_TO_YOUR_GAME_PAGE" target="_blank">
-                <img src="https://cdn-icons-png.flaticon.com/512/733/733561.png" alt="LinkedIn" width="30">
-            </a>
-            <button id="copy-url-button">Copy Game Link</button>
-        </div>
-    </div>
+    <main class="app-shell">
+        <section class="hero" aria-labelledby="page-title">
+            <div class="hero-copy">
+                <p class="eyebrow">Chance, odds, and pretend credits</p>
+                <h1 id="page-title">Roulette Odds Lab</h1>
+                <p class="lede">Pick a color, odd/even, or a single number. Then spin to see how probability feels in
+                    real time. This version uses play credits only and is meant for learning, not gambling.</p>
+            </div>
+
+            <aside class="scoreboard" aria-label="Current game score">
+                <div>
+                    <span class="credit-label">Credit balance</span>
+                    <div class="credit-total"><span id="credit">100</span></div>
+                </div>
+                <p class="credit-note">Start with 100 Dollarbucks. Every bet is subtracted before the spin, and any
+                    payout is added after the result.</p>
+            </aside>
+        </section>
+
+        <section class="main-grid">
+            <article class="panel" aria-labelledby="how-it-works-title">
+                <h2 id="how-it-works-title">How It Works</h2>
+                <ol class="steps">
+                    <li class="step">
+                        <span class="step-number" aria-hidden="true">1</span>
+                        <div>
+                            <h3>Choose your bet</h3>
+                            <p>Simple bets like red, black, odd, or even win more often. A single-number bet is harder
+                                to hit, so the payout is bigger.</p>
+                        </div>
+                    </li>
+                    <li class="step">
+                        <span class="step-number" aria-hidden="true">2</span>
+                        <div>
+                            <h3>Set a stake</h3>
+                            <p>Enter how many Dollarbucks you want to risk. You cannot bet more than you have.</p>
+                        </div>
+                    </li>
+                    <li class="step">
+                        <span class="step-number" aria-hidden="true">3</span>
+                        <div>
+                            <h3>Spin and compare</h3>
+                            <p>The history shows the chance of your bet, the winning number, and your credit after each
+                                round.</p>
+                        </div>
+                    </li>
+                </ol>
+
+                <div class="odds-grid" aria-label="Payout and odds guide">
+                    <div class="odds-card">
+                        <strong>Single number</strong>
+                        <span>Pays 35x</span>
+                        <span>Chance: 2.70%</span>
+                    </div>
+                    <div class="odds-card">
+                        <strong>Red or black</strong>
+                        <span>Pays 2x</span>
+                        <span>Chance: 48.65%</span>
+                    </div>
+                    <div class="odds-card">
+                        <strong>Odd or even</strong>
+                        <span>Pays 2x</span>
+                        <span>Chance: 48.65%</span>
+                    </div>
+                </div>
+            </article>
+
+            <section class="panel game-card" aria-labelledby="play-title">
+                <h2 id="play-title">Play a Round</h2>
+
+                <fieldset class="control-group">
+                    <legend class="control-label">Choose a quick bet</legend>
+                    <div class="quick-bets" id="quick-bets">
+                        <button class="bet-button bet-red" type="button" data-bet="red" aria-pressed="false">Red</button>
+                        <button class="bet-button bet-black" type="button" data-bet="black" aria-pressed="false">Black</button>
+                        <button class="bet-button bet-odd" type="button" data-bet="odd" aria-pressed="false">Odd</button>
+                        <button class="bet-button bet-even" type="button" data-bet="even" aria-pressed="false">Even</button>
+                    </div>
+                </fieldset>
+
+                <fieldset class="control-group">
+                    <legend class="control-label">Or choose one number</legend>
+                    <div class="number-grid" id="number-grid"></div>
+                </fieldset>
+
+                <div class="status-panel" aria-label="Current round">
+                    <div class="draw-display" id="draw-display" aria-label="Winning number">?</div>
+                    <div>
+                        <span class="stat-label">Selected bet</span>
+                        <div class="choice-pill" id="player-choice">None yet</div>
+                    </div>
+                    <p class="result-message" id="result-message" aria-live="polite"></p>
+                </div>
+
+                <div>
+                    <label class="control-label" for="bet-amount">Stake</label>
+                    <div class="stake-row">
+                        <input class="stake-input" type="number" id="bet-amount" min="1" step="1" inputmode="numeric"
+                            value="10" aria-describedby="stake-help">
+                        <button class="primary-button" type="button" id="spin-button">Spin</button>
+                    </div>
+                    <p class="helper-text" id="stake-help">Use whole Dollarbucks. Try several rounds and watch the
+                        pattern, not just one spin.</p>
+                </div>
+            </section>
+        </section>
+
+        <section class="panel history-panel" aria-labelledby="summary-title">
+            <h2 id="summary-title">Round History</h2>
+            <p class="summary-empty" id="summary-empty">No rounds yet. Choose a bet and spin to begin.</p>
+            <ul class="summary-list" id="summary-list" aria-live="polite"></ul>
+
+            <div class="share-row" aria-label="Share this game">
+                <a class="share-link"
+                    href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Frfnajera.github.io%2Fgambling_kids.html"
+                    target="_blank" rel="noopener noreferrer">Facebook</a>
+                <a class="share-link"
+                    href="https://twitter.com/intent/tweet?url=https%3A%2F%2Frfnajera.github.io%2Fgambling_kids.html&text=Try%20this%20Roulette%20Odds%20Lab%20and%20learn%20how%20chance%20works."
+                    target="_blank" rel="noopener noreferrer">X/Twitter</a>
+                <a class="share-link"
+                    href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Frfnajera.github.io%2Fgambling_kids.html"
+                    target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                <button class="secondary-button" type="button" id="copy-url-button">Copy Link</button>
+            </div>
+        </section>
+    </main>
+
+    <div class="sr-only" id="screen-reader-status" aria-live="assertive"></div>
+
     <script>
-        let credit = 100;
+        const STARTING_CREDIT = 100;
+        const RED_NUMBERS = new Set([1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36]);
+        const GAME_URL = 'https://rfnajera.github.io/gambling_kids.html';
+
+        let credit = STARTING_CREDIT;
         let selectedBet = null;
-        let betPlaced = false;
-        const playButton = document.getElementById('play-button');
-        const playGameButton = document.getElementById('play-game-button');
-        const flashingBox = document.getElementById('flashing-box');
-        const resultMessage = document.getElementById('result-message');
+        let isSpinning = false;
+
         const creditDisplay = document.getElementById('credit');
+        const drawDisplay = document.getElementById('draw-display');
+        const resultMessage = document.getElementById('result-message');
         const betAmountInput = document.getElementById('bet-amount');
         const summaryList = document.getElementById('summary-list');
+        const summaryEmpty = document.getElementById('summary-empty');
         const playerChoiceDisplay = document.getElementById('player-choice');
-
-        const getProbability = (bet) => {
-            if (!isNaN(parseInt(bet))) {
-                return (1 / 37) * 100; // Probability for a single number
-            } else if (['red', 'black', 'odd', 'even'].includes(bet)) {
-                return (18 / 37) * 100; // Probability for red, black, odd, or even
-            } else {
-                return 0;
-            }
-        };
+        const spinButton = document.getElementById('spin-button');
+        const numberGrid = document.getElementById('number-grid');
+        const screenReaderStatus = document.getElementById('screen-reader-status');
 
         const getColor = (number) => {
             if (number === 0) return 'green';
-            const redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
-            return redNumbers.includes(number) ? 'red' : 'black';
+            return RED_NUMBERS.has(number) ? 'red' : 'black';
         };
 
-        document.querySelectorAll('.bet-option, .roulette-cell').forEach(option => {
-            option.addEventListener('click', () => {
-                document.querySelectorAll('.bet-option, .roulette-cell').forEach(opt => opt.classList.remove('selected'));
-                option.classList.add('selected');
-                selectedBet = option.getAttribute('data-bet') || option.getAttribute('data-number');
-                playerChoiceDisplay.textContent = `Your Choice: ${selectedBet}`;
+        const formatBet = (bet) => {
+            if (bet === null) return 'None yet';
+            if (!Number.isNaN(Number(bet))) return `Number ${bet}`;
+            return bet.charAt(0).toUpperCase() + bet.slice(1);
+        };
+
+        const getProbability = (bet) => {
+            if (!Number.isNaN(Number(bet))) return (1 / 37) * 100;
+            if (['red', 'black', 'odd', 'even'].includes(bet)) return (18 / 37) * 100;
+            return 0;
+        };
+
+        const getPayoutMultiplier = (bet) => {
+            if (!Number.isNaN(Number(bet))) return 35;
+            return 2;
+        };
+
+        const setDrawDisplay = (value) => {
+            drawDisplay.textContent = value;
+            drawDisplay.classList.remove('is-red', 'is-black', 'is-green');
+
+            const numberValue = Number(value);
+            if (!Number.isNaN(numberValue)) {
+                drawDisplay.classList.add(`is-${getColor(numberValue)}`);
+            }
+        };
+
+        const setSelectedBet = (bet) => {
+            selectedBet = bet;
+            playerChoiceDisplay.textContent = formatBet(bet);
+            screenReaderStatus.textContent = `Selected ${formatBet(bet)}.`;
+
+            [...document.querySelectorAll('[data-bet], [data-number]')].forEach((button) => {
+                const value = button.dataset.bet || button.dataset.number;
+                button.setAttribute('aria-pressed', String(value === bet));
             });
-        });
+        };
 
-        playButton.addEventListener('click', () => {
-            if (betPlaced) {
-                alert('You have already placed a bet. Please play the game first.');
-                return;
+        const buildNumberGrid = () => {
+            for (let number = 0; number <= 36; number += 1) {
+                const button = document.createElement('button');
+                const color = getColor(number);
+                button.type = 'button';
+                button.className = `number-button cell-${color}`;
+                button.dataset.number = String(number);
+                button.setAttribute('aria-pressed', 'false');
+                button.setAttribute('aria-label', `Bet on number ${number}, ${color}`);
+                button.textContent = number;
+                numberGrid.appendChild(button);
+            }
+        };
+
+        const validateBet = () => {
+            const betAmount = Number.parseInt(betAmountInput.value, 10);
+
+            if (selectedBet === null) {
+                return 'Choose a bet before spinning.';
             }
 
-            const betAmount = parseInt(betAmountInput.value);
-            if (isNaN(betAmount) || betAmount <= 0) {
-                alert('Please enter a valid bet amount.');
-                return;
+            if (Number.isNaN(betAmount) || betAmount <= 0) {
+                return 'Enter a stake of at least 1 Dollarbuck.';
             }
+
             if (betAmount > credit) {
-                alert('You do not have enough credits.');
-                return;
+                return `You only have ${credit} Dollarbucks left. Lower your stake and try again.`;
             }
-            if (!selectedBet) {
-                alert('Please select a bet option or a number.');
+
+            return '';
+        };
+
+        const isWinningBet = (winningNumber) => {
+            const winningColor = getColor(winningNumber);
+
+            return selectedBet === String(winningNumber) ||
+                (selectedBet === 'red' && winningColor === 'red') ||
+                (selectedBet === 'black' && winningColor === 'black') ||
+                (selectedBet === 'odd' && winningNumber % 2 === 1) ||
+                (selectedBet === 'even' && winningNumber !== 0 && winningNumber % 2 === 0);
+        };
+
+        const addSummaryItem = ({ bet, betAmount, winningNumber, didWin, payout, probability }) => {
+            const item = document.createElement('li');
+            item.className = didWin ? 'win' : 'lose';
+
+            const title = document.createElement('strong');
+            title.textContent = `${didWin ? 'Won' : 'Lost'} ${betAmount} on ${formatBet(bet)}`;
+
+            const detail = document.createElement('span');
+            detail.textContent = `Chance ${probability.toFixed(2)}%. Winning number: ${winningNumber}. Payout: ${payout}. Balance: ${credit}.`;
+
+            item.append(title, detail);
+            summaryList.prepend(item);
+            summaryEmpty.hidden = true;
+        };
+
+        const spin = () => {
+            if (isSpinning) return;
+
+            const validationMessage = validateBet();
+            if (validationMessage) {
+                resultMessage.textContent = validationMessage;
+                resultMessage.className = 'result-message lose';
+                screenReaderStatus.textContent = validationMessage;
                 return;
             }
 
+            isSpinning = true;
+            spinButton.disabled = true;
+            betAmountInput.disabled = true;
+            resultMessage.textContent = 'Spinning...';
+            resultMessage.className = 'result-message';
+
+            const bet = selectedBet;
+            const betAmount = Number.parseInt(betAmountInput.value, 10);
             credit -= betAmount;
             creditDisplay.textContent = credit;
-            playGameButton.disabled = false;
-            betPlaced = true;
+
+            const possibleNumbers = Array.from({ length: 37 }, (_, index) => index);
+            let index = 0;
+            const interval = window.setInterval(() => {
+                setDrawDisplay(possibleNumbers[index]);
+                index = (index + 1) % possibleNumbers.length;
+            }, 90);
+
+            window.setTimeout(() => {
+                window.clearInterval(interval);
+
+                const winningNumber = possibleNumbers[Math.floor(Math.random() * possibleNumbers.length)];
+                const didWin = isWinningBet(winningNumber);
+                const payout = didWin ? betAmount * getPayoutMultiplier(bet) : 0;
+                const probability = getProbability(bet);
+
+                credit += payout;
+                creditDisplay.textContent = credit;
+                setDrawDisplay(winningNumber);
+
+                const resultText = didWin
+                    ? `You won ${payout} Dollarbucks.`
+                    : `No match this time. The house kept the stake.`;
+
+                resultMessage.textContent = resultText;
+                resultMessage.className = `result-message ${didWin ? 'win' : 'lose'}`;
+                screenReaderStatus.textContent = `${resultText} Winning number ${winningNumber}. Your balance is ${credit}.`;
+
+                addSummaryItem({ bet, betAmount, winningNumber, didWin, payout, probability });
+
+                isSpinning = false;
+                spinButton.disabled = credit <= 0;
+                betAmountInput.disabled = false;
+
+                if (credit <= 0) {
+                    resultMessage.textContent = 'Your balance is 0. Refresh the page to start over.';
+                    screenReaderStatus.textContent = resultMessage.textContent;
+                }
+            }, 2200);
+        };
+
+        buildNumberGrid();
+
+        document.addEventListener('click', (event) => {
+            const betButton = event.target.closest('[data-bet]');
+            const numberButton = event.target.closest('[data-number]');
+
+            if (isSpinning || (!betButton && !numberButton)) return;
+
+            setSelectedBet((betButton && betButton.dataset.bet) || numberButton.dataset.number);
         });
 
-        playGameButton.addEventListener
-            ('click', () => {
-                if (!betPlaced) {
-                    alert('Please place a bet first.');
-                    return;
-                }
+        spinButton.addEventListener('click', spin);
 
-                const betAmount = parseInt(betAmountInput.value);
-                const possibleNumbers = Array.from({ length: 37 }, (_, i) => i);
-                let index = 0;
-                const interval = setInterval(() => {
-                    flashingBox.textContent = possibleNumbers[index];
-                    index = (index + 1) % possibleNumbers.length;
-                }, 100);
+        betAmountInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                spin();
+            }
+        });
 
-                setTimeout(() => {
-                    clearInterval(interval);
-                    const winningNumber = possibleNumbers[Math.floor(Math.random() * possibleNumbers.length)];
-                    flashingBox.textContent = winningNumber;
-
-                    let result = 'LOSE';
-                    let resultClass = 'loser';
-                    let payout = 0;
-                    const winningColor = getColor(winningNumber);
-
-                    if (selectedBet === winningNumber.toString()) {
-                        result = 'WIN';
-                        resultClass = 'winner';
-                        payout = betAmount * 35;
-                    } else if (
-                        (selectedBet === 'red' && winningColor === 'red') ||
-                        (selectedBet === 'black' && winningColor === 'black') ||
-                        (selectedBet === 'odd' && winningNumber % 2 === 1) ||
-                        (selectedBet === 'even' && winningNumber % 2 === 0 && winningNumber !== 0)
-                    ) {
-                        result = 'WIN';
-                        resultClass = 'winner';
-                        payout = betAmount * 2;
-                    }
-
-                    credit += payout;
-                    creditDisplay.textContent = credit;
-
-                    const probability = getProbability(selectedBet).toFixed(2);
-
-                    const listItem = document.createElement('li');
-                    listItem.innerHTML = `Bet: ${selectedBet}, Probability: ${probability}%, Winning Number: ${winningNumber}, <span class="${resultClass}">${result}</span>, Remaining Credit: ${credit}`;
-                    summaryList.appendChild(listItem);
-
-                    resultMessage.textContent = result;
-                    resultMessage.className = resultClass;
-                    playGameButton.disabled = true;
-                    betPlaced = false;
-                }, 3000);
-            });
-
-        // Copy link button functionality
-        document.getElementById('copy-url-button').addEventListener('click', () => {
-            const url = 'https://rfnajera.github.io/gambling_kids.html';
-            navigator.clipboard.writeText(url).then(() => {
-                alert('Game link copied to clipboard! Share it on your favorite platform.');
-            }).catch(err => {
-                console.error('Failed to copy text: ', err);
-            });
+        document.getElementById('copy-url-button').addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(GAME_URL);
+                screenReaderStatus.textContent = 'Game link copied.';
+                resultMessage.textContent = 'Game link copied.';
+                resultMessage.className = 'result-message';
+            } catch (error) {
+                screenReaderStatus.textContent = 'Could not copy the link. You can copy it from the address bar.';
+                resultMessage.textContent = 'Could not copy the link. You can copy it from the address bar.';
+                resultMessage.className = 'result-message lose';
+            }
         });
     </script>
 </body>
