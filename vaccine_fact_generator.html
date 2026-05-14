@@ -1,13 +1,19 @@
+<!doctype html>
 <html lang="en">
-
 <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="Generate a referenced vaccine fact and share it with others. Educational only, not medical advice.">
+  <meta property="og:title" content="Vaccine Fact Generator">
+  <meta property="og:description" content="Generate a referenced vaccine fact and share it with the world. Educational only, not medical advice.">
+  <meta property="og:image" content="https://rfnajera.github.io/assets/images/vaccine_facts_image.jpg">
+  <meta property="og:url" content="https://rfnajera.github.io/vaccine_fact_generator.html">
+  <meta property="og:type" content="website">
   <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
-  <meta property="og:title" content="Vaccine Fact Generator" />
-  <meta property="og:description" content="Generate a referenced vaccine fact and share it with the world." />
-  <meta property="og:image" content="https://rfnajera.github.io/assets/images/vaccine_facts_image.jpg" />
-  <meta property="og:url" content="https://rfnajera.github.io/vaccine_fact_generator.html" />
-  <meta property="og:type" content="website" />
-  <!-- Google tag (gtag.js) -->
+  <title>Vaccine Fact Generator by @EpiRen</title>
+
+  <!-- Google tag (gtag.js). The app still works if analytics are blocked. -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YF8SGD4HY"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -15,172 +21,867 @@
     gtag('js', new Date());
     gtag('config', 'G-8YF8SGD4HY');
   </script>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Vaccine Fact Generator by @EpiRen</title>
-  <link rel="stylesheet" href="https://unpkg.com/papercss@1.4.0/dist/paper.min.css">
+
   <style>
-    header {
-      padding: 1em;
-      background-color: #ffff80;
-      margin-top: 1em;
-      text-align: center;
+    :root {
+      --bg: #f7f7fb;
+      --surface: #ffffff;
+      --surface-soft: #eef7ff;
+      --text: #17202a;
+      --muted: #536271;
+      --primary: #1b6ca8;
+      --primary-strong: #124c78;
+      --accent: #0b7a4b;
+      --border: #d8e0e8;
+      --shadow: 0 24px 70px rgba(17, 24, 39, 0.12);
+      --radius-lg: 1.5rem;
+      --radius-md: 0.9rem;
+      --focus: #ffbf47;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    .quote {
-      font-size: clamp(1.5em, 2.5vw, 3em);
-    }
-
-    .btn-large {
-      margin: 0.5em;
-    }
-
-    .card {
-      text-align: center;
-      width: 100%;
-      max-width: 45em;
-    }
-
-    .new-quote-button {
-      background-color: #8cff66;
-    }
-
-    .share-button {
-      background-color: #b3e0ff;
-    }
-
-    @media (max-width: 700px) {
-      h1 {
-        font-size: 45px;
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f1720;
+        --surface: #17212b;
+        --surface-soft: #142c3c;
+        --text: #f5f7fb;
+        --muted: #bac7d5;
+        --primary: #7bc8ff;
+        --primary-strong: #a7dcff;
+        --accent: #79d9ad;
+        --border: #2b3a49;
+        --shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
       }
+    }
 
-      #newQuoteSection {
-        font-size: 35px;
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(27, 108, 168, 0.18), transparent 28rem),
+        radial-gradient(circle at bottom right, rgba(11, 122, 75, 0.14), transparent 30rem),
+        var(--bg);
+      line-height: 1.5;
+    }
+
+    a { color: var(--primary); }
+    a:hover { color: var(--primary-strong); }
+
+    .skip-link {
+      position: absolute;
+      left: 1rem;
+      top: 1rem;
+      transform: translateY(-150%);
+      z-index: 10;
+      padding: 0.7rem 1rem;
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: var(--shadow);
+    }
+
+    .skip-link:focus { transform: translateY(0); }
+
+    .page {
+      width: min(1080px, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 2rem 0;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 1.5rem;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-card,
+    .fact-card,
+    .about-card {
+      background: color-mix(in srgb, var(--surface) 94%, transparent);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card { padding: clamp(1.5rem, 4vw, 3rem); }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0 0 0.9rem;
+      padding: 0.35rem 0.7rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      background: var(--surface-soft);
+    }
+
+    h1 {
+      max-width: 12ch;
+      margin: 0;
+      font-size: clamp(2.5rem, 8vw, 5.6rem);
+      line-height: 0.95;
+      letter-spacing: -0.06em;
+    }
+
+    .intro {
+      max-width: 62ch;
+      color: var(--muted);
+      font-size: clamp(1rem, 2vw, 1.2rem);
+    }
+
+    .hero-aside {
+      padding: 1.5rem;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+    }
+
+    .hero-aside h2 { margin-top: 0; font-size: 1.2rem; }
+    .hero-aside p { color: var(--muted); }
+
+    main { display: grid; gap: 1rem; }
+
+    .fact-card {
+      padding: clamp(1.25rem, 4vw, 2.5rem);
+    }
+
+    .fact-card:focus-within { outline: 3px solid var(--focus); outline-offset: 4px; }
+
+    .label {
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.82rem;
+    }
+
+    #factText {
+      margin: 0.8rem 0 1rem;
+      font-size: clamp(1.55rem, 3.8vw, 3.15rem);
+      line-height: 1.08;
+      letter-spacing: -0.035em;
+      text-wrap: balance;
+    }
+
+    .source-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.6rem;
+      margin-top: 1rem;
+      color: var(--muted);
+    }
+
+    .source-row a { font-weight: 700; overflow-wrap: anywhere; }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1.4rem;
+    }
+
+    button,
+    .button-link {
+      min-height: 48px;
+      border: 0;
+      border-radius: 999px;
+      padding: 0.85rem 1.1rem;
+      background: var(--primary);
+      color: #ffffff;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+    }
+
+    button:hover,
+    .button-link:hover {
+      transform: translateY(-1px);
+      background: var(--primary-strong);
+      color: #ffffff;
+    }
+
+    button:focus-visible,
+    .button-link:focus-visible,
+    a:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
+    }
+
+    button.secondary,
+    .button-link.secondary {
+      color: var(--text);
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+    }
+
+    button.secondary:hover,
+    .button-link.secondary:hover { background: color-mix(in srgb, var(--surface-soft) 85%, var(--primary)); }
+
+    .status {
+      min-height: 1.5rem;
+      margin-top: 1rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .share-panel {
+      display: none;
+      margin-top: 1rem;
+      padding: 1rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--surface-soft);
+    }
+
+    .share-panel[aria-hidden="false"] { display: block; }
+
+    .share-panel p { margin-top: 0; color: var(--muted); }
+
+    .about-card {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      padding: 1.25rem;
+      color: var(--muted);
+    }
+
+    .about-card strong { color: var(--text); }
+    .about-card p { margin: 0; }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 760px) {
+      .page { width: min(100% - 1rem, 1080px); padding-top: 0.5rem; }
+      .hero { grid-template-columns: 1fr; }
+      .about-card { grid-template-columns: 1fr; }
+      .button-row button,
+      .button-row .button-link { width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
       }
     }
   </style>
 </head>
-
 <body>
-  <div class="container">
-    <div class="row flex-top flex-center">
-      <header class="border shadow">
-        <h1>Vaccine Fact Generator</h1>
-        <small>v0.9 (Last Updated 28Dec2024)</small>
-      </header>
-    </div>
-    <div class="row flex-center" style="width: 80%;">
-      <main class="card">
-        <p class="quote card-body center" id="newQuoteSection">Click on "New Fact" to get a new fact!</p>
-      </main>
-    </div>
-    <div class="row flex-center">
-      <button id="newQuoteButton" class="btn-large new-quote-button" onClick="getQuote()" aria-label="Generate a new vaccine fact">New Fact</button>
-      <button id="shareButton" class="btn-large share-button" onClick="shareQuote()" aria-label="Share this fact">Share This!</button>
-      <button class="btn-large" onClick="copyToClipboard()" aria-label="Copy fact to clipboard">Copy to Clipboard</button>
-    </div>
-    <div class="row flex-bottom flex-center">
-      <div class="card" style="width: 20rem;">
-        <div class="card-body">
-          <h4 class="card-title">The Vaccine Fact Generator</h4>
-          <p class="card-text">Brought to you by René F. Najera, DrPH.</br>Based on code by Jay.</p>
-          <a class="card-link" href="https://twitter.com/epiren">@Epiren</a><br>
-          <a class="card-link" href="https://twitter.com/mrjaypeasmith">@MrJayPeaSmith</a><br>
-        </div>
+  <a class="skip-link" href="#factCard">Skip to the fact generator</a>
+
+  <div class="page">
+    <header class="hero">
+      <section class="hero-card" aria-labelledby="pageTitle">
+        <p class="eyebrow">Referenced public health facts</p>
+        <h1 id="pageTitle">Vaccine Fact Generator</h1>
+        <p class="intro">Generate a vaccine fact with its source, then copy or share it in a format that keeps the citation attached. These facts are for education, not medical advice.</p>
+      </section>
+
+      <aside class="hero-aside" aria-labelledby="howItWorksTitle">
+        <h2 id="howItWorksTitle">How it works</h2>
+        <p>Use <strong>New fact</strong> to generate a fact. The source link is shown separately so people can check it before sharing.</p>
+        <p><small>v1.1 · 100 facts · Updated May 2026</small></p>
+      </aside>
+    </header>
+
+    <main id="factCard" class="fact-card" tabindex="-1" aria-labelledby="factHeading">
+      <p class="label" id="factHeading">Current fact</p>
+      <p id="factText" aria-live="polite">Click “New fact” to generate a referenced vaccine fact.</p>
+
+      <div class="source-row" id="sourceContainer" hidden>
+        <span>Source:</span>
+        <a id="sourceLink" href="#" rel="noopener noreferrer" target="_blank">View source</a>
       </div>
-    </div>
+
+      <div class="button-row" aria-label="Fact actions">
+        <button id="newFactButton" type="button">New fact</button>
+        <button id="shareButton" type="button" class="secondary">Share</button>
+        <button id="copyButton" type="button" class="secondary">Copy fact and source</button>
+      </div>
+
+      <div class="status" id="statusMessage" role="status" aria-live="polite"></div>
+
+      <section class="share-panel" id="sharePanel" aria-hidden="true" aria-labelledby="sharePanelTitle">
+        <h2 id="sharePanelTitle" class="visually-hidden">More sharing options</h2>
+        <p>Native sharing is not available in this browser. Copy the fact, or use one of these links.</p>
+        <div class="button-row">
+          <a id="xShareLink" class="button-link secondary" href="#" target="_blank" rel="noopener noreferrer">Share on X</a>
+          <a id="blueskyShareLink" class="button-link secondary" href="#" target="_blank" rel="noopener noreferrer">Share on Bluesky</a>
+          <a id="emailShareLink" class="button-link secondary" href="#">Share by email</a>
+        </div>
+      </section>
+    </main>
+
+    <section class="about-card" aria-label="About this project">
+      <p><strong>Created by:</strong><br>René F. Najera, DrPH</p>
+      <p><strong>Sources:</strong><br>Facts are educational and include source links for verification.</p>
+      <p><strong>Medical advice:</strong><br>This generator is not a substitute for medical advice. Please talk with a qualified health professional about personal health decisions.</p>
+    </section>
   </div>
 
   <script>
-    // Quotes
-    let quotes = [
-      "Immunization prevents 3.5-5 million deaths every year from diseases like diphtheria, tetanus, pertussis, influenza, and measles. Reference: https://www.who.int/health-topics/vaccines-and-immunization",
-      "Global immunization efforts have saved 154 million lives over the past 50 years. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
-      "For each life saved through immunization, an average of 66 years of full health were gained. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
-      "Measles vaccination alone has saved nearly 94 million lives since 1974. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
-      "Vaccination has enabled more than 20 million people to walk today who would otherwise have been paralyzed by polio. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
-      "Currently, 84% of infants globally are protected with three doses of the DTP vaccine. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
-      "The first influenza vaccine was approved for military use in 1945. Reference: https://www.who.int/news-room/spotlight/history-of-vaccination/a-brief-history-of-vaccination",
-      "The MMR combination vaccine was developed in 1971 by Dr. Maurice Hilleman. Reference: https://www.who.int/news-room/spotlight/history-of-vaccination/a-brief-history-of-vaccination",
-      "The first HPV vaccine was approved in 2006. Reference: https://www.who.int/news-room/spotlight/history-of-vaccination/a-brief-history-of-vaccination",
-      "Vaccines now help protect against more than 20 life-threatening diseases. Reference: https://www.who.int/news-room/spotlight/history-of-vaccination/a-brief-history-of-vaccination",
-      "Each dollar spent on immunization saves $52 in low- and middle-income countries. Reference: https://www.cdc.gov/global-immunization/fast-facts/index.html",
-      "It costs $18 per child to fully immunize children in low-income countries. Reference: https://www.cdc.gov/global-immunization/fast-facts/index.html",
-      "In 2023, over 14.5 million children under age 1 did not receive basic vaccines. Reference: https://www.cdc.gov/global-immunization/fast-facts/index.html",
-      "The measles vaccine requires 95% coverage with two doses to protect communities from outbreaks. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
-      "Global first-dose measles vaccine coverage is currently at 83%. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
-      "The second-dose measles vaccine coverage globally is at 74%. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
-      "UNICEF procures more than 2 billion vaccine doses annually. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
-      "Gavi has helped immunize over 1 billion children since its inception in 2000. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
-      "Vaccine preventable diseases have been reduced by more than 50% in the last 30 years. Reference: https://www.who.int/news-room/spotlight/history-of-vaccination/a-brief-history-of-vaccination",
-      "The first rotavirus vaccine was introduced in 2006. Reference: https://www.who.int/news-room/spotlight/history-of-vaccination/a-brief-history-of-vaccination",
-      "In 2019, the first malaria vaccine pilot program was launched in Ghana, Malawi, and Kenya. Reference: https://www.who.int/news-room/spotlight/history-of-vaccination/a-brief-history-of-vaccination",
-      "The hepatitis B vaccine was first developed in 1969. Reference: https://www.who.int/news-room/spotlight/history-of-vaccination/a-brief-history-of-vaccination",
-      "Vaccines train the immune system to create antibodies without causing disease. Reference: https://www.who.int/health-topics/vaccines-and-immunization",
-      "Immunization is considered a fundamental human right. Reference: https://www.who.int/health-topics/vaccines-and-immunization",
-      "The COVID-19 pandemic caused significant setbacks in global immunization coverage. Reference: https://www.who.int/health-topics/vaccines-and-immunization",
-      "In 2023, 22 million children missed their first dose of measles vaccine. Reference: https://www.who.int/health-topics/vaccines-and-immunization",
-      "Vaccines are crucial for global health security. Reference: https://www.who.int/health-topics/vaccines-and-immunization",
-      "Immunization helps combat antimicrobial resistance. Reference: https://www.who.int/health-topics/vaccines-and-immunization",
-      "The first yellow fever vaccine was developed in 1937. Reference: https://www.who.int/news-room/spotlight/history-of-vaccination/a-brief-history-of-vaccination",
-      "Over 1 million people received the yellow fever vaccine in 1938. Reference: https://www.who.int/news-room/spotlight/history-of-vaccination/a-brief-history-of-vaccination",
-      "The pertussis vaccine reduced disease rates from 15.1 to 2.3 per 100 children. Reference: https://www.who.int/news-room/spotlight/history-of-vaccination/a-brief-history-of-vaccination",
-      "Almost all zero-dose children live in low- and middle-income countries. Reference: https://www.cdc.gov/global-immunization/fast-facts/index.html",
-      "Over half of unvaccinated children live in just 10 countries. Reference: https://www.cdc.gov/global-immunization/fast-facts/index.html",
-      "Vaccines prevent both infectious diseases and several chronic diseases. Reference: https://www.who.int/health-topics/vaccines-and-immunization",
-      "Global vaccination coverage hit its lowest level since 2008 during the COVID-19 pandemic. Reference: https://data.unicef.org/topic/child-health/immunization/",
-      "DTP3 coverage increased to 84% in 2022, showing signs of recovery. Reference: https://data.unicef.org/topic/child-health/immunization/",
-      "Measles vaccination accounts for 60% of lives saved due to immunization. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
-      "The total health years gained from vaccination over five decades is 10.2 billion. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
-      "Fewer than 5% of infants globally had access to routine immunization when EPI launched. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
-      "Vaccination has helped prevent more than 17.3 million future deaths in 78 lower-income countries. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
-      "Vaccines undergo rigorous clinical trials before approval. Reference: https://unfoundation.org/blog/post/setting-the-record-straight-10-facts-you-didnt-know-about-vaccines",
-      "The whooping cough vaccine's efficacy was first demonstrated in 1939. Reference: https://www.who.int/news-room/spotlight/history-of-vaccination/a-brief-history-of-vaccination",
-      "The first genetically engineered hepatitis B vaccine was developed in 1986. Reference: https://www.who.int/news-room/spotlight/history-of-vaccination/a-brief-history-of-vaccination",
-      "Vaccination programs have contributed to halving child mortality in 78 countries. Reference: https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-years",
-      "Vaccines help prevent disease outbreaks that can disrupt economies. Reference: https://www.cdc.gov/global-immunization/fast-facts/index.html",
-      "There are more than 25 safe and effective vaccines available today. Reference: https://www.cdc.gov/global-immunization/fast-facts/index.html",
-      "The cost of fully immunizing children has decreased from $24 to $18 since 2013. Reference: https://www.cdc.gov/global-immunization/fast-facts/index.html",
-      "Vaccine side effects typically occur within two months of vaccination. Reference: https://www.ema.europa.eu/en/human-regulatory-overview/public-health-threats/coronavirus-disease-covid-19/covid-19-medicines/covid-19-vaccines-key-facts",
-      "Current global DTP3 coverage stands at 84% as of 2022. Reference: https://data.unicef.org/topic/child-health/immunization/",
-      "Immunization prevents approximately 4.4 million deaths yearly. Reference: https://data.unicef.org/topic/child-health/immunization/"
-    ];
-
-    function getQuote() {
-      var randomNumber = Math.floor(Math.random() * quotes.length);
-      document.getElementById('newQuoteSection').innerHTML = quotes[randomNumber];
-      gtag('event', 'generate_fact', { event_category: 'interaction', event_label: 'New Fact' });
-    }
-
-    function shareQuote() {
-      const generatedQuote = document.getElementById('newQuoteSection').innerHTML;
-      if (navigator.share) {
-        navigator.share({
-          title: 'Vaccine Fact:',
-          text: generatedQuote
-        }).then(() => {
-          console.log('Thanks for sharing!');
-        }).catch((error) => {
-          console.error('Error sharing:', error);
-        });
-      } else {
-        alert('Your browser does not support sharing. Please copy and paste the fact manually.');
+    const facts = [
+      {
+            "text": "The word \"vaccine\" derives from the Latin vacca, meaning \"cow.\" Edward Jenner coined the term after using cowpox (vaccinia) virus to protect against smallpox in 1796.",
+            "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8216846/"
+      },
+      {
+            "text": "Edward Jenner performed the first scientifically documented vaccination in 1796, inoculating 8-year-old James Phipps with material from a cowpox sore on milkmaid Sarah Nelmes' hand.",
+            "source": "https://www.cdc.gov/smallpox/about/history.html"
+      },
+      {
+            "text": "Variolation—deliberate inoculation with smallpox material—predated Jenner's vaccine by centuries. Written accounts of the procedure in China date to 1549, and the practice was independently developed in Africa, India, and the Ottoman Empire.",
+            "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC1200696/"
+      },
+      {
+            "text": "The case-fatality rate of variolation was approximately 10 times lower than that of naturally occurring smallpox. This evidence encouraged widespread adoption of the practice across Europe and North America in the 18th century.",
+            "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC1200696/"
+      },
+      {
+            "text": "George Washington ordered the variolation of the Continental Army in 1777, making it one of the first large-scale military immunization campaigns in history.",
+            "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC1200696/"
+      },
+      {
+            "text": "Smallpox is the only human disease to have been eradicated, declared so by the World Health Organization (WHO) in 1980. The last known natural case occurred in Somalia in 1977.",
+            "source": "https://www.who.int/health-topics/smallpox"
+      },
+      {
+            "text": "Smallpox has killed an estimated 300 million people throughout history, making it one of the deadliest diseases ever to afflict humanity.",
+            "source": "https://www.chop.edu/vaccine-education-center/vaccine-details/smallpox-vaccine"
+      },
+      {
+            "text": "The WHO launched its Intensified Smallpox Eradication Programme in 1967. Thanks to global vaccination campaigns, the disease was eliminated from South America (1971), Asia (1975), and Africa (1977).",
+            "source": "https://www.who.int/news-room/spotlight/history-of-vaccination/history-of-smallpox-vaccination"
+      },
+      {
+            "text": "Louis Pasteur developed the first laboratory-produced vaccine in 1872—for fowl cholera in chickens. Despite suffering a stroke and losing two daughters to typhoid, he continued his groundbreaking work.",
+            "source": "https://www.who.int/news-room/spotlight/history-of-vaccination/a-brief-history-of-vaccination"
+      },
+      {
+            "text": "In July 1885, Louis Pasteur saved 9-year-old Joseph Meister by administering 13 doses of an experimental rabies vaccine after the boy was bitten 14 times by a rabid dog. Meister survived.",
+            "source": "https://www.pasteur.fr/en/research-journal/news/history-first-rabies-vaccination-1885"
+      },
+      {
+            "text": "Louis Pasteur's rabies treatment expanded the meaning of the word \"vaccine.\" Pasteur deliberately borrowed Jenner's term \"vaccine\" to honor him, permanently broadening it beyond its cow-specific origins.",
+            "source": "https://www.sciencefriday.com/articles/the-origin-of-the-word-vaccine/"
+      },
+      {
+            "text": "The BCG (Bacillus Calmette-Guérin) vaccine against tuberculosis was first administered to a human infant in Paris in July 1921, developed by French scientists Albert Calmette and Camille Guérin at the Pasteur Institute.",
+            "source": "https://www.pasteur.fr/en/home/research-journal/news/bcg-vaccine-first-tuberculosis-vaccination-took-place-century-ago"
+      },
+      {
+            "text": "The BCG vaccine was adopted by the League of Nations' Health Committee in 1928 and became a critical tool in controlling TB, especially in Europe after World War II.",
+            "source": "https://en.wikipedia.org/wiki/BCG_vaccine"
+      },
+      {
+            "text": "In 1937, Max Theiler and Hugh Smith developed the 17D yellow fever vaccine by attenuating the Asibi strain through more than 176 passages in chicken embryo tissue. It was licensed in 1938.",
+            "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2118520/"
+      },
+      {
+            "text": "The yellow fever 17D vaccine is the only Nobel Prize ever awarded specifically for the development of a virus vaccine. Max Theiler received the Nobel Prize in Physiology or Medicine in 1951.",
+            "source": "https://www.nobelprize.org/prizes/medicine/1951/theiler/facts/"
+      },
+      {
+            "text": "Over 850 million doses of the yellow fever 17D vaccine have been distributed since 1938. The vaccine is up to 100% effective, affordable, and can provide lifelong protection after a single dose.",
+            "source": "https://www.nature.com/articles/d42859-020-00012-9"
+      },
+      {
+            "text": "The first influenza vaccine was approved for U.S. military use in 1945, following by approval for civilian use in 1946. Research was led by Dr. Thomas Francis Jr. and Dr. Jonas Salk.",
+            "source": "https://www.who.int/news-room/spotlight/history-of-vaccination/a-brief-history-of-vaccination"
+      },
+      {
+            "text": "Jonas Salk's inactivated polio vaccine (IPV) was announced safe and effective on April 12, 1955. Salk had tested the vaccine on himself, his family, and about one million child \"Polio Pioneers\" in 1954.",
+            "source": "https://www.salk.edu/about/history-of-salk/jonas-salk/"
+      },
+      {
+            "text": "Jonas Salk never patented the polio vaccine and earned no money from his discovery, stating he wanted it distributed as widely as possible. It has been estimated the patent could have been worth $7 billion.",
+            "source": "https://www.salk.edu/about/history-of-salk/jonas-salk/"
+      },
+      {
+            "text": "Before the Salk vaccine, annual U.S. polio cases averaged more than 45,000. Within one year of the vaccine's release, deaths from polio declined by 50%; by 1962, annual U.S. cases had fallen to just 910.",
+            "source": "https://www.eisenhowerlibrary.gov/research/online-documents/jonas-salk-and-polio-vaccine"
+      },
+      {
+            "text": "An oral polio vaccine (OPV) developed by Albert Sabin came into commercial use in 1961. Less than 25 years after its release, domestic transmission of polio was eliminated in the United States.",
+            "source": "https://en.wikipedia.org/wiki/Jonas_Salk"
+      },
+      {
+            "text": "Since the launch of the Global Polio Eradication Initiative (GPEI) in 1988, polio cases have decreased by more than 99%. Polio vaccines have also prevented an estimated 20 million cases of paralysis in children.",
+            "source": "https://www.cdc.gov/global-polio-vaccination/about/index.html"
+      },
+      {
+            "text": "Wild poliovirus now circulates only in Afghanistan and Pakistan, the two remaining countries where endemic transmission persists as of 2026. Wild poliovirus types 2 and 3 have already been eradicated.",
+            "source": "https://www.doherty.edu.au/articles/world-polio-day-2024-a-challenging-year-for-global-eradication/"
+      },
+      {
+            "text": "The measles vaccine was first licensed in 1963. By the late 1960s, vaccines were also available for mumps (1967) and rubella (1969), and in 1971 they were combined into the single MMR vaccine.",
+            "source": "https://www.chop.edu/vaccine-education-center/science-history/vaccine-history/developments-by-year"
+      },
+      {
+            "text": "Two doses of MMR vaccine are approximately 97% effective against measles and 97% effective against rubella; one dose is approximately 93% effective against measles.",
+            "source": "https://www.cdc.gov/measles/vaccines/index.html"
+      },
+      {
+            "text": "Measles vaccination coverage of at least 95% is required to prevent outbreaks. During 2000–2023, measles vaccines saved an estimated 60 million lives worldwide.",
+            "source": "https://www.cdc.gov/global-measles-vaccination/data-research/index.html"
+      },
+      {
+            "text": "Two doses of the measles vaccine cost less than $2 per child, making it one of the most cost-effective public health interventions ever developed.",
+            "source": "https://www.cdc.gov/global-measles-vaccination/data-research/index.html"
+      },
+      {
+            "text": "In 1998, Andrew Wakefield published a study in The Lancet falsely linking the MMR vaccine to autism. The paper was fully retracted in 2010 after investigations found the data were manipulated and Wakefield had undisclosed financial conflicts of interest.",
+            "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3136032/"
+      },
+      {
+            "text": "Numerous large studies have found no link between the MMR vaccine and autism. A 2015 study in JAMA involving 95,727 children found no association between MMR vaccination and autism spectrum disorder.",
+            "source": "https://vaccines-autism.uoguelph.ca/anti-vax-history/"
+      },
+      {
+            "text": "The first recombinant DNA vaccine—against hepatitis B—was FDA-approved in July 1986. Developed by Maurice Hilleman's team at Merck, it was the first human vaccine produced by genetic engineering using yeast cells.",
+            "source": "https://www.ebsco.com/research-starters/politics-and-government/fda-approves-genetically-engineered-vaccine-hepatitis-b"
+      },
+      {
+            "text": "The hepatitis B vaccine is on the WHO's List of Essential Medicines. It was developed from a blood-derived vaccine (1981) and later replaced by a safer recombinant version (1986) that cannot transmit blood-borne viruses.",
+            "source": "https://en.wikipedia.org/wiki/Hepatitis_B_vaccine"
+      },
+      {
+            "text": "Vaccines currently prevent 3.5 to 5 million deaths every year from diseases including diphtheria, tetanus, pertussis, influenza, and measles, according to the WHO.",
+            "source": "https://www.who.int/health-topics/vaccines-and-immunization"
+      },
+      {
+            "text": "A landmark 2024 study in The Lancet estimated that immunization has saved at least 154 million lives since 1974, equivalent to 6 lives saved every minute for 50 years. The vast majority—101 million—were infants.",
+            "source": "https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-year"
+      },
+      {
+            "text": "Measles vaccination alone accounted for nearly 94 million of the 154 million lives saved since 1974, making it the single greatest contributor to vaccine-driven mortality reduction.",
+            "source": "https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-year"
+      },
+      {
+            "text": "For each life saved through immunization, an average of 66 years of full health were gained, resulting in a total of 10.2 billion full health years gained over the past five decades.",
+            "source": "https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-year"
+      },
+      {
+            "text": "Routine childhood vaccinations for U.S. children born during 1994–2023 will have prevented about 508 million illnesses, 32 million hospitalizations, and over 1.1 million deaths, according to CDC research.",
+            "source": "https://www.cdc.gov/vaccines/by-disease/index.html"
+      },
+      {
+            "text": "The U.S. childhood vaccination program has saved approximately $2.7 trillion in societal costs and $540 billion in direct medical costs over 30 years, making it one of the most cost-effective public health interventions ever.",
+            "source": "https://www.cidrap.umn.edu/childhood-vaccines/childhood-vaccines-have-prevented-half-billion-illnesses-saved-us-27-trillion-3"
+      },
+      {
+            "text": "Vaccines work by introducing antigens—weakened, inactivated, or partial forms of pathogens—that trigger an immune response without causing disease. The body then creates antibodies and memory cells that provide future protection.",
+            "source": "https://www.who.int/news-room/feature-stories/detail/how-do-vaccines-work"
+      },
+      {
+            "text": "Memory cells are central to vaccine-induced long-term immunity. After vaccination, B and T memory cells \"remember\" the pathogen and mount a faster, more robust response upon future exposure.",
+            "source": "https://www.longdom.org/open-access/the-significance-and-mechanisms-of-vaccine-immunology-in-immune-system-and-its-innovations.pdf"
+      },
+      {
+            "text": "Live-attenuated vaccines contain weakened but living pathogens and typically produce strong, long-lasting immunity—often lifelong—with one or two doses. Examples include the MMR, varicella, and yellow fever vaccines.",
+            "source": "https://www.hhs.gov/immunization/basics/types/index.html"
+      },
+      {
+            "text": "Inactivated vaccines use killed pathogens and generally require multiple doses or booster shots to maintain adequate immunity. Examples include the inactivated polio vaccine (IPV), hepatitis A, and rabies vaccines.",
+            "source": "https://www.hhs.gov/immunization/basics/types/index.html"
+      },
+      {
+            "text": "Subunit vaccines contain only specific pieces of a pathogen—such as proteins or polysaccharides—rather than the whole organism. They are safe for immunocompromised individuals because they cannot cause infection.",
+            "source": "https://www.pfizer.com/news/articles/understanding_six_types_of_vaccine_technologies"
+      },
+      {
+            "text": "Toxoid vaccines use inactivated bacterial toxins to stimulate immunity against the harmful effects of a toxin rather than the bacterium itself. The diphtheria and tetanus vaccines are classic examples.",
+            "source": "https://www.hhs.gov/immunization/basics/types/index.html"
+      },
+      {
+            "text": "mRNA vaccines work by delivering genetic instructions that direct cells to produce a harmless viral protein, prompting an immune response. They do not alter DNA and cannot integrate into the human genome.",
+            "source": "https://medlineplus.gov/genetics/understanding/therapy/mrnavaccines/"
+      },
+      {
+            "text": "More than 50 years of public and private research laid the groundwork for rapid mRNA COVID-19 vaccine development. Key milestones included the 1961 discovery of mRNA itself and decades of lipid nanoparticle research.",
+            "source": "https://www.niaid.nih.gov/diseases-conditions/decades-making-mrna-covid-19-vaccines"
+      },
+      {
+            "text": "Katalin Karikó and Drew Weissman were awarded the 2023 Nobel Prize in Physiology or Medicine for their discovery of nucleoside base modifications that enabled the development of effective mRNA vaccines against COVID-19.",
+            "source": "https://www.nobelprize.org/prizes/medicine/2023/press-release/"
+      },
+      {
+            "text": "The Pfizer-BioNTech and Moderna mRNA COVID-19 vaccines demonstrated approximately 94–95% efficacy against symptomatic COVID-19 infection in Phase 3 clinical trials conducted in late 2020.",
+            "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8328682/"
+      },
+      {
+            "text": "The first COVID-19 vaccine was authorized in December 2020—less than 12 months after the SARS-CoV-2 genome was sequenced in January 2020, the fastest vaccine development timeline in history.",
+            "source": "https://www.nature.com/articles/s41541-022-00442-8"
+      },
+      {
+            "text": "COVID-19 vaccines averted an estimated 2.5 million deaths globally between 2020 and 2024, according to a 2025 study published in JAMA Health Forum, with sensitivity analyses ranging from 1.4 to 4.0 million lives.",
+            "source": "https://jamanetwork.com/journals/jama-health-forum/fullarticle/2836434"
+      },
+      {
+            "text": "COVID-19 vaccines saved more than 1.4 million lives in the WHO European Region alone, reducing pandemic deaths by at least 57%, with the first booster dose alone saving approximately 700,000 lives.",
+            "source": "https://www.who.int/europe/news/item/16-01-2024-covid-19-vaccinations-have-saved-more-than-1.4-million-lives-in-the-who-european-region"
+      },
+      {
+            "text": "The HPV vaccine has the potential to prevent more than 90% of cancers caused by HPV, including cervical, vaginal, vulvar, anal, penile, and oropharyngeal cancers.",
+            "source": "https://www.cdc.gov/hpv/vaccines/index.html"
+      },
+      {
+            "text": "Girls vaccinated against HPV at or before age 16 are 80% less likely to develop cervical cancer than unvaccinated girls, according to a 2025 Cochrane review of 225 studies involving more than 132 million people.",
+            "source": "https://www.cochrane.org/about-us/news/new-research-confirms-hpv-vaccination-prevents-cervical-cancer"
+      },
+      {
+            "text": "Among vaccinated teen girls in the U.S., infections with HPV types that cause most HPV cancers have dropped 88% since the vaccine was introduced in 2006; among young adult women the reduction is 81%.",
+            "source": "https://www.cdc.gov/hpv/vaccines/index.html"
+      },
+      {
+            "text": "The rotavirus vaccine RotaShield, licensed in the U.S. in 1998, was withdrawn in 1999 after post-licensure surveillance detected a rare association with intussusception (bowel telescoping) at a rate of roughly 1 per 10,000 vaccinated infants.",
+            "source": "https://historyofvaccines.org/diseases/rotavirus/"
+      },
+      {
+            "text": "Current rotavirus vaccines (Rotarix and RotaTeq) demonstrated 85–95% efficacy against severe disease in large clinical trials involving more than 60,000 infants; both trials were specifically sized to rule out significant intussusception risk.",
+            "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8482027/"
+      },
+      {
+            "text": "In the U.S., rotavirus vaccine introduction has reduced rotavirus-related hospitalizations by as much as 86% since 2006, according to surveillance data collected after the program's implementation.",
+            "source": "https://en.wikipedia.org/wiki/Rotavirus_vaccine"
+      },
+      {
+            "text": "The varicella (chickenpox) vaccine was licensed in the United States in 1995. The CDC recommends two doses: the first at 12–15 months and the second at 4–6 years of age.",
+            "source": "https://www.cdc.gov/vaccines/hcp/current-vis/varicella.html"
+      },
+      {
+            "text": "Most people who receive two doses of varicella vaccine are protected for life. If a vaccinated person does contract chickenpox (\"breakthrough varicella\"), symptoms are typically much milder.",
+            "source": "https://my.clevelandclinic.org/health/treatments/22136-chickenpox-vaccine"
+      },
+      {
+            "text": "Herd immunity occurs when enough of a population is immune—through vaccination or prior infection—to interrupt pathogen transmission and thereby protect those who cannot be vaccinated.",
+            "source": "https://www.who.int/news-room/feature-stories/detail/how-do-vaccines-work"
+      },
+      {
+            "text": "For measles, achieving herd immunity requires approximately 92–95% vaccination coverage, reflecting its extremely high transmissibility (R₀ of 12–18). Measles is among the most contagious pathogens known.",
+            "source": "https://historyofvaccines.org/vaccines-101/what-do-vaccines-do/how-herd-immunity-works/"
+      },
+      {
+            "text": "Vaccine adjuvants are substances added to vaccines to enhance the immune response. The first evidence of adjuvants appeared in 1926, when Alexander Glenny found that mixing aluminum salts with antigens produced more antibodies.",
+            "source": "https://www.nature.com/articles/s41392-023-01557-7"
+      },
+      {
+            "text": "Aluminum-based adjuvants (alum) are the most widely used adjuvants in licensed vaccines. They promote humoral immunity by inducing a Th2 immune response, characterized by increased antibody production.",
+            "source": "https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2025.1557415/full"
+      },
+      {
+            "text": "The standard cold chain temperature for most vaccines is +2°C to +8°C. If a vaccine is improperly stored—frozen or overheated—it can lose all or part of its effectiveness and must not be administered.",
+            "source": "https://immune.org.nz/vaccines/cold-chain"
+      },
+      {
+            "text": "The bifurcated needle, developed in 1961, required only one-quarter of the vaccine needed with previous methods and was the primary instrument used in the WHO smallpox eradication campaign from 1966 to 1977.",
+            "source": "https://www.who.int/news-room/feature-stories/detail/smallpox-vaccines"
+      },
+      {
+            "text": "Standard vaccine development typically takes approximately 10–15 years, covering discovery, pre-clinical research, and three phases of clinical trials before licensure by regulators like the FDA.",
+            "source": "https://www.cdc.gov/vaccines/basics/how-developed-approved.html"
+      },
+      {
+            "text": "Phase I clinical trials for new vaccines typically involve dozens of participants and focus on determining safe dose levels. At least one year is required before advancing to Phase II trials.",
+            "source": "https://ncirs.org.au/phases-clinical-trials"
+      },
+      {
+            "text": "Phase III vaccine trials enroll thousands of participants and are designed to confirm efficacy and detect rare adverse events. The pathogen must be circulating during the trial to establish protective effectiveness.",
+            "source": "https://ncirs.org.au/phases-clinical-trials"
+      },
+      {
+            "text": "The Vaccine Adverse Event Reporting System (VAERS), established in 1990, is co-managed by the CDC and FDA and serves as an early warning system to detect safety signals from any FDA-approved or authorized vaccine.",
+            "source": "https://www.cdc.gov/vaccine-safety-systems/vaers/index.html"
+      },
+      {
+            "text": "VAERS accepts reports from anyone—healthcare providers, manufacturers, and the public—but reports alone cannot determine causation. VAERS functions as a hypothesis-generating system, with confirmed signals further investigated via the Vaccine Safety Datalink (VSD).",
+            "source": "https://wonder.cdc.gov/vaers.html"
+      },
+      {
+            "text": "The National Childhood Vaccine Injury Act was signed into law by President Reagan on November 14, 1986. It created the National Vaccine Injury Compensation Program (VICP), a no-fault system to compensate individuals harmed by certain vaccines.",
+            "source": "https://en.wikipedia.org/wiki/National_Childhood_Vaccine_Injury_Act"
+      },
+      {
+            "text": "The NCVIA was enacted after lawsuits against vaccine manufacturers threatened to cause vaccine shortages. By 1985, only one company still manufactured pertussis vaccine in the U.S., highlighting a serious supply crisis.",
+            "source": "https://www.kff.org/other-health/how-does-the-federal-government-monitor-vaccine-safety/"
+      },
+      {
+            "text": "The \"Cutter Incident\" of 1955 was a defining moment in vaccine manufacturing safety. Inadequately inactivated Salk polio vaccine from Cutter Laboratories caused 40,000 cases of polio and led to major reforms in vaccine regulation.",
+            "source": "https://www.cdc.gov/vaccine-safety/historical-concerns/index.html"
+      },
+      {
+            "text": "From 1955 to 1963, an estimated 10–30% of polio vaccines administered in the U.S. were contaminated with simian virus 40 (SV40), a contaminant from monkey kidney cells used to grow the vaccine. No definitive human disease link was ever confirmed.",
+            "source": "https://www.cdc.gov/vaccine-safety/historical-concerns/index.html"
+      },
+      {
+            "text": "Anti-vaccination sentiment dates to the early 1800s, shortly after Jenner's discovery. The UK's Vaccination Act of 1853, which mandated infant vaccination, triggered immediate resistance and the formation of anti-vaccination leagues.",
+            "source": "https://historyofvaccines.org/vaccines-101/misconceptions-about-vaccines/history-anti-vaccination-movements/"
+      },
+      {
+            "text": "The Anti-Vaccination Society of America was founded in 1879, following a visit to the U.S. by prominent British anti-vaccinationist William Tebb. Two additional anti-vaccination leagues formed in New England and New York by 1885.",
+            "source": "https://historyofvaccines.org/vaccines-101/misconceptions-about-vaccines/history-anti-vaccination-movements/"
+      },
+      {
+            "text": "In February 1905, the U.S. Supreme Court ruled in Jacobson v. Massachusetts that states have the authority to enforce compulsory vaccination laws, establishing a foundational legal precedent for vaccine mandates.",
+            "source": "https://historyofvaccines.org/history/vaccine-timeline/timeline/"
+      },
+      {
+            "text": "Today, there are vaccines licensed to prevent more than 30 life-threatening diseases, including diphtheria, tetanus, pertussis, measles, mumps, rubella, polio, hepatitis A and B, chickenpox, rotavirus, influenza, HPV, and meningococcal disease.",
+            "source": "https://www.who.int/health-topics/vaccines-and-immunization"
+      },
+      {
+            "text": "The U.S. childhood immunization schedule is developed by the Advisory Committee on Immunization Practices (ACIP), approved by the CDC, and reviewed annually to incorporate new vaccines and updated evidence.",
+            "source": "https://www.cdc.gov/vaccines/hcp/imz-schedules/child-adolescent-age.html"
+      },
+      {
+            "text": "Childhood vaccination has directly contributed to reducing infant deaths by 40% globally over the past 50 years, and by more than 50% in the African Region, according to the landmark 2024 WHO-led Lancet study.",
+            "source": "https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-year"
+      },
+      {
+            "text": "Approximately 14.5 million children received no vaccines at all in 2023, and 22.2 million children did not receive any dose of measles-containing vaccine—leaving them highly vulnerable to preventable diseases.",
+            "source": "https://www.chop.edu/vaccine-education-center/science-history/global-immunization/diseases-and-vaccines-world-view"
+      },
+      {
+            "text": "The seasonal influenza vaccine has been in use for more than 60 years. The WHO revises its composition twice yearly—for both the Northern and Southern Hemisphere seasons—to match circulating strains.",
+            "source": "https://www.emro.who.int/health-topics/influenza/influenza-vaccines.html"
+      },
+      {
+            "text": "Influenza vaccine effectiveness varies by season and strain match. In the 2024–25 U.S. flu season, adjusted overall vaccine effectiveness was 56%, based on a study of more than 139,000 patients.",
+            "source": "https://www.cdc.gov/flu-vaccines-work/php/effectiveness-studies/index.html"
+      },
+      {
+            "text": "Viral vector vaccines use a different, harmless virus as a delivery vehicle to introduce genetic material from the target pathogen into human cells. The Oxford-AstraZeneca COVID-19 vaccine used this platform.",
+            "source": "https://www.hhs.gov/immunization/basics/types/index.html"
+      },
+      {
+            "text": "Live-attenuated vaccines must be stored and handled carefully because they are fragile and can be damaged or destroyed by heat and light. Improper handling can render them ineffective before administration.",
+            "source": "https://www.cdc.gov/pinkbook/hcp/table-of-contents/chapter-1-principles-of-vaccination.html"
+      },
+      {
+            "text": "Conjugate vaccines link a polysaccharide antigen to a carrier protein, enhancing the immune response especially in infants and young children whose immune systems cannot mount strong responses to polysaccharides alone.",
+            "source": "https://www.hhs.gov/immunization/basics/types/index.html"
+      },
+      {
+            "text": "For polio, the herd immunity threshold is estimated at 80–93% coverage, depending on the reproductive number used. This wide range reflects variability in transmission dynamics across different settings.",
+            "source": "https://www.atrainceu.com/content/4-herd-immunity"
+      },
+      {
+            "text": "The Global Polio Eradication Initiative is the largest public-health initiative ever undertaken, with more than $20 billion contributed as of 2022. Partners include WHO, UNICEF, CDC, Rotary International, and the Bill & Melinda Gates Foundation.",
+            "source": "https://www.doherty.edu.au/articles/world-polio-day-2024-a-challenging-year-for-global-eradication/"
+      },
+      {
+            "text": "Eradicating polio would save at least $40–50 billion, mostly in low-income countries, according to economic modeling, through avoided treatment costs and productivity gains.",
+            "source": "https://www.who.int/news-room/fact-sheets/detail/poliomyelitis"
+      },
+      {
+            "text": "Polio vaccines have prevented an estimated 20 million cases of paralysis in children since 1988, meaning millions of people can walk today who would otherwise have been paralyzed by the disease.",
+            "source": "https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-year"
+      },
+      {
+            "text": "Approximately 700,000 children under age 5 died from vaccine-preventable diseases in 2018, with 99% of those deaths occurring in low- and middle-income countries, highlighting the global equity challenge in vaccine access.",
+            "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8677503/"
+      },
+      {
+            "text": "The first U.S. Vaccine Agency was established by Congress in 1813 to ensure the quality of the smallpox vaccine—one of the earliest examples of government vaccine oversight in the United States.",
+            "source": "https://historyofvaccines.org/history/vaccine-timeline/timeline/"
+      },
+      {
+            "text": "mRNA vaccines cannot alter a person's DNA. mRNA never enters the cell nucleus where DNA is stored; it is read by cellular ribosomes in the cytoplasm and then rapidly degraded.",
+            "source": "https://medlineplus.gov/genetics/understanding/therapy/mrnavaccines/"
+      },
+      {
+            "text": "Once scientists had the SARS-CoV-2 genetic sequence in January 2020, Moderna developed a vaccine candidate and began Phase I clinical trials by March 15, 2020—just 65 days later.",
+            "source": "https://ki.se/en/research/popular-science-and-dialogue/spotlight-on/spotlight-on-vaccine-research/lightning-fast-vaccine-development"
+      },
+      {
+            "text": "The Vaccine Safety Datalink (VSD), established in 1990, links vaccination records with health outcomes in a population of over 12 million individuals, enabling rapid post-licensure safety studies.",
+            "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9870038/"
+      },
+      {
+            "text": "Pearl Kendrick and Grace Eldering demonstrated in 1939 that the pertussis vaccine reduced childhood whooping cough rates from 15.1 to 2.3 cases per 100 children—a landmark efficacy demonstration by two pioneering women scientists.",
+            "source": "https://www.who.int/news-room/spotlight/history-of-vaccination/a-brief-history-of-vaccination"
+      },
+      {
+            "text": "Over the past 50 years, vaccination against 14 diseases has contributed to reducing infant deaths by more than 50% in Africa, demonstrating vaccines' outsized role in the region with the highest burden of childhood mortality.",
+            "source": "https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-year"
+      },
+      {
+            "text": "The dengue vaccine Dengvaxia, approved by the FDA in 2019, is only recommended for individuals aged 9–16 who have laboratory-confirmed prior dengue infection, because vaccination of dengue-naive individuals can increase risk of severe disease.",
+            "source": "https://www.immunize.org/vaccines/vaccine-timeline/"
+      },
+      {
+            "text": "The first chikungunya vaccine, IXCHIQ (Valneva), was FDA-approved in November 2023 for adults 18 and older at increased risk of exposure. It is the first licensed vaccine against this mosquito-borne viral disease.",
+            "source": "https://www.immunize.org/vaccines/vaccine-timeline/"
+      },
+      {
+            "text": "mRNA vaccine technology is being explored for use against cancer, HIV, RSV, and other infectious diseases. Some cancer mRNA vaccines are already in clinical trials, representing a potential revolution in personalized cancer immunotherapy.",
+            "source": "https://www.niaid.nih.gov/diseases-conditions/decades-making-mrna-covid-19-vaccines"
+      },
+      {
+            "text": "WHO's Expanded Programme on Immunization (EPI), launched in 1974, laid the foundation for the 154 million lives saved over 50 years. Starting with just 6 antigens, the EPI now supports immunization against 14 or more diseases in low- and middle-income countries.",
+            "source": "https://www.who.int/news/item/24-04-2024-global-immunization-efforts-have-saved-at-least-154-million-lives-over-the-past-50-year"
       }
-      gtag('event', 'share_fact', { event_category: 'interaction', event_label: 'Share Fact' });
+];
+
+    const factText = document.getElementById('factText');
+    const sourceContainer = document.getElementById('sourceContainer');
+    const sourceLink = document.getElementById('sourceLink');
+    const statusMessage = document.getElementById('statusMessage');
+    const sharePanel = document.getElementById('sharePanel');
+    const xShareLink = document.getElementById('xShareLink');
+    const blueskyShareLink = document.getElementById('blueskyShareLink');
+    const emailShareLink = document.getElementById('emailShareLink');
+
+    document.getElementById('newFactButton').addEventListener('click', getFact);
+    document.getElementById('shareButton').addEventListener('click', shareFact);
+    document.getElementById('copyButton').addEventListener('click', copyFact);
+
+    function trackEvent(name, label) {
+      if (typeof gtag === 'function') {
+        gtag('event', name, { event_category: 'interaction', event_label: label });
+      }
     }
 
-    function copyToClipboard() {
-      const fact = document.getElementById('newQuoteSection').innerHTML;
-      const additionalText = "\nFind more vaccine facts to share at bit.ly/myvaxfacts!";
-      const fullText = fact + additionalText;
-      navigator.clipboard.writeText(fullText).then(() => {
-        alert('Fact and citation copied to clipboard!');
-      }).catch((error) => {
-        console.error('Failed to copy:', error);
-      });
+    function getFact() {
+      const randomNumber = Math.floor(Math.random() * facts.length);
+      currentFact = facts[randomNumber];
+
+      factText.textContent = currentFact.text;
+      sourceLink.href = currentFact.source;
+      sourceLink.textContent = readableSourceName(currentFact.source);
+      sourceContainer.hidden = false;
+      statusMessage.textContent = 'New fact generated.';
+      updateShareLinks();
+      hideFallbackSharePanel();
+      trackEvent('generate_fact', 'New Fact');
     }
+
+    function readableSourceName(url) {
+      try {
+        const parsed = new URL(url);
+        return parsed.hostname.replace(/^www\./, '');
+      } catch (error) {
+        return 'View source';
+      }
+    }
+
+    function getShareText() {
+      if (!currentFact) { getFact(); }
+      return `${currentFact.text}
+
+Source: ${currentFact.source}
+
+More vaccine facts: ${appUrl}`;
+    }
+
+    async function shareFact() {
+      const shareText = getShareText();
+      const shareData = {
+        title: 'Vaccine Fact',
+        text: shareText,
+        url: appUrl
+      };
+
+      if (navigator.share && navigator.canShare?.(shareData)) {
+        try {
+          await navigator.share(shareData);
+          statusMessage.textContent = 'Share sheet opened.';
+          trackEvent('share_fact', 'Native Share');
+        } catch (error) {
+          if (error.name !== 'AbortError') {
+            statusMessage.textContent = 'Sharing did not work. You can copy the fact instead.';
+            showFallbackSharePanel();
+          }
+        }
+        return;
+      }
+
+      showFallbackSharePanel();
+      await copyFact(false);
+      statusMessage.textContent = 'Native sharing is not available here. The fact was copied, and more options are shown below.';
+      trackEvent('share_fact', 'Fallback Share');
+    }
+
+    async function copyFact(showSuccess = true) {
+      const shareText = getShareText();
+
+      try {
+        await navigator.clipboard.writeText(shareText);
+        if (showSuccess) { statusMessage.textContent = 'Fact and source copied.'; }
+        trackEvent('copy_fact', 'Copy Fact');
+      } catch (error) {
+        fallbackCopy(shareText);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.setAttribute('readonly', '');
+      textArea.style.position = 'fixed';
+      textArea.style.top = '-9999px';
+      document.body.appendChild(textArea);
+      textArea.select();
+
+      try {
+        document.execCommand('copy');
+        statusMessage.textContent = 'Fact and source copied.';
+      } catch (error) {
+        statusMessage.textContent = 'Copying did not work in this browser. Please select the fact and source manually.';
+      } finally {
+        document.body.removeChild(textArea);
+      }
+    }
+
+    function updateShareLinks() {
+      const shareText = encodeURIComponent(getShareText());
+      const emailSubject = encodeURIComponent('Vaccine fact');
+      xShareLink.href = `https://twitter.com/intent/tweet?text=${shareText}`;
+      blueskyShareLink.href = `https://bsky.app/intent/compose?text=${shareText}`;
+      emailShareLink.href = `mailto:?subject=${emailSubject}&body=${shareText}`;
+    }
+
+    function showFallbackSharePanel() {
+      updateShareLinks();
+      sharePanel.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideFallbackSharePanel() {
+      sharePanel.setAttribute('aria-hidden', 'true');
+    }
+
+    // Start with a fact so the page has useful content immediately.
+    getFact();
   </script>
 </body>
-
 </html>
