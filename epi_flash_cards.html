@@ -10,9 +10,9 @@
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Interactive flashcards to help epidemiology students master key terms and concepts. Features timer mode, bookmarking, and direct links to academic resources.">
+  <meta name="description" content="Interactive flashcards to help epidemiology students master key terms and concepts. Three difficulty levels, timer mode, bookmarking, downloadable notes, and direct links to academic resources.">
   <meta property="og:title" content="Epidemiology Flashcards">
-  <meta property="og:description" content="Interactive flashcards for epidemiology students — 200 terms with definitions, timer mode, and study bookmarks.">
+  <meta property="og:description" content="Interactive flashcards for epidemiology — terms organized by audience, with definitions, timer mode, bookmarks, and downloadable study notes.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://rfnajera.github.io/assets/images/flashcards_image.jpg" />
   <meta property="og:url" content="https://rfnajera.github.io/epi_flash_cards.html" />
@@ -36,10 +36,8 @@
        ============================================================ -->
   <header class="app-header">
     <div class="header-brand">
-      <!-- SVG Logo: microscope / epidemiology mark -->
       <svg class="header-logo" viewBox="0 0 40 40" fill="none" aria-label="Epi Flashcards logo" role="img">
         <circle cx="20" cy="20" r="20" fill="var(--color-primary)"/>
-        <!-- Simplified Rx / epidemiology curve -->
         <circle cx="20" cy="16" r="7" stroke="white" stroke-width="2" fill="none"/>
         <path d="M20 23 v8" stroke="white" stroke-width="2" stroke-linecap="round"/>
         <path d="M15 27 h10" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
@@ -47,13 +45,12 @@
       </svg>
       <div class="header-title-group">
         <span class="header-title">Epi Flashcards</span>
-        <span class="header-subtitle">200 Epidemiology Terms and Concepts</span>
+        <span class="header-subtitle">Epidemiology Terms &amp; Concepts</span>
       </div>
     </div>
 
     <div class="header-actions">
       <button class="btn-icon" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark/light mode">
-        <!-- injected by JS -->
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       </button>
     </div>
@@ -64,204 +61,387 @@
        ============================================================ -->
   <main class="app-main" role="main">
 
-    <!-- Controls panel -->
-    <div class="controls-panel" role="region" aria-label="Study settings">
-      <div class="controls-left">
-
-        <!-- Mode toggle: Manual / Timer -->
-        <div class="mode-toggle-group" role="group" aria-label="Flip mode">
-          <button class="mode-toggle-btn active" id="btn-mode-manual" aria-pressed="true" title="Flip cards manually">
-            Manual
-          </button>
-          <button class="mode-toggle-btn" id="btn-mode-timer" aria-pressed="false" title="Cards flip automatically on a timer">
-            Timer
-          </button>
-        </div>
-
-        <!-- Timer duration (hidden until timer mode selected) -->
-        <div class="timer-options" id="timer-options" aria-label="Timer duration">
-          <label class="timer-label" for="timer-select">Auto-flip in</label>
-          <select class="timer-select" id="timer-select" aria-label="Seconds before auto-flip">
-            <option value="5">5 sec</option>
-            <option value="10" selected>10 sec</option>
-            <option value="15">15 sec</option>
-            <option value="20">20 sec</option>
-            <option value="30">30 sec</option>
-            <option value="45">45 sec</option>
-            <option value="60">60 sec</option>
-          </select>
-        </div>
-
-        <!-- Shuffle toggle -->
-        <label class="shuffle-toggle" title="Randomize card order">
-          <input type="checkbox" id="shuffle-check" checked aria-label="Shuffle deck">
-          <span>Shuffle</span>
-        </label>
-
-      </div>
-
-      <div class="controls-right">
-        <!-- Reviewed counter -->
-        <div class="counter-badge" aria-live="polite" aria-label="Terms reviewed">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <span id="counter-number">0</span>&nbsp;/&nbsp;<span id="counter-total">200</span>
-          <span style="font-size:var(--text-xs);font-weight:500;opacity:0.75;margin-left:2px">reviewed</span>
-        </div>
-      </div>
-
-      <!-- Progress bar (full width, below the controls row) -->
-      <div class="progress-bar-wrap" style="flex-basis:100%;margin-top:var(--space-1)" role="progressbar" aria-label="Study progress" aria-valuemin="0" aria-valuemax="100">
-        <div class="progress-bar-fill" id="progress-fill"></div>
-      </div>
-    </div>
-
     <!-- ============================================================
-         FLASHCARD
+         CATEGORY PICKER (shown on first visit / change category)
          ============================================================ -->
-
-    <!-- Start / empty state (shown before deck starts) -->
-    <div class="empty-state" id="empty-state" role="status">
-      <svg class="empty-state-icon" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-        <rect x="2" y="4" width="20" height="16" rx="2"/>
-        <path d="M8 4v16M16 4v16M2 12h20" opacity="0.4"/>
-      </svg>
-      <p class="empty-state-title">Ready to study?</p>
-      <p class="empty-state-desc">Click <strong>Start Deck</strong> to begin reviewing 200 epidemiology terms and concepts.</p>
-      <button class="btn btn-primary" id="btn-start" aria-label="Start the flashcard deck">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-        Start Deck
-      </button>
-    </div>
-
-    <!-- Card scene (hidden until started) -->
-    <div class="card-scene" id="card-scene" aria-label="Flashcard">
-
-      <div class="card-stage">
-        <!-- The card itself — click to flip -->
-        <div class="flashcard" id="flashcard" role="button" tabindex="0"
-             aria-label="Flashcard — click or press Space to flip"
-             title="Click to reveal the answer">
-
-          <!-- FRONT FACE -->
-          <div class="card-face card-front" aria-hidden="false" id="card-face-front">
-
-            <!-- Timer ring (shown in timer mode) -->
-            <div class="timer-ring-wrap" id="timer-ring-wrap" aria-hidden="true">
-              <svg class="timer-ring-svg" width="54" height="54" viewBox="0 0 54 54">
-                <circle class="timer-ring-bg" cx="27" cy="27" r="22"/>
-                <circle class="timer-ring-fill" id="timer-ring-fill" cx="27" cy="27" r="22"/>
-                <text class="timer-ring-text" id="timer-ring-text" x="27" y="27">10</text>
-              </svg>
-            </div>
-
-            <span class="card-label">Question</span>
-            <p class="card-question" id="card-question">
-              <!-- question text injected by JS -->
-            </p>
-            <span class="card-hint">Click or press <kbd style="background:rgba(255,255,255,0.15);padding:1px 6px;border-radius:4px;font-family:inherit;font-size:0.85em">Space</kbd> to reveal answer</span>
-          </div>
-
-          <!-- BACK FACE -->
-          <div class="card-face card-back" aria-hidden="true" id="card-face-back">
-
-            <div class="card-back-inner">
-              <span class="card-label" style="color:var(--color-accent)">Answer</span>
-              <p class="card-answer" id="card-answer">
-                <!-- answer text injected by JS -->
-              </p>
-              <p class="card-reference" id="card-ref"></p>
-            </div>
-
-            <!-- Action row at the bottom of the card back -->
-            <div class="card-back-footer">
-              <!-- Learn More -->
-              <a class="btn-learn" id="btn-learn-more" href="#" target="_blank" rel="noopener noreferrer"
-                 title="Search this term on academic &amp; government websites"
-                 aria-label="Learn more about this term (opens academic search)">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-                Learn More
-              </a>
-
-              <!-- Bookmark -->
-              <button class="btn-bookmark" id="btn-bookmark" aria-label="Mark this term for review">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-                <span class="btn-bookmark-label">Mark for review</span>
-              </button>
-            </div>
-
-          </div>
-        </div><!-- /flashcard -->
-      </div><!-- /card-stage -->
-    </div><!-- /card-scene -->
-
-    <!-- ============================================================
-         NAVIGATION ROW
-         ============================================================ -->
-    <div class="nav-row" id="nav-row" role="navigation" aria-label="Card navigation">
-      <button class="btn btn-secondary" id="btn-prev" aria-label="Previous card" title="Previous (← Arrow)">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
-        Previous
-      </button>
-
-      <button class="btn btn-flip" id="btn-flip" aria-label="Flip card" title="Flip (Space)">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
-        Flip Card
-      </button>
-
-      <button class="btn btn-secondary" id="btn-next" aria-label="Next card" title="Next (→ Arrow)">
-        Next
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
-      </button>
-
-      <button class="btn btn-secondary" id="btn-restart" aria-label="Restart deck" title="Restart with a freshly shuffled deck" style="display:none">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-        Restart
-      </button>
-    </div>
-
-    <!-- Keyboard shortcut hint (shown after start) -->
-    <p style="font-size:var(--text-xs);color:var(--color-text-faint);text-align:center;margin-top:calc(var(--space-2) * -1)">
-      Keyboard: <kbd style="background:var(--color-surface-offset);padding:1px 5px;border-radius:3px;border:1px solid var(--color-border)">←</kbd>
-      <kbd style="background:var(--color-surface-offset);padding:1px 5px;border-radius:3px;border:1px solid var(--color-border)">→</kbd> navigate &nbsp;·&nbsp;
-      <kbd style="background:var(--color-surface-offset);padding:1px 5px;border-radius:3px;border:1px solid var(--color-border)">Space</kbd> flip &nbsp;·&nbsp;
-      <kbd style="background:var(--color-surface-offset);padding:1px 5px;border-radius:3px;border:1px solid var(--color-border)">B</kbd> bookmark
-    </p>
-
-    <!-- ============================================================
-         BOOKMARKED TERMS PANEL
-         ============================================================ -->
-    <section class="bookmarks-section" id="bookmarks-section" aria-label="Bookmarked terms for review">
-      <div class="bookmarks-header" id="bookmarks-header" role="button" tabindex="0"
-           aria-expanded="false" aria-controls="bookmarks-body"
-           title="Toggle bookmark list">
-        <div class="bookmarks-header-left">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-bookmark)" stroke-width="2.5" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-          <span class="bookmarks-title">Terms Marked for Review</span>
-          <span class="bookmark-count-badge" id="bookmark-count-badge">0</span>
-        </div>
-        <svg class="bookmarks-toggle-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-      </div>
-
-      <div class="bookmarks-body" id="bookmarks-body">
-        <p class="bookmarks-empty-msg" id="bookmarks-empty-msg">
-          No terms marked yet. While viewing a card's answer, click <strong>Mark for review</strong> (or press <kbd style="background:var(--color-surface-offset);padding:1px 5px;border-radius:3px;border:1px solid var(--color-border)">B</kbd>) to save it here.
+    <section class="category-picker" id="category-picker" aria-label="Choose study category">
+      <div class="category-picker-intro">
+        <h2 class="category-picker-title">Choose a Study Level</h2>
+        <p class="category-picker-desc">
+          Cards are organized into three categories so you can study at the depth that fits your goals.
+          You can switch categories any time.
         </p>
+      </div>
 
-        <textarea class="bookmarks-textarea" id="bookmarks-textarea"
-          readonly
-          aria-label="Bookmarked terms — copy and paste to study"
-          placeholder="Your bookmarked terms will appear here..."></textarea>
+      <div class="category-grid">
 
-        <div class="bookmarks-actions" id="bookmarks-actions" style="display:none">
-          <button class="btn btn-accent" id="btn-copy" aria-label="Copy all bookmarked terms to clipboard">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            Copy to Clipboard
-          </button>
-          <button class="btn btn-secondary" id="btn-clear-bookmarks" aria-label="Clear all bookmarks">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-            Clear All
-          </button>
-          <span class="copy-feedback" id="copy-feedback" role="status" aria-live="polite">✓ Copied!</span>
+        <button class="category-card category-public" data-category="public" tabindex="0">
+          <div class="category-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div class="category-title">General Public</div>
+          <div class="category-desc">Everyday vocabulary of public health and disease — accessible to anyone, no science background required.</div>
+          <div class="category-count">— cards</div>
+        </button>
+
+        <button class="category-card category-student" data-category="student" tabindex="0">
+          <div class="category-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+              <path d="M6 12v5c0 2 4 3 6 3s6-1 6-3v-5"/>
+            </svg>
+          </div>
+          <div class="category-title">Undergraduate / Graduate</div>
+          <div class="category-desc">Foundational study designs, measures of association, bias, and screening — assumes basic science literacy.</div>
+          <div class="category-count">— cards</div>
+        </button>
+
+        <button class="category-card category-advanced" data-category="advanced" tabindex="0">
+          <div class="category-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10"/>
+              <path d="M12 2a15 15 0 0 0-4 10 15 15 0 0 0 4 10"/>
+              <path d="M2 12h20"/>
+            </svg>
+          </div>
+          <div class="category-title">Advanced / Doctoral</div>
+          <div class="category-desc">Causal inference, advanced study designs, survival analysis, and applied field epidemiology methods.</div>
+          <div class="category-count">— cards</div>
+        </button>
+
+        <button class="category-card category-all" data-category="all" tabindex="0">
+          <div class="category-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+            </svg>
+          </div>
+          <div class="category-title">All Categories</div>
+          <div class="category-desc">The full deck — every term from every level, shuffled together for comprehensive review.</div>
+          <div class="category-count">— cards</div>
+        </button>
+
+      </div>
+    </section>
+
+    <!-- ============================================================
+         STUDY AREA (controls + card + bookmarks)
+         ============================================================ -->
+    <div id="study-area">
+
+      <!-- Selected category badge / change button -->
+      <div class="selected-category-bar">
+        <div class="selected-category-badge" id="selected-category-badge" style="display:none">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          <span class="badge-label">—</span>
+          <span class="badge-dot">·</span>
+          <span class="badge-count">— cards</span>
+        </div>
+        <button class="btn-link" id="btn-change-category" title="Choose a different category">Change category</button>
+      </div>
+
+      <!-- Controls panel -->
+      <div class="controls-panel" role="region" aria-label="Study settings">
+        <div class="controls-left">
+
+          <div class="mode-toggle-group" role="group" aria-label="Flip mode">
+            <button class="mode-toggle-btn active" id="btn-mode-manual" aria-pressed="true" title="Flip cards manually">Manual</button>
+            <button class="mode-toggle-btn" id="btn-mode-timer" aria-pressed="false" title="Cards flip automatically on a timer">Timer</button>
+          </div>
+
+          <div class="timer-options" id="timer-options" aria-label="Timer duration">
+            <label class="timer-label" for="timer-select">Auto-flip in</label>
+            <select class="timer-select" id="timer-select" aria-label="Seconds before auto-flip">
+              <option value="5">5 sec</option>
+              <option value="10" selected>10 sec</option>
+              <option value="15">15 sec</option>
+              <option value="20">20 sec</option>
+              <option value="30">30 sec</option>
+              <option value="45">45 sec</option>
+              <option value="60">60 sec</option>
+            </select>
+          </div>
+
+          <label class="shuffle-toggle" title="Randomize card order">
+            <input type="checkbox" id="shuffle-check" checked aria-label="Shuffle deck">
+            <span>Shuffle</span>
+          </label>
+
+        </div>
+
+        <div class="controls-right">
+          <div class="counter-badge" aria-live="polite" aria-label="Terms reviewed">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <span id="counter-number">0</span>&nbsp;/&nbsp;<span id="counter-total">—</span>
+            <span style="font-size:var(--text-xs);font-weight:500;opacity:0.75;margin-left:2px">reviewed</span>
+          </div>
+        </div>
+
+        <div class="progress-bar-wrap" style="flex-basis:100%;margin-top:var(--space-1)" role="progressbar" aria-label="Study progress" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-bar-fill" id="progress-fill"></div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           FLASHCARD
+           ============================================================ -->
+      <div class="empty-state" id="empty-state" role="status">
+        <svg class="empty-state-icon" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <rect x="2" y="4" width="20" height="16" rx="2"/>
+          <path d="M8 4v16M16 4v16M2 12h20" opacity="0.4"/>
+        </svg>
+        <p class="empty-state-title">Ready to study?</p>
+        <p class="empty-state-desc">Click <strong>Start Deck</strong> to begin reviewing the cards in your selected category.</p>
+        <button class="btn btn-primary" id="btn-start" aria-label="Start the flashcard deck">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Start Deck
+        </button>
+      </div>
+
+      <div class="card-scene" id="card-scene" aria-label="Flashcard">
+        <div class="card-stage">
+          <div class="flashcard" id="flashcard" role="button" tabindex="0"
+               aria-label="Flashcard — click or press Space to flip"
+               title="Click to reveal the answer">
+
+            <div class="card-face card-front" aria-hidden="false" id="card-face-front">
+              <div class="timer-ring-wrap" id="timer-ring-wrap" aria-hidden="true">
+                <svg class="timer-ring-svg" width="54" height="54" viewBox="0 0 54 54">
+                  <circle class="timer-ring-bg" cx="27" cy="27" r="22"/>
+                  <circle class="timer-ring-fill" id="timer-ring-fill" cx="27" cy="27" r="22"/>
+                  <text class="timer-ring-text" id="timer-ring-text" x="27" y="27">10</text>
+                </svg>
+              </div>
+
+              <span class="card-label">Question</span>
+              <p class="card-question" id="card-question"></p>
+              <span class="card-hint">Click or press <kbd style="background:rgba(255,255,255,0.15);padding:1px 6px;border-radius:4px;font-family:inherit;font-size:0.85em">Space</kbd> to reveal answer</span>
+            </div>
+
+            <div class="card-face card-back" aria-hidden="true" id="card-face-back">
+              <div class="card-back-inner">
+                <span class="card-label" style="color:var(--color-accent)">Answer</span>
+                <p class="card-answer" id="card-answer"></p>
+                <p class="card-reference" id="card-ref"></p>
+              </div>
+
+              <div class="card-back-footer">
+                <a class="btn-learn" id="btn-learn-more" href="#" target="_blank" rel="noopener noreferrer"
+                   title="Search this term on academic &amp; government websites"
+                   aria-label="Learn more about this term (opens academic search)">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                  Learn More
+                </a>
+
+                <button class="btn-bookmark" id="btn-bookmark" aria-label="Mark this term for review">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                  <span class="btn-bookmark-label">Mark for review</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           NAVIGATION ROW
+           ============================================================ -->
+      <div class="nav-row" id="nav-row" role="navigation" aria-label="Card navigation">
+        <button class="btn btn-secondary" id="btn-prev" aria-label="Previous card" title="Previous (← Arrow)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+          Previous
+        </button>
+
+        <button class="btn btn-flip" id="btn-flip" aria-label="Flip card" title="Flip (Space)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+          Flip Card
+        </button>
+
+        <button class="btn btn-secondary" id="btn-next" aria-label="Next card" title="Next (→ Arrow)">
+          Next
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+
+        <button class="btn btn-secondary" id="btn-restart" aria-label="Restart deck" title="Restart with a freshly shuffled deck" style="display:none">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          Restart
+        </button>
+      </div>
+
+      <p id="keyboard-hint" style="font-size:var(--text-xs);color:var(--color-text-faint);text-align:center;margin-top:calc(var(--space-2) * -1);display:none">
+        Keyboard: <kbd style="background:var(--color-surface-offset);padding:1px 5px;border-radius:3px;border:1px solid var(--color-border)">←</kbd>
+        <kbd style="background:var(--color-surface-offset);padding:1px 5px;border-radius:3px;border:1px solid var(--color-border)">→</kbd> navigate &nbsp;·&nbsp;
+        <kbd style="background:var(--color-surface-offset);padding:1px 5px;border-radius:3px;border:1px solid var(--color-border)">Space</kbd> flip &nbsp;·&nbsp;
+        <kbd style="background:var(--color-surface-offset);padding:1px 5px;border-radius:3px;border:1px solid var(--color-border)">B</kbd> bookmark
+      </p>
+
+      <!-- ============================================================
+           BOOKMARKED TERMS PANEL
+           ============================================================ -->
+      <section class="bookmarks-section" id="bookmarks-section" aria-label="Bookmarked terms for review">
+        <div class="bookmarks-header" id="bookmarks-header" role="button" tabindex="0"
+             aria-expanded="false" aria-controls="bookmarks-body"
+             title="Toggle bookmark list">
+          <div class="bookmarks-header-left">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-bookmark)" stroke-width="2.5" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            <span class="bookmarks-title">Terms Marked for Review</span>
+            <span class="bookmark-count-badge" id="bookmark-count-badge">0</span>
+          </div>
+          <svg class="bookmarks-toggle-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+
+        <div class="bookmarks-body" id="bookmarks-body">
+          <p class="bookmarks-empty-msg" id="bookmarks-empty-msg">
+            No terms marked yet. While viewing a card's answer, click <strong>Mark for review</strong> (or press <kbd style="background:var(--color-surface-offset);padding:1px 5px;border-radius:3px;border:1px solid var(--color-border)">B</kbd>) to save it here.
+          </p>
+
+          <textarea class="bookmarks-textarea" id="bookmarks-textarea"
+            readonly
+            aria-label="Bookmarked terms — copy and paste to study"
+            placeholder="Your bookmarked terms will appear here..."></textarea>
+
+          <div class="bookmarks-actions" id="bookmarks-actions" style="display:none">
+            <button class="btn btn-accent" id="btn-copy" aria-label="Copy all bookmarked terms to clipboard">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copy to Clipboard
+            </button>
+            <button class="btn btn-primary" id="btn-download-rtf" aria-label="Download bookmarked terms as a rich text file">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download Notes (.rtf)
+            </button>
+            <button class="btn btn-secondary" id="btn-clear-bookmarks" aria-label="Clear all bookmarks">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+              Clear All
+            </button>
+            <span class="copy-feedback" id="copy-feedback" role="status" aria-live="polite">✓ Copied!</span>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- /#study-area -->
+
+    <!-- ============================================================
+         REFERENCES & SOURCES
+         ============================================================ -->
+    <section class="references-section" aria-label="References">
+      <h2 class="references-title">References &amp; Sources</h2>
+      <p class="references-intro">
+        Card content was reviewed and updated against the following standard epidemiology texts and authoritative public-health sources:
+      </p>
+      <ol class="references-list">
+        <li>
+          Bonita R, Beaglehole R, Kjellström T.
+          <em>Basic Epidemiology</em>, 2nd ed. Geneva: World Health Organization, 2006.
+          <a href="https://www.who.int/publications/i/item/9241547073" target="_blank" rel="noopener noreferrer">WHO publication record</a>.
+        </li>
+        <li>
+          Gordis L.
+          <em>Epidemiology</em>, 5th ed. Philadelphia: Elsevier Saunders, 2014.
+        </li>
+        <li>
+          Van den Broeck J, Brestoff JR, eds.
+          <em>Epidemiology: Principles and Practical Guidelines</em>. Dordrecht: Springer, 2013.
+          DOI: <a href="https://doi.org/10.1007/978-94-007-5989-3" target="_blank" rel="noopener noreferrer">10.1007/978-94-007-5989-3</a>.
+        </li>
+        <li>
+          Aschengrau A, Seage GR.
+          <em>Essentials of Epidemiology in Public Health</em> (referenced as <em>Understanding Epidemiology</em>). Burlington, MA: Jones &amp; Bartlett Learning.
+        </li>
+        <li>
+          U.S. Centers for Disease Control and Prevention.
+          <em>Principles of Epidemiology in Public Health Practice</em>, 3rd ed. Atlanta: CDC, 2012.
+          <a href="https://www.cdc.gov/training-publichealth101/php/index.html" target="_blank" rel="noopener noreferrer">CDC self-study course</a>.
+        </li>
+        <li>
+          Rothman KJ, Greenland S, Lash TL.
+          <em>Modern Epidemiology</em>, 3rd ed. Philadelphia: Lippincott Williams &amp; Wilkins, 2008.
+        </li>
+        <li>
+          Hernán MA, Robins JM.
+          <em>Causal Inference: What If</em>. Boca Raton: Chapman &amp; Hall / CRC, 2020.
+          <a href="https://www.hsph.harvard.edu/miguel-hernan/causal-inference-book/" target="_blank" rel="noopener noreferrer">Author's site</a>.
+        </li>
+        <li>
+          Hill AB.
+          The Environment and Disease: Association or Causation?
+          <em>Proceedings of the Royal Society of Medicine</em>, 1965;58(5):295–300.
+          <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1898525/" target="_blank" rel="noopener noreferrer">PMC1898525</a>.
+        </li>
+        <li>
+          Rothman KJ.
+          Causes. <em>American Journal of Epidemiology</em>, 1976;104(6):587–592.
+        </li>
+        <li>
+          Anderson RM, May RM.
+          <em>Infectious Diseases of Humans: Dynamics and Control</em>. Oxford: Oxford University Press, 1991.
+        </li>
+        <li>
+          Hernán MA, Hernández-Díaz S, Robins JM.
+          A structural approach to selection bias.
+          <em>Epidemiology</em>, 2004;15(5):615–625.
+        </li>
+        <li>
+          World Health Organization.
+          <em>Commission on Social Determinants of Health — Final Report</em>. Geneva: WHO, 2008.
+          <a href="https://www.who.int/publications/i/item/WHO-IER-CSDH-08.1" target="_blank" rel="noopener noreferrer">WHO record</a>.
+        </li>
+        <li>
+          U.S. Centers for Disease Control and Prevention.
+          <em>One Health</em>.
+          <a href="https://www.cdc.gov/one-health/" target="_blank" rel="noopener noreferrer">cdc.gov/one-health</a>.
+        </li>
+        <li>
+          Omran AR.
+          The Epidemiologic Transition: A Theory of the Epidemiology of Population Change.
+          <em>The Milbank Memorial Fund Quarterly</em>, 1971;49(4):509–538.
+        </li>
+        <li>
+          Higgins JPT, Thomas J, et al., eds.
+          <em>Cochrane Handbook for Systematic Reviews of Interventions</em> (current version).
+          <a href="https://training.cochrane.org/handbook" target="_blank" rel="noopener noreferrer">Cochrane Training</a>.
+        </li>
+      </ol>
+      <p class="references-note">
+        Where individual cards cite landmark methodological papers (e.g., Kaplan &amp; Meier 1958, Mantel &amp; Haenszel 1959, Cox 1972, Rosenbaum &amp; Rubin 1983, Hernán &amp; Robins 2016), full citations appear on the back of those cards.
+      </p>
+    </section>
+
+    <!-- ============================================================
+         CREATIVE COMMONS LICENSE
+         ============================================================ -->
+    <section class="license-section" aria-label="Creative Commons license">
+      <div class="license-inner">
+        <a class="license-badge" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="license noopener noreferrer" aria-label="Creative Commons Attribution-NonCommercial 4.0 International License">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
+            <circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="1.6"/>
+            <text x="12" y="16" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="11" fill="currentColor">CC</text>
+          </svg>
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
+            <circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="1.6"/>
+            <text x="12" y="16" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="13" fill="currentColor">BY</text>
+          </svg>
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
+            <circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="1.6"/>
+            <text x="12" y="16" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="11" fill="currentColor">NC</text>
+          </svg>
+        </a>
+        <div class="license-text">
+          <p class="license-line">
+            <strong>Epi Flashcards</strong> by <a href="https://epidemiological.net" target="_blank" rel="noopener noreferrer">Rene F. Najera, MPH, DrPH, FCPP</a> is licensed under a
+            <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="license noopener noreferrer">
+              Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0)</a>.
+          </p>
+          <p class="license-line license-line-small">
+            You are free to share and adapt this material for <strong>non-commercial</strong> purposes, provided that you give appropriate credit, indicate any changes, and do not impose additional restrictions. Commercial use requires written permission from the author.
+          </p>
         </div>
       </div>
     </section>
@@ -272,11 +452,41 @@
        FOOTER
        ============================================================ -->
   <footer class="app-footer">
-    <span>Epi Flashcards &mdash; 200 terms and concepts &mdash; for epidemiology students</span>
-      Created with <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Perplexity Computer</a>, Reviewed and Accepted by a Human Epidemiology Instructor
+    <span>Epi Flashcards — terms and concepts for epidemiology students at every level</span>
+    <span>Created with <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Perplexity Computer</a>, reviewed and accepted by a human epidemiology instructor.</span>
   </footer>
 
 </div><!-- /app-wrapper -->
+
+<!-- ============================================================
+     COOKIE CONSENT BANNER
+     ============================================================ -->
+<div class="cookie-banner" id="cookie-banner" role="dialog" aria-live="polite" aria-label="Cookie consent">
+  <div class="cookie-banner-inner">
+    <div class="cookie-banner-icon" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2a10 10 0 1 0 10 10c0-.26-.01-.51-.04-.76A4 4 0 0 1 17 7a4 4 0 0 1-3.93-3.27A10 10 0 0 0 12 2z"/>
+        <circle cx="8.5" cy="10.5" r="1"/>
+        <circle cx="13" cy="14" r="1"/>
+        <circle cx="16" cy="9" r="1"/>
+        <circle cx="9" cy="15" r="1"/>
+      </svg>
+    </div>
+    <div class="cookie-banner-text">
+      <p class="cookie-banner-title">We value your privacy</p>
+      <p class="cookie-banner-desc">
+        This site uses only first-party browser storage (cookies / localStorage) to remember your chosen study category and color theme between visits.
+        We do not set advertising cookies and do not share data with third parties.
+        Under the EU GDPR, the UK Data Protection Act, the California CCPA/CPRA, and similar laws, you can choose to accept or decline this optional storage.
+        Your decision is honored for this site only and you can change it any time by clearing your browser storage.
+      </p>
+    </div>
+    <div class="cookie-banner-actions">
+      <button class="btn btn-secondary" id="cookie-reject" aria-label="Decline non-essential cookies">Decline</button>
+      <button class="btn btn-primary" id="cookie-accept" aria-label="Accept cookies">Accept</button>
+    </div>
+  </div>
+</div>
 
 <!-- Toast area -->
 <div class="toast-area" id="toast-area" aria-live="assertive" aria-atomic="true"></div>
