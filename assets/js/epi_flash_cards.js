@@ -1,321 +1,415 @@
 /* ===================================================================
    EPI FLASHCARDS — epi_flash_cards.js
    Card data + game logic
+   -------------------------------------------------------------------
+   Cards are organized into three difficulty categories:
+     - "public":   General-public terms (no specialized science needed)
+     - "student":  Undergraduate / graduate level (basic science foundation)
+     - "advanced": Doctoral / advanced clinical & field epidemiology
+   -------------------------------------------------------------------
+   All terms have been reviewed against:
+     - Gordis, L. Epidemiology, 5th ed. (Elsevier, 2014)
+     - Bonita R., Beaglehole R., Kjellström T. Basic Epidemiology, 2nd ed.
+       (WHO, 2006)
+     - Van den Broeck J., Brestoff J.R. Epidemiology: Principles &
+       Practical Guidelines (Springer, 2013)
+     - Understanding Epidemiology (Jones & Bartlett)
+     - CDC Principles of Epidemiology in Public Health Practice, 3rd ed.
+       (2012)
    =================================================================== */
 
 // ===================================================================
-// CARD DATA — 116 epidemiology terms
+// CARD DATA
 // ===================================================================
 const CARDS = [
-  { q: "What is the definition of epidemiology?", a: "Epidemiology is the study of the distribution and determinants of health-related states or events in specified populations, and the application of this study to control health problems.", ref: "Source: CDC Principles of Epidemiology", term: "epidemiology" },
-  { q: "What is the natural history of a disease?", a: "The natural history of a disease refers to the progression of a disease process in an individual over time, from the onset to resolution or chronicity.", ref: "Source: Merck Veterinary Manual", term: "natural history of a disease" },
-  { q: "What are the three components of the epidemiologic triad?", a: "The three components of the epidemiologic triad are the agent, the host, and the environment.", ref: "Source: CDC Principles of Epidemiology", term: "three components of the epidemiologic triad" },
-  { q: "What is an epidemic?", a: "An epidemic is the occurrence of more cases of a disease than expected in a given area or among a specific group of people over a particular period of time.", ref: "Source: Principles of Epidemiology", term: "an epidemic" },
-  { q: "What is the difference between incidence and prevalence?", a: "Incidence refers to the number of new cases of a disease in a population during a specific time, while prevalence refers to the total number of cases, both new and existing, in a population at a specific time.", ref: "Source: Merck Veterinary Manual", term: "difference between incidence and prevalence" },
-  { q: "What is a case-control study?", a: "A case-control study is a type of observational study that compares individuals with a specific condition (cases) to those without the condition (controls) to identify risk factors.", ref: "Source: Principles of Epidemiology", term: "a case-control study" },
-  { q: "What is herd immunity?", a: "Herd immunity occurs when a large portion of a population becomes immune to a disease, making its spread unlikely.", ref: "Source: CDC Principles of Epidemiology", term: "herd immunity" },
-  { q: "What is the primary purpose of descriptive epidemiology?", a: "The primary purpose of descriptive epidemiology is to describe the distribution of diseases and health outcomes in terms of person, place, and time.", ref: "Source: Principles of Epidemiology", term: "primary purpose of descriptive epidemiology" },
-  { q: "What is the role of an epidemiologist?", a: "An epidemiologist studies the distribution and determinants of health-related states or events and applies this knowledge to control health problems.", ref: "Source: Principles of Epidemiology", term: "role of an epidemiologist" },
-  { q: "What is a cohort study?", a: "A cohort study is a type of observational study where a group of individuals who share a common characteristic is followed over time to observe outcomes.", ref: "Source: Merck Veterinary Manual", term: "a cohort study" },
-  { q: "What is a pandemic?", a: "A pandemic is an epidemic that has spread over several countries or continents, usually affecting a large number of people.", ref: "Source: Principles of Epidemiology", term: "a pandemic" },
-  { q: "What is the difference between a retrospective and a prospective study?", a: "A retrospective study looks backward in time to examine exposure to risk factors, while a prospective study follows participants forward in time to observe outcomes.", ref: "Source: Gordis Epidemiology", term: "difference between a retrospective and a prospective study" },
-  { q: "What is a cross-sectional study?", a: "A cross-sectional study examines data on exposure and outcome at the same point in time in a population.", ref: "Source: Merck Veterinary Manual", term: "a cross-sectional study" },
-  { q: "What are the steps of an outbreak investigation?", a: "Key steps include: establish a case definition, confirm the outbreak, identify cases, describe and orient data in terms of time, place, and person, develop hypotheses, test hypotheses, refine hypotheses, and implement control measures.", ref: "Source: CDC Principles of Epidemiology", term: "steps of an outbreak investigation" },
-  { q: "What is an endemic?", a: "An endemic is the constant presence of a disease or infectious agent within a given geographic area or population group.", ref: "Source: Principles of Epidemiology", term: "an endemic" },
-  { q: "What is the purpose of analytical epidemiology?", a: "Analytical epidemiology seeks to identify causes or risk factors for diseases and health-related events by testing specific hypotheses.", ref: "Source: Gordis Epidemiology", term: "purpose of analytical epidemiology" },
-  { q: "What is attributable risk?", a: "Attributable risk is the difference in disease risk between exposed and unexposed groups, showing the amount of disease risk that can be attributed to a specific exposure.", ref: "Source: Merck Veterinary Manual", term: "attributable risk" },
-  { q: "What is the incubation period?", a: "The incubation period is the time interval between exposure to an infectious agent and the appearance of the first signs or symptoms of the disease.", ref: "Source: Principles of Epidemiology", term: "incubation period" },
-  { q: "What is the purpose of a case definition?", a: "A case definition provides a set of standard criteria for classifying whether an individual has a particular disease or health condition.", ref: "Source: CDC Principles of Epidemiology", term: "purpose of a case definition" },
-  { q: "What is a confounding variable?", a: "A confounding variable is an extraneous factor that can distort the observed relationship between an exposure and an outcome.", ref: "Source: Gordis Epidemiology", term: "a confounding variable" },
-  { q: "What is a point source epidemic?", a: "A point source epidemic occurs when a group of people is exposed to the same source of infection at the same time.", ref: "Source: Principles of Epidemiology", term: "a point source epidemic" },
-  { q: "What is a propagating epidemic?", a: "A propagating epidemic occurs when the infection spreads person-to-person over time.", ref: "Source: CDC Principles of Epidemiology", term: "a propagating epidemic" },
-  { q: "What is a secondary attack rate?", a: "The secondary attack rate is the proportion of susceptible individuals who develop the disease after exposure to a primary case.", ref: "Source: Gordis Epidemiology", term: "a secondary attack rate" },
-  { q: "What is the iceberg concept of disease?", a: "The iceberg concept refers to the idea that for every clinically apparent case of disease, there are many subclinical, undiagnosed, or asymptomatic cases.", ref: "Source: Principles of Epidemiology", term: "iceberg concept of disease" },
-  { q: "What is surveillance in epidemiology?", a: "Surveillance is the ongoing systematic collection, analysis, and interpretation of health data for planning, implementation, and evaluation of public health practice.", ref: "Source: CDC Principles of Epidemiology", term: "surveillance in epidemiology" },
-  { q: "What is the difference between active and passive surveillance?", a: "Active surveillance involves proactive data collection by health authorities, while passive surveillance relies on reports submitted by health providers.", ref: "Source: Gordis Epidemiology", term: "difference between active and passive surveillance" },
-  { q: "What is the basic reproductive number (R0)?", a: "The basic reproductive number (R0) is the average number of secondary cases produced by one primary case in a completely susceptible population.", ref: "Source: Principles of Epidemiology", term: "basic reproductive number (R0)" },
-  { q: "What is an odds ratio?", a: "An odds ratio is a measure of association that quantifies the odds of exposure among cases relative to the odds of exposure among controls.", ref: "Source: Gordis Epidemiology", term: "an odds ratio" },
-  { q: "What is a confidence interval?", a: "A confidence interval is a range of values that likely contain the true value of a parameter, calculated from sample data.", ref: "Source: Merck Veterinary Manual", term: "a confidence interval" },
-  { q: "What is the null hypothesis in epidemiology?", a: "The null hypothesis is the assumption that there is no association between exposure and outcome.", ref: "Source: Principles of Epidemiology", term: "null hypothesis in epidemiology" },
-  { q: "What is the role of randomization in a clinical trial?", a: "Randomization helps ensure that treatment groups are comparable and eliminates bias in the allocation of treatments.", ref: "Source: Gordis Epidemiology", term: "role of randomization in a clinical trial" },
-  { q: "What is a p-value in epidemiology?", a: "A p-value indicates the probability of observing the study results, or something more extreme, if the null hypothesis is true.", ref: "Source: Principles of Epidemiology", term: "a p-value in epidemiology" },
-  { q: "What is a Type I error?", a: "A Type I error occurs when a null hypothesis is rejected even though it is true.", ref: "Source: Merck Veterinary Manual", term: "a Type I error" },
-  { q: "What is a Type II error?", a: "A Type II error occurs when a null hypothesis is not rejected even though it is false.", ref: "Source: Gordis Epidemiology", term: "a Type II error" },
-  { q: "What is recall bias?", a: "Recall bias occurs when there are differences in the accuracy or completeness of the information recalled by study participants.", ref: "Source: Principles of Epidemiology", term: "recall bias" },
-  { q: "What is selection bias?", a: "Selection bias occurs when the sample selected for a study is not representative of the target population.", ref: "Source: Merck Veterinary Manual", term: "selection bias" },
-  { q: "What is effect modification?", a: "Effect modification occurs when the effect of an exposure on an outcome differs depending on the level of another variable.", ref: "Source: Gordis Epidemiology", term: "effect modification" },
-  { q: "What is the purpose of matching in a case-control study?", a: "Matching is used to control confounding by ensuring cases and controls are comparable for specific variables.", ref: "Source: Principles of Epidemiology", term: "purpose of matching in a case-control study" },
-  { q: "What is lead-time bias?", a: "Lead-time bias occurs when earlier detection of a disease falsely appears to improve survival rates without actual improvements in outcomes.", ref: "Source: Merck Veterinary Manual", term: "lead-time bias" },
-  { q: "What is length-time bias?", a: "Length-time bias occurs when slower-progressing, less aggressive cases of a disease are more likely to be detected by screening than fast-progressing cases.", ref: "Source: Gordis Epidemiology", term: "length-time bias" },
-  { q: "What is primary prevention?", a: "Primary prevention involves measures taken to prevent the occurrence of disease, such as vaccination or lifestyle modifications.", ref: "Source: Principles of Epidemiology", term: "primary prevention" },
-  { q: "What is secondary prevention?", a: "Secondary prevention focuses on early detection and intervention to stop the progression of a disease.", ref: "Source: Gordis Epidemiology", term: "secondary prevention" },
-  { q: "What is tertiary prevention?", a: "Tertiary prevention involves measures to reduce complications and improve quality of life for people with a disease.", ref: "Source: Merck Veterinary Manual", term: "tertiary prevention" },
-  { q: "What is the difference between sensitivity and specificity?", a: "Sensitivity is the ability of a test to correctly identify those with the disease, while specificity is the ability to correctly identify those without the disease.", ref: "Source: CDC Principles of Epidemiology", term: "difference between sensitivity and specificity" },
-  { q: "What is the purpose of a control group in a study?", a: "The control group provides a baseline for comparison to determine the effect of an exposure or intervention.", ref: "Source: Principles of Epidemiology", term: "purpose of a control group in a study" },
-  { q: "What is a risk ratio?", a: "A risk ratio compares the risk of a health outcome in an exposed group to the risk in an unexposed group.", ref: "Source: Gordis Epidemiology", term: "a risk ratio" },
-  { q: "What is a case-fatality rate?", a: "The case-fatality rate is the proportion of individuals with a specific condition who die from that condition within a specified time.", ref: "Source: Merck Veterinary Manual", term: "a case-fatality rate" },
-  { q: "What is a p-value?", a: "A p-value is the probability of obtaining the observed results, or more extreme ones, assuming the null hypothesis is true.", ref: "Source: Gordis Epidemiology", term: "a p-value" },
-  { q: "What is confounding in epidemiology?", a: "Confounding occurs when an extraneous variable is associated with both the exposure and the outcome, distorting the true relationship.", ref: "Source: Principles of Epidemiology", term: "confounding in epidemiology" },
-  { q: "What is an attributable fraction?", a: "The attributable fraction is the proportion of cases in the population that can be attributed to a specific exposure.", ref: "Source: Merck Veterinary Manual", term: "an attributable fraction" },
-  { q: "What is a standard error?", a: "The standard error is the standard deviation of the sampling distribution of a statistic, measuring its precision.", ref: "Source: CDC Principles of Epidemiology", term: "a standard error" },
-  { q: "What is the difference between absolute risk reduction and relative risk reduction?", a: "Absolute risk reduction is the difference in risk between two groups, while relative risk reduction is the proportionate reduction in risk.", ref: "Source: Gordis Epidemiology", term: "difference between absolute risk reduction and relative risk reduction" },
-  { q: "What is an ecological study?", a: "An ecological study analyzes data at the population or group level rather than the individual level.", ref: "Source: Principles of Epidemiology", term: "an ecological study" },
-  { q: "What is statistical power?", a: "Statistical power is the probability of correctly rejecting the null hypothesis when it is false.", ref: "Source: Merck Veterinary Manual", term: "statistical power" },
-  { q: "What is the Kaplan-Meier method?", a: "The Kaplan-Meier method is a statistical technique used to estimate survival probabilities over time.", ref: "Source: CDC Principles of Epidemiology", term: "Kaplan-Meier method" },
-  { q: "What is a hazard ratio?", a: "A hazard ratio is a measure of how often a particular event happens in one group compared to another over time.", ref: "Source: Gordis Epidemiology", term: "a hazard ratio" },
-  { q: "What is the difference between correlation and causation?", a: "Correlation is a statistical association between two variables, while causation indicates one variable directly affects the other.", ref: "Source: Principles of Epidemiology", term: "difference between correlation and causation" },
-  { q: "What is a cohort study?", a: "A cohort study follows a group of individuals over time to determine the incidence of disease and its association with exposures.", ref: "Source: Principles of Epidemiology", term: "a cohort study" },
-  { q: "What is a case definition in an outbreak investigation?", a: "A case definition is a set of standard criteria used to classify whether an individual has a specific disease or condition.", ref: "Source: CDC Principles of Epidemiology", term: "a case definition in an outbreak investigation" },
-  { q: "What is the difference between a pandemic and an epidemic?", a: "An epidemic is localized to a specific region or population, while a pandemic spans multiple countries or continents.", ref: "Source: Gordis Epidemiology", term: "difference between a pandemic and an epidemic" },
-  { q: "What is the role of surveillance in public health?", a: "Surveillance monitors disease trends and provides data for planning, implementing, and evaluating public health interventions.", ref: "Source: Principles of Epidemiology", term: "role of surveillance in public health" },
-  { q: "What is the attack rate in epidemiology?", a: "The attack rate is the proportion of people who develop a disease among those at risk during a specific time.", ref: "Source: Merck Veterinary Manual", term: "attack rate in epidemiology" },
-  { q: "What is the difference between cross-sectional and longitudinal studies?", a: "Cross-sectional studies assess data at one point in time, while longitudinal studies collect data over a period of time.", ref: "Source: Gordis Epidemiology", term: "difference between cross-sectional and longitudinal studies" },
-  { q: "What is a confounding variable?", a: "A confounding variable is an external factor that distorts the observed relationship between exposure and outcome.", ref: "Source: Principles of Epidemiology", term: "a confounding variable" },
-  { q: "What is a null hypothesis?", a: "The null hypothesis assumes no association between exposure and outcome, serving as a baseline for testing.", ref: "Source: CDC Principles of Epidemiology", term: "a null hypothesis" },
-  { q: "What is lead-time bias?", a: "Lead-time bias occurs when earlier detection of a disease falsely appears to improve survival rates without affecting outcomes.", ref: "Source: Gordis Epidemiology", term: "lead-time bias" },
-  { q: "What is ecological fallacy?", a: "Ecological fallacy occurs when assumptions about individuals are based on group-level data.", ref: "Source: Principles of Epidemiology", term: "ecological fallacy" },
-  { q: "What is an odds ratio?", a: "An odds ratio quantifies the odds of exposure among cases relative to controls, used in case-control studies.", ref: "Source: Merck Veterinary Manual", term: "an odds ratio" },
-  { q: "What is statistical significance?", a: "Statistical significance indicates the likelihood that observed results are not due to chance, typically assessed with a p-value.", ref: "Source: Gordis Epidemiology", term: "statistical significance" },
-  { q: "What is herd immunity?", a: "Herd immunity occurs when enough people in a population are immune to a disease, reducing its spread.", ref: "Source: Principles of Epidemiology", term: "herd immunity" },
-  { q: "What is the purpose of randomization in clinical trials?", a: "Randomization eliminates selection bias by assigning participants to treatment groups by chance.", ref: "Source: CDC Principles of Epidemiology", term: "purpose of randomization in clinical trials" },
-  { q: "What is bias in epidemiological studies?", a: "Bias is a systematic error in study design or data analysis that leads to incorrect conclusions.", ref: "Source: Gordis Epidemiology", term: "bias in epidemiological studies" },
-  { q: "What is length-time bias?", a: "Length-time bias occurs when slower-progressing diseases are more likely to be detected by screening, giving a false impression of improved survival.", ref: "Source: Principles of Epidemiology", term: "length-time bias" },
-  { q: "What is a p-value?", a: "A p-value is the probability of obtaining results as extreme as those observed, assuming the null hypothesis is true.", ref: "Source: Gordis Epidemiology", term: "a p-value" },
-  { q: "What is a Kaplan-Meier curve?", a: "A Kaplan-Meier curve is a graphical representation of survival probabilities over time.", ref: "Source: CDC Principles of Epidemiology", term: "a Kaplan-Meier curve" },
-  { q: "What is the purpose of blinding in a study?", a: "Blinding prevents bias by ensuring that participants and/or researchers do not know who is receiving the treatment or placebo.", ref: "Source: Gordis Epidemiology", term: "purpose of blinding in a study" },
-  { q: "What is an attributable risk percent?", a: "An attributable risk percent quantifies the proportion of the risk of a disease in the exposed group that is due to the exposure.", ref: "Source: Principles of Epidemiology", term: "an attributable risk percent" },
-  { q: "What is an epidemic curve?", a: "An epidemic curve is a graphical representation of the number of cases of disease over time.", ref: "Source: Merck Veterinary Manual", term: "an epidemic curve" },
-  { q: "What is a secondary attack rate?", a: "The secondary attack rate measures the spread of disease in a specific group, typically among contacts of primary cases.", ref: "Source: Gordis Epidemiology", term: "a secondary attack rate" },
-  { q: "What is a confidence interval?", a: "A confidence interval is a range of values that is likely to contain the true population parameter.", ref: "Source: Principles of Epidemiology", term: "a confidence interval" },
-  { q: "What is incidence density?", a: "Incidence density is the rate of new cases of a disease per unit of person-time at risk.", ref: "Source: Merck Veterinary Manual", term: "incidence density" },
-  { q: "What is a proportional mortality ratio?", a: "A proportional mortality ratio compares the number of deaths from a specific cause to the total number of deaths in a population.", ref: "Source: CDC Principles of Epidemiology", term: "a proportional mortality ratio" },
-  { q: "What is relative risk reduction?", a: "Relative risk reduction is the proportional decrease in risk between the control group and the experimental group.", ref: "Source: Gordis Epidemiology", term: "relative risk reduction" },
-  { q: "What is the purpose of matching in case-control studies?", a: "Matching ensures that cases and controls are comparable with respect to confounding factors.", ref: "Source: Principles of Epidemiology", term: "purpose of matching in case-control studies" },
-  { q: "What is a cross-sectional study?", a: "A cross-sectional study examines data on exposure and outcome at a single point in time.", ref: "Source: Merck Veterinary Manual", term: "a cross-sectional study" },
-  { q: "What is a propagating epidemic?", a: "A propagating epidemic is characterized by person-to-person transmission, resulting in a series of progressively taller peaks in cases.", ref: "Source: Gordis Epidemiology", term: "a propagating epidemic" },
-  { q: "If a town reports 50 new cases of a disease in a population of 5,000 during a single month, what is the incidence rate?", a: "The incidence rate is 50/5,000 = 1%, or 10 cases per 1,000 population per month.", ref: "Source: Principles of Epidemiology", term: "incidence rate" },
-  { q: "A study finds that smokers have a lung cancer risk 10 times higher than non-smokers. What measure does this ratio represent?", a: "This represents the relative risk of lung cancer among smokers compared to non-smokers.", ref: "Source: Gordis Epidemiology", term: "A study finds that smokers have a lung cancer risk 10 times " },
-  { q: "In a recent outbreak, most cases occurred within 24 hours of a wedding banquet. What type of epidemic does this suggest?", a: "This suggests a point-source epidemic, where all cases result from a single exposure event.", ref: "Source: Principles of Epidemiology", term: "epidemic does this suggest" },
-  { q: "What if a diagnostic test has a sensitivity of 90%? What does this mean for disease detection?", a: "A sensitivity of 90% means the test correctly identifies 90% of individuals with the disease, but 10% may be false negatives.", ref: "Source: Merck Veterinary Manual", term: "What if a diagnostic test has a sensitivity of 90% What does" },
-  { q: "If a screening program detects many asymptomatic cases of a disease, what type of bias might this introduce?", a: "This could introduce length-time bias, as slower-progressing cases are more likely to be detected.", ref: "Source: Gordis Epidemiology", term: "bias might this introduce" },
-  { q: "During an outbreak, 20 cases are reported in a group of 100 exposed people. What is the attack rate?", a: "The attack rate is 20/100 = 20%.", ref: "Source: Principles of Epidemiology", term: "attack rate" },
-  { q: "If an odds ratio is calculated as 2.5 in a case-control study, what does this indicate?", a: "An odds ratio of 2.5 indicates that the odds of exposure are 2.5 times higher in cases than in controls.", ref: "Source: Gordis Epidemiology", term: "If an odds ratio is calculated as 2.5 in a case-control stud" },
-  { q: "A vaccine trial shows a relative risk reduction of 80%. What does this imply?", a: "An 80% relative risk reduction means that the vaccinated group has 80% fewer cases compared to the unvaccinated group.", ref: "Source: Principles of Epidemiology", term: "A vaccine trial shows a relative risk reduction of 80%. What" },
-  { q: "If a disease is highly prevalent but has low incidence, what does this suggest about its nature?", a: "This suggests the disease is chronic, with many existing cases but few new cases developing over time.", ref: "Source: Merck Veterinary Manual", term: "If a disease is highly prevalent but has low incidence, what" },
-  { q: "What if a p-value is reported as 0.03? How should this result be interpreted?", a: "A p-value of 0.03 indicates a 3% probability that the observed results occurred by chance, often considered statistically significant.", ref: "Source: Gordis Epidemiology", term: "What if a p-value is reported as 0.03 How should this result" },
-  { q: "What if an epidemic curve shows multiple peaks? What could this indicate?", a: "Multiple peaks in an epidemic curve often indicate a propagating epidemic with person-to-person transmission.", ref: "Source: Principles of Epidemiology", term: "What if an epidemic curve shows multiple peaks What could th" },
-  { q: "If a test has a specificity of 95%, what does this mean for non-disease detection?", a: "A specificity of 95% means the test correctly identifies 95% of people without the disease, with a 5% false-positive rate.", ref: "Source: Merck Veterinary Manual", term: "If a test has a specificity of 95%, what does this mean for " },
-  { q: "A city implements a flu vaccine program, and the incidence of flu decreases significantly. What is this an example of?", a: "This is an example of primary prevention, reducing the occurrence of disease through vaccination.", ref: "Source: Gordis Epidemiology", term: "this an example of" },
-  { q: "What if a study finds a relative risk of 1.0 between two groups? What does this imply?", a: "A relative risk of 1.0 implies there is no difference in risk between the two groups.", ref: "Source: Principles of Epidemiology", term: "What if a study finds a relative risk of 1.0 between two gro" },
-  { q: "If a population has high herd immunity, what would you expect to happen to disease transmission?", a: "High herd immunity reduces disease transmission, as there are fewer susceptible individuals for the pathogen to infect.", ref: "Source: CDC Principles of Epidemiology", term: "If a population has high herd immunity, what would you expec" },
-  { q: "A study reports a confidence interval of 1.5 to 3.0 for an odds ratio. What does this mean?", a: "This indicates that the true odds ratio is likely between 1.5 and 3.0, with a given confidence level (e.g., 95%).", ref: "Source: Gordis Epidemiology", term: "this" },
-  { q: "If a screening test detects more cases in one population than another, what factors could explain this?", a: "Factors could include differences in disease prevalence, access to healthcare, or the sensitivity and specificity of the test.", ref: "Source: Principles of Epidemiology", term: "this" },
-  { q: "If a disease has an incubation period of 2-4 days, what does this suggest about its control measures?", a: "Control measures need to be rapid to identify and isolate cases before they become infectious.", ref: "Source: Merck Veterinary Manual", term: "If a disease has an incubation period of 2-4 days, what does" },
-  { q: "What if a new diagnostic test identifies all cases but also many false positives? How could this impact its use?", a: "The test has high sensitivity but low specificity, leading to overdiagnosis and possibly unnecessary treatments.", ref: "Source: Gordis Epidemiology", term: "What if a new diagnostic test identifies all cases but also " },
-  { q: "A researcher notes that areas with more hospitals have higher mortality rates. What type of bias could explain this?", a: "This could be an example of ecological fallacy, assuming a group-level association applies to individuals.", ref: "Source: Principles of Epidemiology", term: "this" },
-  { q: "What if an outbreak investigation identifies a food item as the source of infection? What should happen next?", a: "The food item should be recalled, and public warnings issued to prevent further exposure.", ref: "Source: CDC Principles of Epidemiology", term: "What if an outbreak investigation identifies a food item as " },
-  { q: "If a vaccine has an efficacy of 70%, what does this mean?", a: "Vaccine efficacy of 70% means a 70% reduction in disease incidence among the vaccinated group compared to the unvaccinated group.", ref: "Source: Gordis Epidemiology", term: "this" },
-  { q: "If a disease cluster is identified in a workplace, what steps should investigators take?", a: "Investigators should define cases, collect exposure histories, and test hypotheses about the source and transmission route.", ref: "Source: Principles of Epidemiology", term: "If a disease cluster is identified in a workplace, what step" },
-  { q: "What if a study only recruits participants from hospitals? What type of bias might occur?", a: "This could result in selection bias, as hospital patients may not represent the general population.", ref: "Source: Merck Veterinary Manual", term: "bias might occur" },
-  { q: "What if a screening test for cancer improves survival time without reducing mortality? What bias might this indicate?", a: "This suggests lead-time bias, where early detection does not change the natural history of the disease.", ref: "Source: Gordis Epidemiology", term: "What if a screening test for cancer improves survival time w" },
-  { q: "A rural village reports a sudden spike in diarrheal disease after a festival. What type of epidemic does this suggest?", a: "This suggests a point-source epidemic, likely linked to contaminated food or water at the festival.", ref: "Source: Principles of Epidemiology", term: "epidemic does this suggest" },
-  { q: "What if a study’s confidence interval for an odds ratio includes 1.0? How should this result be interpreted?", a: "If the confidence interval includes 1.0, the result is not statistically significant, as the null hypothesis cannot be rejected.", ref: "Source: Merck Veterinary Manual", term: "What if a study’s confidence interval for an odds ratio incl" },
-  { q: "If a disease has a high basic reproductive number (R0), what does this imply about its spread?", a: "A high R0 indicates the disease is highly transmissible and likely to spread widely without intervention.", ref: "Source: Gordis Epidemiology", term: "If a disease has a high basic reproductive number (R0), what" },
-  { q: "If a study finds a new intervention significantly reduces mortality, what should researchers consider next?", a: "Researchers should evaluate the intervention’s feasibility, cost-effectiveness, and potential side effects before widespread implementation.", ref: "Source: Principles of Epidemiology", term: "If a study finds a new intervention significantly reduces mo" },
-  { q: "If a disease is endemic in a region, what does this mean about its occurrence?", a: "An endemic disease is consistently present in a population or region, often at predictable levels.", ref: "Source: CDC Principles of Epidemiology", term: "If a disease is endemic in a region, what does this mean abo" },
-  // ===================================================================
-// ADDITIONAL CARDS — Appended to reach 200 total (cards 117-200)
-// Copy these entries and paste them into the existing CARDS array,
-// just before the closing ]; of the CARDS declaration.
-// ===================================================================
 
-// --- Study Design ---
-{ q: "What is a randomized controlled trial (RCT)?", a: "An RCT is a study in which participants are randomly assigned to an intervention group or a control group to evaluate the effect of an intervention.", ref: "Source: Gordis Epidemiology", term: "randomized controlled trial" },
-{ q: "What is the difference between internal and external validity?", a: "Internal validity refers to the degree to which study results accurately reflect the true relationship within the study population, while external validity refers to how well results generalize to other populations.", ref: "Source: Gordis Epidemiology", term: "internal and external validity" },
-{ q: "What is a nested case-control study?", a: "A nested case-control study is a case-control study conducted within a defined cohort, using existing cohort data to select cases and controls.", ref: "Source: CDC Principles of Epidemiology", term: "nested case-control study" },
-{ q: "What is a case-cohort study?", a: "A case-cohort study selects a random subcohort from the full cohort at baseline as controls, then compares them to all cases that develop during follow-up.", ref: "Source: Gordis Epidemiology", term: "case-cohort study" },
-{ q: "What is the main advantage of a prospective cohort study over a retrospective one?", a: "Prospective cohort studies allow researchers to control data collection and reduce recall bias, since exposures are measured before disease onset.", ref: "Source: Gordis Epidemiology", term: "prospective cohort study advantage" },
-{ q: "What is a cluster randomized trial?", a: "A cluster randomized trial randomly assigns groups such as schools or clinics, rather than individuals, to intervention or control conditions.", ref: "Source: CDC Principles of Epidemiology", term: "cluster randomized trial" },
-{ q: "You design a study where you follow 1,000 healthcare workers forward in time to see who develops tuberculosis. What type of study is this?", a: "This is a prospective cohort study. You are following a group forward in time to observe disease incidence.", ref: "Source: Gordis Epidemiology", term: "prospective cohort study applied" },
-{ q: "You want to study a rare disease quickly and inexpensively. Which study design would you choose and why?", a: "A case-control study is ideal for rare diseases because you start with existing cases, avoiding the need to follow a large population over time.", ref: "Source: Gordis Epidemiology", term: "case-control rare disease" },
+  // ==================================================================
+  // CATEGORY: PUBLIC
+  // Terms a general audience can understand without specialized science.
+  // ==================================================================
 
-// --- Measures of Disease Frequency ---
-{ q: "What is person-time in epidemiology?", a: "Person-time is the sum of the time each study participant is at risk of developing the outcome, used as the denominator for incidence rates when follow-up times vary.", ref: "Source: CDC Principles of Epidemiology", term: "person-time" },
-{ q: "What is the difference between cumulative incidence and incidence rate?", a: "Cumulative incidence is the proportion of a fixed population that develops disease over a defined period. Incidence rate accounts for varying follow-up by using person-time as the denominator.", ref: "Source: Gordis Epidemiology", term: "cumulative incidence vs incidence rate" },
-{ q: "What is the prevalence pool concept?", a: "The prevalence pool illustrates that prevalence depends on both incidence and disease duration. Longer duration increases prevalence even if incidence stays stable.", ref: "Source: CDC Principles of Epidemiology", term: "prevalence pool concept" },
-{ q: "A disease has stable incidence but rising prevalence over 20 years. What is the most likely explanation?", a: "Improved treatment is keeping people alive with the disease longer, increasing disease duration and thus prevalence, even though the rate of new cases has not changed.", ref: "Source: Gordis Epidemiology", term: "stable incidence rising prevalence" },
-{ q: "What is the difference between point prevalence and period prevalence?", a: "Point prevalence measures the proportion of a population with a disease at a single point in time. Period prevalence captures all cases during a defined time interval.", ref: "Source: CDC Principles of Epidemiology", term: "point vs period prevalence" },
+  { cat: "public", q: "What is epidemiology?", a: "Epidemiology is the study of the distribution and determinants of health-related states or events in specified populations, and the application of this study to the prevention and control of health problems.", ref: "Source: Bonita, Beaglehole & Kjellström, Basic Epidemiology, 2nd ed. (WHO 2006); CDC Principles of Epidemiology, 3rd ed.", term: "epidemiology" },
 
-// --- Measures of Association ---
-{ q: "What is a 2x2 contingency table used for in epidemiology?", a: "A 2x2 table organizes data by exposure (yes/no) and disease (yes/no) status, enabling calculation of risk ratios, odds ratios, and other measures of association.", ref: "Source: CDC Principles of Epidemiology", term: "2x2 contingency table" },
-{ q: "In a cohort study, risk is 0.20 in exposed and 0.05 in unexposed participants. What is the risk ratio?", a: "The risk ratio is 0.20 divided by 0.05 equals 4.0. The exposed group has four times the risk of disease compared to the unexposed group.", ref: "Source: Gordis Epidemiology", term: "risk ratio calculation" },
-{ q: "What does a risk ratio of less than 1.0 indicate?", a: "A risk ratio below 1.0 means the exposure is protective. The exposed group has a lower disease risk than the unexposed group.", ref: "Source: Gordis Epidemiology", term: "protective risk ratio" },
-{ q: "Why is an odds ratio used instead of a risk ratio in case-control studies?", a: "In case-control studies, the investigator controls the number of cases and controls, so the true disease prevalence is not known and a risk ratio cannot be calculated directly.", ref: "Source: Gordis Epidemiology", term: "odds ratio in case-control" },
-{ q: "When does an odds ratio approximate a risk ratio?", a: "The odds ratio approximates the risk ratio when the disease is rare, typically defined as affecting less than 10% of the population. This is called the rare disease assumption.", ref: "Source: CDC Principles of Epidemiology", term: "rare disease assumption" },
-{ q: "What is the population attributable risk percent (PAR%)?", a: "PAR% estimates the proportion of disease in the total population (exposed and unexposed) that can be attributed to a given exposure, indicating how much disease would be eliminated if the exposure were removed.", ref: "Source: CDC Principles of Epidemiology", term: "population attributable risk percent" },
-{ q: "A study reports an OR of 3.5 with a 95% CI of 2.1 to 5.8 linking fast food consumption to obesity. How do you interpret this?", a: "The odds of obesity are 3.5 times higher in frequent fast food consumers. Because the confidence interval excludes 1.0, the association is statistically significant.", ref: "Source: Gordis Epidemiology", term: "odds ratio CI interpretation" },
+  { cat: "public", q: "What does an epidemiologist do?", a: "An epidemiologist studies who gets sick, where, and why — and uses that information to prevent disease and protect the health of populations.", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 1", term: "what is an epidemiologist" },
 
-// --- Bias and Confounding ---
-{ q: "What is information bias?", a: "Information bias arises from inaccurate measurement of exposure or outcome status, leading to misclassification of study participants.", ref: "Source: Gordis Epidemiology", term: "information bias" },
-{ q: "What is differential misclassification?", a: "Differential misclassification occurs when exposure or disease misclassification differs between comparison groups, potentially biasing results in either direction.", ref: "Source: Gordis Epidemiology", term: "differential misclassification" },
-{ q: "What is non-differential misclassification?", a: "Non-differential misclassification is equally distributed misclassification across comparison groups, typically biasing the measure of association toward the null value.", ref: "Source: Gordis Epidemiology", term: "non-differential misclassification" },
-{ q: "What is the healthy worker effect?", a: "The healthy worker effect is a selection bias in which employed populations appear healthier than the general public because severely ill individuals are less likely to hold jobs.", ref: "Source: CDC Principles of Epidemiology", term: "healthy worker effect" },
-{ q: "What is Berkson's bias?", a: "Berkson's bias occurs in hospital-based case-control studies when hospitalized controls differ systematically from the general population, distorting the exposure-disease association.", ref: "Source: Gordis Epidemiology", term: "Berkson bias" },
-{ q: "What are the three criteria for a variable to be a confounder?", a: "A confounder must be: (1) associated with the exposure, (2) independently associated with the outcome, and (3) not on the causal pathway between exposure and outcome.", ref: "Source: Gordis Epidemiology", term: "three criteria confounder" },
-{ q: "You are running a case-control study and identify a variable associated with both the exposure and the outcome that distorts their relationship. What is that variable called?", a: "That variable is a confounder. It must be controlled through design strategies such as matching or restriction, or analytical methods such as stratification or multivariable regression.", ref: "Source: Gordis Epidemiology", term: "confounder case-control applied" },
-{ q: "A study finds an association between coffee drinking and pancreatic cancer, but coffee drinkers also smoke more. How should researchers address this?", a: "Smoking is a potential confounder. Researchers must control for it through stratified analysis, restriction to non-smokers, matching, or multivariable regression to isolate the effect of coffee.", ref: "Source: Gordis Epidemiology", term: "confounding smoking coffee applied" },
-{ q: "What is the key distinction between confounding and effect modification when deciding how to handle them analytically?", a: "Confounding distorts the relationship and should be removed by adjustment. Effect modification is a real biological finding that should be preserved and reported separately for each stratum.", ref: "Source: Gordis Epidemiology", term: "confounding vs effect modification handling" },
+  { cat: "public", q: "What is an epidemic?", a: "An epidemic is the occurrence of cases of an illness in a community or region clearly in excess of what is normally expected for that area and population.", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 1", term: "epidemic definition" },
 
-// --- Causality ---
-{ q: "What are the Bradford Hill criteria for causation?", a: "The nine criteria are: strength, consistency, specificity, temporality, biological gradient (dose-response), plausibility, coherence, experimental evidence, and analogy.", ref: "Source: Bradford Hill J Roy Soc Med 1965; PMC4589117", term: "Bradford Hill criteria" },
-{ q: "Which Bradford Hill criterion is considered the only absolute requirement for causation?", a: "Temporality is the only universally required criterion. The cause must precede the disease.", ref: "Source: PMC4589117", term: "temporality Bradford Hill" },
-{ q: "What is a sufficient cause in epidemiology?", a: "A sufficient cause is a complete causal mechanism that inevitably produces the outcome when all of its component causes are present.", ref: "Source: Gordis Epidemiology", term: "sufficient cause" },
-{ q: "What is a necessary cause in epidemiology?", a: "A necessary cause must always be present for the disease to occur, but its presence alone is not enough to cause disease.", ref: "Source: Gordis Epidemiology", term: "necessary cause" },
-{ q: "A study shows a dose-response relationship: the more cigarettes smoked per day, the higher the lung cancer risk. Which Bradford Hill criterion is satisfied?", a: "This satisfies the biological gradient criterion. An increasing level of exposure associated with increasing risk strengthens the argument for a causal relationship.", ref: "Source: PMC4589117", term: "biological gradient applied" },
+  { cat: "public", q: "What is a pandemic?", a: "A pandemic is an epidemic that has spread across several countries or continents, usually affecting large numbers of people.", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 1", term: "pandemic definition" },
 
-// --- Screening ---
-{ q: "What is positive predictive value (PPV)?", a: "PPV is the probability that a person with a positive test result actually has the disease, calculated as true positives divided by all positive test results.", ref: "Source: PMC4608333", term: "positive predictive value PPV" },
-{ q: "What is negative predictive value (NPV)?", a: "NPV is the probability that a person with a negative test result truly does not have the disease, calculated as true negatives divided by all negative test results.", ref: "Source: PMC4608333", term: "negative predictive value NPV" },
-{ q: "How does disease prevalence affect positive predictive value?", a: "Higher prevalence increases PPV because there are more true cases relative to non-cases. Lower prevalence decreases PPV, causing more false positives.", ref: "Source: PMC4608333", term: "prevalence effect on PPV" },
-{ q: "A test has 99% sensitivity and 95% specificity. Used in a population with 1% disease prevalence, what is the approximate PPV?", a: "PPV is approximately 17%. With low prevalence there are far more non-diseased than diseased people, so even a small false-positive rate produces many false positives, lowering PPV.", ref: "Source: PMC4608333", term: "PPV calculation low prevalence" },
-{ q: "What is the difference between a screening test and a diagnostic test?", a: "Screening tests are applied to apparently healthy populations to identify those at risk. Diagnostic tests are used in symptomatic individuals to confirm or rule out disease.", ref: "Source: CDC Principles of Epidemiology", term: "screening vs diagnostic test" },
-{ q: "You start a cancer screening program and survival after diagnosis increases, but cancer mortality rates are unchanged. What bias does this demonstrate?", a: "Lead-time bias. Early detection advances the diagnosis date, lengthening apparent survival time, but the time of death is unchanged — no real survival benefit has occurred.", ref: "Source: Gordis Epidemiology", term: "lead-time bias applied" },
-{ q: "What is overdiagnosis in screening programs?", a: "Overdiagnosis occurs when screening detects conditions that would never have caused symptoms or death during a patient's lifetime, leading to unnecessary treatment and potential harm.", ref: "Source: Gordis Epidemiology", term: "overdiagnosis" },
+  { cat: "public", q: "What is an endemic disease?", a: "An endemic disease is one that is constantly present in a particular region or population at a usual or expected level — for example, chickenpox in many parts of the world before widespread vaccination.", ref: "Source: CDC Principles of Epidemiology, 3rd ed.", term: "endemic disease" },
 
-// --- Outbreak Investigation ---
-{ q: "What is the difference between a common-source and a propagated outbreak?", a: "In a common-source outbreak all cases share a single exposure source. In a propagated outbreak, infection spreads person to person, producing successive waves of cases.", ref: "Source: CDC Principles of Epidemiology", term: "common-source vs propagated" },
-{ q: "What does the shape of an epidemic curve tell investigators about an outbreak?", a: "A sharp single peak suggests a point-source exposure. A series of progressively rising peaks suggests propagated person-to-person transmission.", ref: "Source: CDC Principles of Epidemiology", term: "epidemic curve shape interpretation" },
-{ q: "You investigate a restaurant outbreak. Attack rates show 80% illness among those who ate the shrimp vs. 10% among those who did not. What should you do next?", a: "Shrimp is the likely vehicle. Collect specimens from remaining shrimp and ill individuals for laboratory confirmation, remove the implicated food, and notify public health authorities.", ref: "Source: CDC Principles of Epidemiology", term: "food vehicle outbreak applied" },
-{ q: "What is a line listing and why is it used in outbreak investigations?", a: "A line listing is a table where each row is one case and columns record demographics, onset date, exposures, and symptoms, allowing investigators to quickly identify patterns, clusters, and missing data.", ref: "Source: CDC Principles of Epidemiology", term: "line listing" },
-{ q: "An outbreak follows a bimodal epidemic curve with peaks 3 days apart. What does this suggest about transmission?", a: "A bimodal curve suggests mixed transmission: an initial point-source event followed by secondary person-to-person spread, or two separate common-source exposures.", ref: "Source: CDC Principles of Epidemiology", term: "bimodal epidemic curve" },
+  { cat: "public", q: "What is an outbreak?", a: "An outbreak is the same idea as an epidemic but usually refers to a more limited geographic area or smaller group of people. The two words are often used interchangeably.", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 1", term: "outbreak definition" },
 
-// --- Surveillance and Rates ---
-{ q: "What is syndromic surveillance?", a: "Syndromic surveillance monitors health-related data such as emergency department visits or pharmacy sales before diagnoses are confirmed, enabling early detection of disease events or bioterrorism.", ref: "Source: CDC Principles of Epidemiology", term: "syndromic surveillance" },
-{ q: "What is sentinel surveillance?", a: "Sentinel surveillance tracks disease trends at selected sites or facilities that are representative of broader trends, used when complete population reporting is not feasible.", ref: "Source: CDC Principles of Epidemiology", term: "sentinel surveillance" },
-{ q: "What is the difference between crude and age-adjusted mortality rates?", a: "Crude rates reflect overall mortality without adjustment. Age-adjusted rates remove the effect of differing age structures between populations, enabling valid comparisons.", ref: "Source: CDC Principles of Epidemiology", term: "crude vs age-adjusted rates" },
-{ q: "State A has a higher crude mortality rate than State B but similar age-adjusted rates. What explains this?", a: "State A likely has an older population. After age standardization, mortality experience is similar, indicating the crude difference was caused by age structure rather than greater underlying disease burden.", ref: "Source: CDC Principles of Epidemiology", term: "age adjustment interpretation applied" },
-{ q: "What is a disability-adjusted life year (DALY)?", a: "A DALY combines years of life lost from premature death and years lived with disability into a single metric of overall disease burden, used to compare the impact of different conditions.", ref: "Source: WHO Global Burden of Disease", term: "DALY" },
-{ q: "What is Years of Potential Life Lost (YPLL)?", a: "YPLL estimates premature mortality by summing the years a person would have lived had they survived to a reference age, highlighting conditions that disproportionately affect younger people.", ref: "Source: CDC Principles of Epidemiology", term: "YPLL" },
+  { cat: "public", q: "What is herd immunity?", a: "Herd immunity is the indirect protection from an infectious disease that happens when a large enough share of a community is immune (through vaccination or prior infection) that the germ has difficulty finding new people to infect.", ref: "Source: WHO; CDC Principles of Epidemiology, 3rd ed.", term: "herd immunity" },
 
-// --- Vaccine Epidemiology ---
-{ q: "What is the difference between vaccine efficacy and vaccine effectiveness?", a: "Vaccine efficacy is measured under ideal, controlled trial conditions. Vaccine effectiveness is measured in real-world populations through observational studies after deployment.", ref: "Source: CDC Principles of Epidemiology", term: "vaccine efficacy vs effectiveness" },
-{ q: "What is the herd immunity threshold and how is it calculated?", a: "The herd immunity threshold is the proportion of a population that must be immune to prevent sustained transmission, calculated as 1 minus (1 divided by R0).", ref: "Source: CDC Principles of Epidemiology", term: "herd immunity threshold" },
-{ q: "A pathogen has an R0 of 5. What proportion of the population must be immune to achieve herd immunity?", a: "Herd immunity threshold = 1 minus (1/5) = 0.80, or 80%. At least 80% of the population must be immune to interrupt sustained transmission.", ref: "Source: CDC Principles of Epidemiology", term: "herd immunity R0 calculation" },
+  { cat: "public", q: "What is a vaccine?", a: "A vaccine is a biological preparation that trains the immune system to recognize and fight a specific disease-causing organism without making the person sick from the disease itself.", ref: "Source: WHO Immunization Basics", term: "vaccine" },
 
-// --- Analysis Methods ---
-{ q: "What is stratified analysis in epidemiology?", a: "Stratified analysis separates data into subgroups by a third variable to assess whether that variable confounds or modifies the exposure-disease relationship.", ref: "Source: Gordis Epidemiology", term: "stratified analysis" },
-{ q: "What is the Mantel-Haenszel method?", a: "The Mantel-Haenszel method calculates a pooled, confounder-adjusted odds ratio or risk ratio across strata by weighting each stratum's contribution to the total estimate.", ref: "Source: Gordis Epidemiology", term: "Mantel-Haenszel method" },
-{ q: "What is logistic regression used for in epidemiology?", a: "Logistic regression models the probability of a binary outcome as a function of multiple exposures or covariates simultaneously, enabling control of confounding from several variables at once.", ref: "Source: Gordis Epidemiology", term: "logistic regression" },
-{ q: "What is a meta-analysis?", a: "A meta-analysis statistically combines results from multiple independent studies on the same question to produce a more precise, quantitative summary estimate of effect.", ref: "Source: Gordis Epidemiology", term: "meta-analysis" },
-{ q: "What is publication bias and why does it matter?", a: "Publication bias occurs when studies with statistically significant results are more likely to be published than null results, causing systematic reviews and meta-analyses to overestimate true effect sizes.", ref: "Source: Gordis Epidemiology", term: "publication bias" },
-{ q: "What is the number needed to treat (NNT)?", a: "NNT is the number of patients who must receive a treatment to prevent one additional adverse outcome, calculated as 1 divided by the absolute risk reduction.", ref: "Source: Gordis Epidemiology", term: "number needed to treat NNT" },
-{ q: "A drug reduces the relative risk of stroke by 50%, but the absolute risk reduction is 0.2%. How should you communicate this finding to a patient?", a: "Emphasize the absolute risk reduction of 0.2 percentage points and the NNT of 500. Relative risk reduction can be misleading; the absolute benefit helps patients and clinicians weigh treatment value against cost and side effects.", ref: "Source: Gordis Epidemiology", term: "NNT communication applied" },
-{ q: "What is survival analysis and when is it used?", a: "Survival analysis examines time-to-event data and accounts for censored observations (participants who do not experience the event before follow-up ends), commonly used in cohort studies and clinical trials.", ref: "Source: Gordis Epidemiology", term: "survival analysis" },
-{ q: "What is an intention-to-treat (ITT) analysis?", a: "ITT analysis includes all randomized participants in their assigned groups regardless of whether they completed the intervention, preserving randomization benefits and preventing attrition bias.", ref: "Source: Gordis Epidemiology", term: "intention-to-treat analysis" },
-{ q: "What is a forest plot in a meta-analysis?", a: "A forest plot visually displays individual study effect estimates with confidence intervals and a pooled summary estimate, allowing readers to compare study results and assess heterogeneity.", ref: "Source: Gordis Epidemiology", term: "forest plot" },
+  { cat: "public", q: "What is the difference between an outbreak and a pandemic?", a: "An outbreak is a rise in cases in a limited area or group; an epidemic is a larger rise within a community or region; a pandemic is an epidemic that has spread across many countries or continents.", ref: "Source: CDC Principles of Epidemiology, 3rd ed.", term: "outbreak vs epidemic vs pandemic" },
 
-// --- Special Topics ---
-{ q: "What are social determinants of health?", a: "Social determinants are conditions in which people are born, grow, live, work, and age — such as income, education, housing, and healthcare access — that profoundly shape health outcomes.", ref: "Source: WHO Commission on Social Determinants of Health", term: "social determinants of health" },
-{ q: "What is the epidemiologic transition?", a: "The epidemiologic transition is the historical shift from high mortality due to infectious diseases toward predominance of chronic non-communicable diseases, accompanying economic and public health development.", ref: "Source: Gordis Epidemiology", term: "epidemiologic transition" },
-{ q: "What is molecular epidemiology?", a: "Molecular epidemiology uses molecular techniques such as PCR and genome sequencing to identify transmission pathways, track outbreaks, and study gene-environment interactions in disease.", ref: "Source: CDC Principles of Epidemiology", term: "molecular epidemiology" },
-{ q: "What is One Health in epidemiology?", a: "One Health is a collaborative framework recognizing that human, animal, and environmental health are interconnected, especially relevant for zoonotic diseases, antimicrobial resistance, and food safety.", ref: "Source: CDC One Health", term: "One Health" },
-{ q: "What is measurement validity in epidemiology?", a: "Measurement validity is the degree to which an instrument measures what it is intended to measure, distinct from reliability, which concerns reproducibility of measurements.", ref: "Source: Gordis Epidemiology", term: "measurement validity" },
-{ q: "What is the kappa statistic?", a: "Cohen's kappa measures agreement between observers or raters beyond what would be expected by chance alone, commonly used to evaluate inter-rater reliability in epidemiologic studies.", ref: "Source: Gordis Epidemiology", term: "kappa statistic" },
-{ q: "What is the difference between vaccine efficacy, effectiveness, and efficiency?", a: "Efficacy is performance under ideal controlled conditions. Effectiveness is performance in real-world practice. Efficiency evaluates whether benefits justify costs, typically through cost-effectiveness analysis.", ref: "Source: CDC Principles of Epidemiology; Gordis Epidemiology", term: "efficacy effectiveness efficiency" },
+  { cat: "public", q: "What is a case?", a: "In epidemiology, a case is a person identified as having a particular disease, health disorder, or condition under investigation.", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 1", term: "case in epidemiology" },
 
-// --- Critical Thinking Applied ---
-{ q: "A cohort study shows exercising 150+ minutes per week is associated with lower diabetes risk (RR 0.6, 95% CI 0.5-0.7). Can you conclude exercise prevents diabetes?", a: "The association is strong and significant, but observational studies cannot prove causation. Residual confounding and reverse causation (sick people may exercise less) are alternative explanations. Randomized trial evidence would be needed to confirm causality.", ref: "Source: Gordis Epidemiology", term: "causal inference cohort" },
-{ q: "You conduct a cross-sectional study and find that people with depression have higher rates of physical inactivity. What is the key limitation?", a: "Cross-sectional studies cannot establish temporality. It is impossible to determine whether depression causes inactivity, inactivity causes depression, or both share a common cause.", ref: "Source: Gordis Epidemiology", term: "cross-sectional temporality limitation" },
-{ q: "A hospital intervention reduces readmissions, but the hospital treats sicker patients than average. What must investigators do before claiming effectiveness?", a: "Investigators must adjust for patient severity using risk adjustment or multivariable analysis. Without controlling for case mix, apparent differences may reflect patient characteristics rather than the intervention.", ref: "Source: Gordis Epidemiology", term: "case mix risk adjustment" },
-{ q: "You notice disease rates are higher in a census tract with lower median income. What epidemiological concept does this illustrate, and what study design would clarify the individual-level relationship?", a: "This illustrates a health disparity likely linked to social determinants of health. An ecological association at the census-tract level should be followed by individual-level cohort or case-control studies to avoid ecological fallacy.", ref: "Source: CDC Health Equity; Gordis Epidemiology", term: "health disparity social determinants applied" },
+  { cat: "public", q: "What is an outbreak investigation?", a: "An outbreak investigation is the organized search for the source of an unusual rise in disease, so it can be stopped and prevented in the future. It usually involves interviewing patients, gathering lab samples, and looking for shared exposures.", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 6", term: "outbreak investigation" },
 
-// --- Additional Applied Questions ---
-{ q: "What is Rothman's induction period?", a: "The induction period is the time from the action of a causal component to disease initiation. Understanding it helps investigators identify the relevant exposure window in epidemiologic studies.", ref: "Source: Gordis Epidemiology", term: "induction period Rothman" },
-{ q: "What is measurement reliability in epidemiology?", a: "Reliability is the consistency of a measurement when repeated under the same conditions. A measure can be reliable but still invalid if it consistently produces the same inaccurate result.", ref: "Source: Gordis Epidemiology", term: "measurement reliability" },
-{ q: "What is an ecological fallacy?", a: "The ecological fallacy occurs when an association found at the population (group) level is incorrectly assumed to apply at the individual level.", ref: "Source: Gordis Epidemiology", term: "ecological fallacy" },
-{ q: "An ecological study shows countries with higher sugar consumption have higher rates of type 2 diabetes. Can you conclude sugar causes diabetes in individuals?", a: "No. This would be an ecological fallacy. The country-level association may not reflect individual risk. Confounding by other national characteristics and differences in healthcare access could explain the pattern.", ref: "Source: Gordis Epidemiology", term: "ecological fallacy applied" },
-{ q: "What is direct age standardization?", a: "Direct age standardization applies the age-specific rates from study populations to a single standard population to compute a summary rate that allows comparison unconfounded by age structure differences.", ref: "Source: CDC Principles of Epidemiology", term: "direct age standardization" },
-{ q: "What is a health disparity?", a: "A health disparity is a difference in health outcomes or their determinants between population segments, often linked to social, economic, environmental, or structural disadvantages.", ref: "Source: CDC Health Equity", term: "health disparity" },
-{ q: "What is a notifiable disease?", a: "A notifiable disease is one for which healthcare providers are legally required to report cases to public health authorities, enabling disease surveillance and outbreak response.", ref: "Source: CDC Principles of Epidemiology", term: "notifiable disease" },
-{ q: "You are monitoring influenza in a city using data from 10 sentinel clinics rather than all healthcare facilities. What type of surveillance is this?", a: "This is sentinel surveillance. It uses a representative subset of sites to detect trends and provide timely data when universal reporting is not feasible or cost-effective.", ref: "Source: CDC Principles of Epidemiology", term: "sentinel surveillance applied" }
+  { cat: "public", q: "What is a contact in disease investigation?", a: "A contact is a person who has been close enough to an infected individual to have been exposed to the infection — for example, household members, classmates, or co-workers.", ref: "Source: CDC Principles of Epidemiology, 3rd ed.", term: "contact tracing" },
+
+  { cat: "public", q: "What is contact tracing?", a: "Contact tracing is the public-health process of identifying people who may have been exposed to an infectious disease, notifying them, and helping them quarantine, get tested, or seek care to stop further spread.", ref: "Source: CDC; WHO", term: "contact tracing definition" },
+
+  { cat: "public", q: "What is the incubation period?", a: "The incubation period is the time between when a person is exposed to an infection and when they start showing symptoms. It is different for every disease — a few hours for some food poisonings, several days for flu, years for HIV.", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 1", term: "incubation period" },
+
+  { cat: "public", q: "What is quarantine?", a: "Quarantine is the separation and restriction of movement of people who were exposed to a contagious disease but are not yet sick, to see if they become ill. Isolation, by contrast, applies to people who are already known to be sick.", ref: "Source: CDC", term: "quarantine vs isolation" },
+
+  { cat: "public", q: "What is the difference between quarantine and isolation?", a: "Isolation keeps someone who is already sick away from others. Quarantine separates and restricts the movement of people who were exposed but are not yet known to be sick, in case they become contagious.", ref: "Source: CDC", term: "quarantine vs isolation" },
+
+  { cat: "public", q: "What is a zoonotic disease?", a: "A zoonotic disease (or zoonosis) is an illness caused by a germ that spreads between animals and people — examples include rabies, Lyme disease, and many influenzas.", ref: "Source: CDC One Health; WHO", term: "zoonotic disease" },
+
+  { cat: "public", q: "What is public health surveillance?", a: "Public health surveillance is the ongoing collection, analysis, and sharing of health data so that public health officials can detect problems early and respond. Examples include weekly flu reports and notifiable disease tracking.", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 5", term: "public health surveillance" },
+
+  { cat: "public", q: "What is prevention in public health?", a: "Prevention is any action that stops a disease from happening in the first place, finds it early when treatment works best, or reduces complications once it occurs. These three approaches are called primary, secondary, and tertiary prevention.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 18", term: "prevention public health" },
+
+  { cat: "public", q: "What is primary prevention?", a: "Primary prevention stops disease before it starts — for example, vaccination, seat-belt laws, clean drinking water, or campaigns to encourage exercise and healthy eating.", ref: "Source: Gordis, Epidemiology 5th ed.", term: "primary prevention" },
+
+  { cat: "public", q: "What is secondary prevention?", a: "Secondary prevention is early detection and treatment of a disease before it causes major harm — for example, mammograms, blood-pressure checks, or screening newborns for hearing loss.", ref: "Source: Gordis, Epidemiology 5th ed.", term: "secondary prevention" },
+
+  { cat: "public", q: "What is tertiary prevention?", a: "Tertiary prevention reduces the impact of an existing disease — for example, rehabilitation after a stroke, diabetes management to prevent complications, or support groups to improve quality of life.", ref: "Source: Gordis, Epidemiology 5th ed.", term: "tertiary prevention" },
+
+  { cat: "public", q: "What are risk factors?", a: "A risk factor is anything — a behavior, exposure, or characteristic — that raises the chance a person will develop a disease. Smoking is a risk factor for lung cancer; high blood pressure is a risk factor for stroke.", ref: "Source: CDC", term: "risk factor" },
+
+  { cat: "public", q: "What is a chronic disease?", a: "A chronic disease is one that lasts a long time — generally a year or more — and usually needs ongoing medical attention. Examples include heart disease, diabetes, and most cancers.", ref: "Source: CDC", term: "chronic disease" },
+
+  { cat: "public", q: "What is an infectious disease?", a: "An infectious disease is an illness caused by a germ — a bacterium, virus, parasite, or fungus — that can be passed, directly or indirectly, from one person, animal, or source to another.", ref: "Source: CDC; WHO", term: "infectious disease" },
+
+  { cat: "public", q: "What are the social determinants of health?", a: "The social determinants of health are the conditions in which people are born, grow, live, work, and age — including income, education, housing, neighborhood safety, and access to care — that shape how healthy a person can be.", ref: "Source: WHO Commission on Social Determinants of Health (2008)", term: "social determinants of health" },
+
+  { cat: "public", q: "What is health equity?", a: "Health equity means everyone has a fair and just opportunity to be as healthy as possible. It requires removing obstacles — such as poverty, discrimination, and lack of access — that prevent some groups from reaching good health.", ref: "Source: CDC Health Equity; Robert Wood Johnson Foundation", term: "health equity" },
+
+  { cat: "public", q: "What is a health disparity?", a: "A health disparity is a preventable difference in disease, injury, or opportunities to be healthy that is experienced more heavily by socially disadvantaged groups.", ref: "Source: CDC Health Equity", term: "health disparity" },
+
+  { cat: "public", q: "What is screening?", a: "Screening is testing people who feel well to find diseases early, when they are easier to treat. Mammograms, colonoscopies, and newborn blood tests are all examples of screening.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 5", term: "screening definition" },
+
+  { cat: "public", q: "What is mortality?", a: "Mortality means death. A mortality rate is the number of deaths in a population over a given period, usually expressed per 1,000 or 100,000 people per year.", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 3", term: "mortality" },
+
+  { cat: "public", q: "What is morbidity?", a: "Morbidity refers to illness or disease in a population — how many people are sick. It is distinct from mortality, which refers to death.", ref: "Source: CDC Principles of Epidemiology, 3rd ed.", term: "morbidity" },
+
+  { cat: "public", q: "What is life expectancy?", a: "Life expectancy is the average number of years a person can expect to live, based on the death rates in their country or population at the time of their birth.", ref: "Source: WHO; CDC", term: "life expectancy" },
+
+  { cat: "public", q: "What is a notifiable (reportable) disease?", a: "A notifiable disease is one that doctors and laboratories are required by law to report to public health authorities — for example, measles, tuberculosis, and many sexually transmitted infections — so outbreaks can be tracked and stopped.", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 5", term: "notifiable disease" },
+
+  { cat: "public", q: "What is One Health?", a: "One Health is an approach that recognizes the health of people, animals, and the shared environment are connected. It is used to tackle problems like zoonotic disease, food safety, and antimicrobial resistance.", ref: "Source: CDC One Health", term: "One Health" },
+
+  { cat: "public", q: "What is a host in disease transmission?", a: "A host is a person or animal in which an infectious agent can live and multiply. People can be hosts for the flu virus; deer and mice are hosts for the bacteria that cause Lyme disease.", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 1", term: "host disease" },
+
+  { cat: "public", q: "What is the chain of infection?", a: "The chain of infection is the sequence of events needed for an infection to spread: an infectious agent, a reservoir, a way out of the reservoir, a mode of transmission, a way into a new host, and a susceptible host. Breaking any link stops the spread.", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 1", term: "chain of infection" },
+
+
+  // ==================================================================
+  // CATEGORY: STUDENT
+  // Undergraduate / graduate level — assumes basic science literacy.
+  // ==================================================================
+
+  { cat: "student", q: "What are the three components of the epidemiologic triad?", a: "The epidemiologic triad models infectious disease causation as an interaction of three elements: the agent (the pathogen), the host (the person at risk), and the environment (the conditions that bring agent and host together).", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 1", term: "epidemiologic triad" },
+
+  { cat: "student", q: "What is the natural history of disease?", a: "The natural history of disease describes the progression of a disease in an individual from the moment of exposure through the stages of subclinical disease, clinical disease, and resolution (recovery, disability, or death) in the absence of treatment.", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 1", term: "natural history of disease" },
+
+  { cat: "student", q: "What is the difference between incidence and prevalence?", a: "Incidence measures new cases of disease that develop in a defined population during a defined period. Prevalence measures the total cases — new and pre-existing — present in a population at a point in time.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 3", term: "incidence vs prevalence" },
+
+  { cat: "student", q: "What is the relationship between incidence, prevalence, and disease duration?", a: "When incidence and duration are stable, prevalence ≈ incidence × average duration of disease. Prevalence rises when people live longer with the disease, even if the rate of new cases stays the same.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 3", term: "prevalence incidence duration" },
+
+  { cat: "student", q: "What is a cohort study?", a: "A cohort study is an observational study in which people are classified by exposure status and followed over time to compare the incidence (or rate) of disease in the exposed and unexposed groups.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 9", term: "cohort study" },
+
+  { cat: "student", q: "What is a case-control study?", a: "A case-control study compares people with a disease (cases) to people without it (controls) and looks backward to compare past exposures, in order to identify factors associated with the disease.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 10", term: "case-control study" },
+
+  { cat: "student", q: "What is a cross-sectional study?", a: "A cross-sectional study measures exposure and outcome simultaneously in a defined population — providing a snapshot of disease prevalence and associated factors at one point in time.", ref: "Source: Van den Broeck & Brestoff, Epidemiology: Principles & Practical Guidelines (Springer 2013), Ch. 8", term: "cross-sectional study" },
+
+  { cat: "student", q: "What is a randomized controlled trial (RCT)?", a: "An RCT is an experimental study in which participants are randomly allocated to an intervention or a comparison (control) group and followed to compare outcomes — minimizing confounding and selection bias.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 7", term: "randomized controlled trial" },
+
+  { cat: "student", q: "What is descriptive epidemiology?", a: "Descriptive epidemiology characterizes the occurrence of disease by person (who), place (where), and time (when). It generates hypotheses about causes that analytic studies can then test.", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 1", term: "descriptive epidemiology" },
+
+  { cat: "student", q: "What is analytic epidemiology?", a: "Analytic epidemiology tests hypotheses about exposure–disease relationships, usually with a comparison group, to quantify associations and assess causality. Cohort, case-control, and randomized trials are the main analytic designs.", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 1", term: "analytic epidemiology" },
+
+  { cat: "student", q: "What is a risk ratio (relative risk)?", a: "A risk ratio is the ratio of disease risk (cumulative incidence) in an exposed group to the risk in an unexposed group. A risk ratio of 1.0 means no difference; values above 1 suggest harm, values below 1 suggest protection.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 11", term: "risk ratio relative risk" },
+
+  { cat: "student", q: "What is an odds ratio?", a: "An odds ratio is the ratio of the odds of exposure among cases to the odds of exposure among controls. It is the standard measure of association in case-control studies and approximates the risk ratio when disease is rare.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 12", term: "odds ratio" },
+
+  { cat: "student", q: "What is attributable risk?", a: "Attributable risk (risk difference) is the difference in disease incidence between exposed and unexposed groups. It estimates the excess disease burden in the exposed group that can be attributed to the exposure, assuming the relationship is causal.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 12", term: "attributable risk" },
+
+  { cat: "student", q: "What is the attack rate?", a: "The attack rate is the proportion of an at-risk population that develops disease during an outbreak (cases ÷ at-risk population). It is a cumulative incidence calculated over the epidemic period rather than per year.", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 3", term: "attack rate" },
+
+  { cat: "student", q: "What is the secondary attack rate?", a: "The secondary attack rate measures spread within a defined group, usually a household: it is the attack rate among susceptible contacts of a primary case. It quantifies person-to-person transmissibility.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 2", term: "secondary attack rate" },
+
+  { cat: "student", q: "What is the basic reproduction number, R₀?", a: "R₀ (R-naught) is the average number of secondary infections produced by one infectious person in a fully susceptible population. R₀ > 1 means the disease can spread; R₀ < 1 means it will die out.", ref: "Source: Understanding Epidemiology (Jones & Bartlett); CDC", term: "basic reproduction number R0" },
+
+  { cat: "student", q: "What is the difference between R₀ and the effective reproduction number (Rₑ or Rₜ)?", a: "R₀ assumes a fully susceptible population. The effective reproduction number (Rₑ or Rₜ) accounts for immunity, behavior change, and interventions present at a given time. Rₜ < 1 means transmission is contracting.", ref: "Source: WHO; Understanding Epidemiology", term: "effective reproduction number Rt" },
+
+  { cat: "student", q: "What is a case definition?", a: "A case definition is a standard set of criteria for deciding whether a person should be classified as having the disease under study. It may include clinical, laboratory, and epidemiologic criteria and is often stratified as confirmed, probable, or suspected.", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 6", term: "case definition" },
+
+  { cat: "student", q: "What are the steps of an outbreak investigation?", a: "CDC describes 10 steps: (1) prepare for fieldwork; (2) establish the existence of an outbreak; (3) verify the diagnosis; (4) construct a working case definition; (5) find cases systematically; (6) perform descriptive epidemiology; (7) develop hypotheses; (8) evaluate hypotheses with analytic methods; (9) reconsider or refine; (10) implement control and prevention; communicate findings.", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 6", term: "outbreak investigation steps" },
+
+  { cat: "student", q: "What is a point-source outbreak?", a: "A point-source outbreak occurs when a group of people is exposed to the same source over a relatively brief time. The epidemic curve typically shows a single, sharp peak whose width reflects the incubation period.", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 6", term: "point source outbreak" },
+
+  { cat: "student", q: "What is a propagated outbreak?", a: "A propagated outbreak spreads from person to person rather than from a single common source. Its epidemic curve usually shows a series of progressively taller peaks, each one incubation period apart.", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 6", term: "propagated outbreak" },
+
+  { cat: "student", q: "What is an epidemic curve?", a: "An epidemic curve (epi curve) is a histogram of case counts by date or time of illness onset. Its shape, height, and spread help investigators identify the pattern of spread, probable time of exposure, and outliers.", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 6", term: "epidemic curve" },
+
+  { cat: "student", q: "What is the iceberg phenomenon of disease?", a: "The iceberg phenomenon (or iceberg concept) describes that for every clinically diagnosed case, there are typically many milder, subclinical, or asymptomatic infections that go undetected — the visible 'tip' is only part of the burden.", ref: "Source: Bonita, Beaglehole & Kjellström, Basic Epidemiology, 2nd ed. (WHO)", term: "iceberg phenomenon disease" },
+
+  { cat: "student", q: "What is a confounding variable?", a: "A confounder is a third variable that is (1) associated with the exposure, (2) an independent risk factor for the outcome, and (3) not on the causal pathway between exposure and outcome. Unadjusted confounders distort observed associations.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 15", term: "confounding variable" },
+
+  { cat: "student", q: "What is selection bias?", a: "Selection bias is a systematic error arising from procedures used to choose study participants — for example, recruiting cases from one hospital and controls from a different population. It distorts the measured association.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 15", term: "selection bias" },
+
+  { cat: "student", q: "What is information (measurement) bias?", a: "Information bias is a systematic error from inaccurate measurement or classification of exposure, outcome, or covariates. Examples include recall bias and interviewer bias.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 15", term: "information bias" },
+
+  { cat: "student", q: "What is recall bias?", a: "Recall bias is a type of information bias in which cases and controls remember past exposures with different accuracy. Cases, motivated to find a cause, often recall exposures more thoroughly than healthy controls.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 10", term: "recall bias" },
+
+  { cat: "student", q: "What is sensitivity?", a: "Sensitivity is the probability that a test correctly identifies people who truly have the disease — true positives ÷ (true positives + false negatives). A highly sensitive test minimizes false negatives.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 5", term: "sensitivity test" },
+
+  { cat: "student", q: "What is specificity?", a: "Specificity is the probability that a test correctly identifies people who truly do not have the disease — true negatives ÷ (true negatives + false positives). A highly specific test minimizes false positives.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 5", term: "specificity test" },
+
+  { cat: "student", q: "What is positive predictive value (PPV)?", a: "PPV is the probability that a person with a positive test truly has the disease (true positives ÷ all positives). Unlike sensitivity, PPV depends on disease prevalence — lower prevalence yields a lower PPV.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 5", term: "positive predictive value" },
+
+  { cat: "student", q: "What is negative predictive value (NPV)?", a: "NPV is the probability that a person with a negative test truly does not have the disease (true negatives ÷ all negatives). NPV also depends on prevalence — higher prevalence yields lower NPV.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 5", term: "negative predictive value" },
+
+  { cat: "student", q: "What is a p-value?", a: "A p-value is the probability of observing data at least as extreme as what was observed, assuming the null hypothesis is true. A small p-value provides evidence against the null but does not measure the size or importance of an effect.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 11; ASA Statement on p-values (2016)", term: "p-value" },
+
+  { cat: "student", q: "What is a confidence interval?", a: "A confidence interval is a range of values, calculated from the data, that is intended to contain the true population parameter a specified percentage of the time (commonly 95%) over many repeated samples. Narrower intervals indicate greater precision.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 11", term: "confidence interval" },
+
+  { cat: "student", q: "What is the null hypothesis?", a: "The null hypothesis (H₀) is the default statement of no association or no difference between groups. Statistical tests evaluate the data against H₀; a small p-value provides evidence to reject H₀.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 11", term: "null hypothesis" },
+
+  { cat: "student", q: "What is statistical power?", a: "Statistical power is the probability that a study will detect an effect of a given size, if one truly exists. Power equals 1 − β, where β is the Type II error rate. Power is increased by larger samples and larger effect sizes.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 11", term: "statistical power" },
+
+  { cat: "student", q: "What is the difference between a Type I and Type II error?", a: "A Type I error (α) is rejecting a true null hypothesis — a false positive. A Type II error (β) is failing to reject a false null hypothesis — a false negative. Power = 1 − β.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 11", term: "Type I and Type II error" },
+
+  { cat: "student", q: "What is blinding (masking) in a clinical trial?", a: "Blinding hides treatment assignment from participants (single-blind), from participants and investigators (double-blind), or from participants, investigators, and outcome assessors (triple-blind). It reduces information bias and placebo effects.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 7", term: "blinding clinical trial" },
+
+  { cat: "student", q: "What is randomization?", a: "Randomization is the random allocation of participants to treatment groups in a clinical trial. It balances both measured and unmeasured confounders across groups, making the groups comparable on average.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 7", term: "randomization" },
+
+  { cat: "student", q: "What is a control group?", a: "A control group is a comparison group that does not receive the intervention or exposure under study. It establishes the baseline against which the effect of the exposure or treatment is judged.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 7", term: "control group" },
+
+  { cat: "student", q: "What is matching in a case-control study?", a: "Matching pairs each case with one or more controls sharing the same value of a potential confounder (e.g., age, sex). It controls confounding by design but requires matched analysis to avoid bias.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 10", term: "matching case-control" },
+
+  { cat: "student", q: "What is active surveillance?", a: "Active surveillance is when health authorities reach out — by phone calls, visits, or chart reviews — to collect data on cases. It is more complete and timely than passive surveillance but more resource-intensive.", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 5", term: "active surveillance" },
+
+  { cat: "student", q: "What is passive surveillance?", a: "Passive surveillance relies on routine reports submitted to health authorities by physicians, hospitals, and laboratories. It is inexpensive and broad-reaching but typically underreports the true number of cases.", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 5", term: "passive surveillance" },
+
+  { cat: "student", q: "What is sentinel surveillance?", a: "Sentinel surveillance uses a selected sample of reporting sites (e.g., clinics, providers) that are chosen to represent a wider population. It gives high-quality data efficiently when full enumeration is impractical, as with seasonal influenza.", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 5", term: "sentinel surveillance" },
+
+  { cat: "student", q: "What is the case-fatality rate (CFR)?", a: "The case-fatality rate is the proportion of diagnosed cases of a disease who die from it (deaths ÷ cases × 100), measured over a defined period. It reflects the severity of the disease, not its frequency.", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 3", term: "case-fatality rate" },
+
+  { cat: "student", q: "What is the difference between mortality rate and case-fatality rate?", a: "A mortality rate is deaths from a disease divided by the total population at risk over time. A case-fatality rate is deaths from a disease divided only by people diagnosed with that disease — it measures lethality, not population burden.", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 3", term: "mortality vs case-fatality rate" },
+
+  { cat: "student", q: "What is vaccine efficacy?", a: "Vaccine efficacy is the relative reduction in disease risk among vaccinated people compared with unvaccinated people, measured under the controlled conditions of a randomized clinical trial.", ref: "Source: CDC Principles of Epidemiology, 3rd ed.; WHO", term: "vaccine efficacy" },
+
+  { cat: "student", q: "What is vaccine effectiveness?", a: "Vaccine effectiveness is the reduction in disease in a vaccinated population observed in real-world (post-licensure) use, usually estimated from observational study designs such as test-negative case-control studies.", ref: "Source: CDC Principles of Epidemiology, 3rd ed.; WHO", term: "vaccine effectiveness" },
+
+  { cat: "student", q: "What is a retrospective vs. prospective study design?", a: "In a prospective study, exposure is measured at baseline and participants are followed forward in time for the outcome. In a retrospective study, both exposure and outcome have already occurred when the study begins, and existing records are reviewed.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 9", term: "retrospective vs prospective" },
+
+  { cat: "student", q: "What is an ecological study?", a: "An ecological study analyzes data at the population (group) level — for example, comparing average sodium intake and stroke rates across countries — rather than at the individual level. Conclusions about individuals from such data risk the ecological fallacy.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 6", term: "ecological study" },
+
+  { cat: "student", q: "What is the ecological fallacy?", a: "The ecological fallacy is the error of drawing conclusions about individual-level relationships from data observed only at the group level. A correlation between two variables among populations does not necessarily hold among individuals within those populations.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 6", term: "ecological fallacy" },
+
+  { cat: "student", q: "What is internal validity?", a: "Internal validity is the degree to which a study's findings reflect the true relationship between exposure and outcome in the study population — that is, freedom from bias, confounding, and chance.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 15", term: "internal validity" },
+
+  { cat: "student", q: "What is external validity (generalizability)?", a: "External validity is the extent to which study results apply to populations outside the study sample. A study can have strong internal validity but limited external validity if its participants are unusual or its setting is unique.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 15", term: "external validity" },
+
+
+  // ==================================================================
+  // CATEGORY: ADVANCED
+  // Doctoral / advanced clinical and field epidemiology.
+  // ==================================================================
+
+  { cat: "advanced", q: "What are the Bradford Hill viewpoints on causation?", a: "Sir Austin Bradford Hill (1965) proposed nine viewpoints for judging whether an observed association is causal: strength, consistency, specificity, temporality, biological gradient (dose-response), plausibility, coherence, experiment, and analogy. They are aids to judgment, not a checklist.", ref: "Source: Hill AB. The Environment and Disease: Association or Causation? Proc R Soc Med. 1965;58:295-300", term: "Bradford Hill criteria" },
+
+  { cat: "advanced", q: "Which Bradford Hill viewpoint is considered indispensable?", a: "Temporality — the cause must precede the effect — is the only viewpoint that is logically necessary. The remaining viewpoints are supportive but not individually required or sufficient for causal inference.", ref: "Source: Hill AB, Proc R Soc Med 1965; Rothman & Greenland, Modern Epidemiology", term: "temporality Hill" },
+
+  { cat: "advanced", q: "What is the Rothman sufficient-component cause model?", a: "Rothman's model represents each sufficient cause as a 'pie' composed of multiple component causes. A sufficient cause inevitably produces disease when all of its components are present; a necessary cause appears in every sufficient cause for that disease.", ref: "Source: Rothman KJ. Causes. Am J Epidemiol 1976;104:587-92; Gordis 5th ed., Ch. 14", term: "sufficient component cause Rothman" },
+
+  { cat: "advanced", q: "What is the difference between a sufficient cause and a necessary cause?", a: "A sufficient cause is one whose presence guarantees the disease will occur. A necessary cause must be present for the disease to occur but may not be sufficient on its own — Mycobacterium tuberculosis, for instance, is necessary for TB but not sufficient.", ref: "Source: Rothman, Greenland & Lash, Modern Epidemiology, 3rd ed.; Gordis 5th ed., Ch. 14", term: "necessary vs sufficient cause" },
+
+  { cat: "advanced", q: "What is the counterfactual definition of causation?", a: "In the counterfactual framework, an exposure is a cause of an outcome in an individual if the outcome would not have occurred (or would have occurred differently) had the exposure been absent — comparing factual and counterfactual potential outcomes.", ref: "Source: Hernán & Robins, Causal Inference: What If (CRC Press, 2020); Rothman et al., Modern Epidemiology", term: "counterfactual causal inference" },
+
+  { cat: "advanced", q: "What is person-time and when is it used?", a: "Person-time sums the time each subject contributes to the population at risk. It is the denominator for incidence rates (also called incidence density) when follow-up time varies between subjects — common in dynamic cohorts.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 3", term: "person-time" },
+
+  { cat: "advanced", q: "What is the difference between cumulative incidence and incidence rate (incidence density)?", a: "Cumulative incidence (incidence proportion) is new cases ÷ population at risk at the start of follow-up — a probability with no time unit attached to the denominator. Incidence rate is new cases ÷ person-time at risk — a rate with units of 1/time that accommodates variable follow-up and competing risks.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 3; Rothman et al., Modern Epidemiology", term: "cumulative incidence vs incidence rate" },
+
+  { cat: "advanced", q: "What is the population attributable risk percent (PAR%)?", a: "PAR% estimates the proportion of disease in the total population that would be eliminated if the exposure were removed: PAR% = [(Iₜ − Iᵤ) / Iₜ] × 100, where Iₜ is incidence in the total population and Iᵤ is incidence in the unexposed. It incorporates both the strength of the association and the prevalence of the exposure.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 12; CDC Principles of Epidemiology, Lesson 3", term: "population attributable risk percent" },
+
+  { cat: "advanced", q: "What is the herd immunity threshold and how is it calculated?", a: "The herd immunity threshold (Hₜ) is the minimum proportion of an evenly mixing population that must be immune to interrupt sustained transmission. For a homogeneous population, Hₜ = 1 − 1/R₀. Real populations require higher coverage because mixing is heterogeneous and immunity wanes.", ref: "Source: Anderson & May, Infectious Diseases of Humans (Oxford, 1991); CDC", term: "herd immunity threshold" },
+
+  { cat: "advanced", q: "What is a nested case-control study?", a: "A nested case-control study selects all incident cases that arise within a defined cohort and a sample of non-cases from the same cohort for detailed (and often costly) analyses. It preserves the temporal clarity of a cohort while improving efficiency.", ref: "Source: Rothman, Greenland & Lash, Modern Epidemiology, 3rd ed.; Gordis Ch. 10", term: "nested case-control study" },
+
+  { cat: "advanced", q: "What is a case-cohort study?", a: "A case-cohort study compares all incident cases in a cohort to a random sub-cohort selected at baseline. Unlike nested case-control sampling, the sub-cohort is fixed from the start and can serve as the comparison group for multiple outcomes.", ref: "Source: Prentice RL. Biometrika 1986;73:1-11; Rothman et al., Modern Epidemiology", term: "case-cohort study" },
+
+  { cat: "advanced", q: "What is a cluster-randomized trial?", a: "A cluster-randomized trial randomizes intact groups (clinics, schools, villages) rather than individuals to intervention or control conditions. It is used when individual randomization is impractical or when the intervention naturally acts at the group level. Analysis must account for intra-cluster correlation.", ref: "Source: Hayes & Moulton, Cluster Randomised Trials, 2nd ed. (CRC Press, 2017)", term: "cluster randomized trial" },
+
+  { cat: "advanced", q: "What is the Mantel-Haenszel method?", a: "The Mantel-Haenszel method produces a pooled, confounder-adjusted estimate of the odds ratio, risk ratio, or rate ratio by combining stratum-specific estimates with appropriate weights. It is robust to sparse data and underlies most stratified analyses.", ref: "Source: Mantel N, Haenszel W. JNCI 1959;22:719-48; Rothman et al., Modern Epidemiology", term: "Mantel-Haenszel method" },
+
+  { cat: "advanced", q: "What is the Kaplan-Meier estimator?", a: "The Kaplan-Meier estimator is a non-parametric method for estimating the survivor function from time-to-event data, accounting for right-censoring by computing conditional survival probabilities at each event time and multiplying them across the follow-up period.", ref: "Source: Kaplan EL, Meier P. JASA 1958;53:457-81; Gordis Ch. 6", term: "Kaplan-Meier estimator" },
+
+  { cat: "advanced", q: "What is a hazard ratio?", a: "A hazard ratio is the ratio of instantaneous event rates (hazards) between two groups at any given time. It is the standard effect estimate from Cox proportional hazards regression and assumes (in its simplest form) that the ratio is constant over follow-up.", ref: "Source: Cox DR. JRSS-B 1972;34:187-220; Gordis Ch. 6", term: "hazard ratio" },
+
+  { cat: "advanced", q: "What is the proportional hazards assumption?", a: "The proportional hazards assumption holds that the hazard ratio between two groups is constant over the entire follow-up period. Violations can be detected with Schoenfeld residuals or a log(–log(survival)) plot, and are addressed with stratification or time-varying covariates.", ref: "Source: Cox DR, JRSS-B 1972; Klein & Moeschberger, Survival Analysis (Springer 2003)", term: "proportional hazards assumption" },
+
+  { cat: "advanced", q: "What is differential vs. non-differential misclassification?", a: "Non-differential misclassification is independent of disease status (or vice versa) and typically biases dichotomous-exposure estimates toward the null. Differential misclassification differs across comparison groups and can bias estimates in either direction, sometimes dramatically.", ref: "Source: Rothman, Greenland & Lash, Modern Epidemiology, 3rd ed.; Gordis Ch. 15", term: "differential vs non-differential misclassification" },
+
+  { cat: "advanced", q: "What is Berkson's bias?", a: "Berkson's bias (or admission-rate bias) arises in hospital-based case-control studies when the probability of being hospitalized for the disease and for the exposure differ, creating a spurious association between exposure and disease among hospitalized people that does not exist in the general population.", ref: "Source: Berkson J. Biometrics 1946;2:47-53; Rothman et al., Modern Epidemiology", term: "Berkson bias" },
+
+  { cat: "advanced", q: "What is the healthy worker effect?", a: "The healthy worker effect is a form of selection bias in occupational studies: employed populations exhibit lower mortality than the general population because severely ill or disabled individuals are less likely to be employed. It typically biases occupational risk estimates toward the null.", ref: "Source: McMichael AJ. J Occup Med 1976;18:165-8; Rothman et al., Modern Epidemiology", term: "healthy worker effect" },
+
+  { cat: "advanced", q: "What is collider (selection-related) bias?", a: "Collider bias is a spurious association induced when an analysis conditions on (stratifies, restricts, or adjusts for) a variable that is a common effect of the exposure and the outcome. It is a key threat in cohort selection, case-control sampling, and missing-data analyses.", ref: "Source: Hernán MA, Hernández-Díaz S, Robins JM. Epidemiology 2004;15:615-25", term: "collider bias" },
+
+  { cat: "advanced", q: "What is a directed acyclic graph (DAG)?", a: "A DAG is a graphical model whose nodes represent variables and whose directed edges represent assumed causal effects, without cycles. DAGs encode assumptions about confounding, mediation, and selection, and identify the minimum sufficient adjustment set using the back-door criterion.", ref: "Source: Greenland S, Pearl J, Robins JM. Epidemiology 1999;10:37-48", term: "directed acyclic graph DAG" },
+
+  { cat: "advanced", q: "What is effect modification (interaction)?", a: "Effect modification occurs when the magnitude of an exposure's effect on the outcome differs across levels of another variable. Unlike confounding, effect modification is a substantive finding to be reported (often as stratum-specific estimates), not eliminated. Additive and multiplicative interactions may give different answers.", ref: "Source: Rothman, Greenland & Lash, Modern Epidemiology, 3rd ed.", term: "effect modification interaction" },
+
+  { cat: "advanced", q: "How is confounding distinguished from effect modification analytically?", a: "Confounding is a distortion to be removed: stratum-specific estimates are similar, but differ from the crude. Effect modification is a substantive heterogeneity: stratum-specific estimates differ from each other and a single summary measure may be misleading.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 15; Rothman et al., Modern Epidemiology", term: "confounding vs effect modification" },
+
+  { cat: "advanced", q: "What is propensity score analysis?", a: "A propensity score is the predicted probability of exposure given measured covariates. Matching, stratifying, weighting (e.g., IPTW), or covariate-adjusting on the score can balance covariates across exposure groups in observational studies, mimicking randomization for measured confounders.", ref: "Source: Rosenbaum PR, Rubin DB. Biometrika 1983;70:41-55", term: "propensity score" },
+
+  { cat: "advanced", q: "What is instrumental variable (IV) analysis?", a: "An instrumental variable affects the outcome only through its effect on the exposure, is associated with the exposure, and is independent of unmeasured confounders. Under these assumptions, IV methods (e.g., two-stage least squares, Mendelian randomization) estimate causal effects despite unmeasured confounding.", ref: "Source: Greenland S. Int J Epidemiol 2000;29:722-9", term: "instrumental variable" },
+
+  { cat: "advanced", q: "What is Mendelian randomization?", a: "Mendelian randomization uses genetic variants as instrumental variables for a modifiable exposure. Because alleles are randomly assorted at meiosis, they are typically unrelated to behavioral or environmental confounders, allowing causal inference about the exposure on the outcome.", ref: "Source: Smith GD, Ebrahim S. Int J Epidemiol 2003;32:1-22", term: "Mendelian randomization" },
+
+  { cat: "advanced", q: "What is the difference between intention-to-treat (ITT) and per-protocol analysis?", a: "ITT analyzes participants in the groups to which they were randomized regardless of adherence — preserving randomization, estimating effectiveness, and conservatively biased toward the null. Per-protocol analyzes only adherent participants — estimating biological efficacy but vulnerable to selection bias.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 7; ICH E9 Statistical Principles", term: "intention-to-treat per-protocol" },
+
+  { cat: "advanced", q: "What is overdiagnosis bias in screening?", a: "Overdiagnosis is the detection through screening of disease that would never have caused symptoms or death during the patient's lifetime. It inflates apparent incidence and survival while exposing patients to the harms of unnecessary diagnosis and treatment.", ref: "Source: Welch HG, Black WC. JNCI 2010;102:605-13; Gordis Ch. 18", term: "overdiagnosis screening" },
+
+  { cat: "advanced", q: "What is lead-time bias?", a: "Lead-time bias is the apparent survival benefit from screening that arises purely from advancing the time of diagnosis without changing the time of death. Without accounting for lead time, screened patients appear to live longer when they are merely diagnosed earlier.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 18", term: "lead-time bias" },
+
+  { cat: "advanced", q: "What is length-biased sampling in screening?", a: "Length-biased sampling reflects that slowly progressing cases have a longer detectable preclinical phase and are therefore over-represented in screening-detected cohorts, while aggressive fast-growing cases are under-represented. This systematically inflates the apparent prognosis of screen-detected disease.", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 18; Welch HG", term: "length-biased sampling" },
+
+  { cat: "advanced", q: "What is the number needed to treat (NNT)?", a: "NNT = 1 / absolute risk reduction. It estimates how many patients must receive an intervention, instead of the comparator, for one additional patient to benefit. NNT contextualizes a relative risk reduction in absolute terms for clinical decisions.", ref: "Source: Laupacis A, Sackett DL, Roberts RS. NEJM 1988;318:1728-33", term: "number needed to treat NNT" },
+
+  { cat: "advanced", q: "What is direct vs. indirect age standardization?", a: "Direct standardization applies the study population's age-specific rates to a chosen standard population, producing comparable summary rates. Indirect standardization applies a standard set of age-specific rates to the study population to compute expected events, yielding a standardized mortality (or morbidity) ratio (SMR).", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 3; Gordis Ch. 4", term: "direct vs indirect standardization" },
+
+  { cat: "advanced", q: "What is a standardized mortality ratio (SMR)?", a: "An SMR is the ratio of observed deaths in a study population to deaths expected if it had the age-specific mortality of a standard population. SMR = 1.0 indicates equivalence; >1.0 indicates excess mortality. It is the principal output of indirect standardization.", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 3", term: "standardized mortality ratio" },
+
+  { cat: "advanced", q: "What is the disability-adjusted life year (DALY)?", a: "A DALY combines years of life lost (YLL) due to premature mortality and years lived with disability (YLD), weighted by disability severity, into a single measure of disease burden. One DALY equals one year of healthy life lost. DALYs underpin the Global Burden of Disease project.", ref: "Source: Murray CJL, Lopez AD. The Global Burden of Disease (WHO/Harvard, 1996); GBD Study", term: "DALY" },
+
+  { cat: "advanced", q: "What are Years of Potential Life Lost (YPLL)?", a: "YPLL is a summary measure of premature mortality computed by subtracting age at death from a reference age (often 65 or 75) and summing across deaths. Causes that kill at younger ages — injuries, suicide, infant mortality — contribute disproportionately, making YPLL useful for setting prevention priorities.", ref: "Source: CDC Principles of Epidemiology, 3rd ed.; Gardner JW, Sanborn JS. Epidemiology 1990;1:322-9", term: "years of potential life lost" },
+
+  { cat: "advanced", q: "What is molecular epidemiology?", a: "Molecular epidemiology integrates molecular biology (genomic sequencing, biomarkers, pathogen typing) with classical epidemiology to identify transmission chains, characterize variants, and study gene-environment interactions in disease causation.", ref: "Source: Schulte PA, Perera FP, eds. Molecular Epidemiology: Principles and Practices (Academic Press, 1993)", term: "molecular epidemiology" },
+
+  { cat: "advanced", q: "What is genomic surveillance?", a: "Genomic surveillance is the systematic sequencing of pathogens from clinical or environmental samples to monitor variant emergence, antimicrobial resistance, and transmission dynamics in near real-time. It became central to the COVID-19, mpox, and HAI response.", ref: "Source: WHO Global Strategy for Genomic Surveillance of Pathogens (2022)", term: "genomic surveillance" },
+
+  { cat: "advanced", q: "What is a meta-analysis?", a: "A meta-analysis is a quantitative synthesis that pools effect estimates across studies addressing the same question, weighting by precision. Random-effects models accommodate between-study heterogeneity; fixed-effect models assume one true effect. The forest plot displays study-specific and pooled estimates.", ref: "Source: Higgins JPT, Thomas J, eds. Cochrane Handbook for Systematic Reviews of Interventions, 6.x", term: "meta-analysis" },
+
+  { cat: "advanced", q: "What is publication bias and how can it be assessed?", a: "Publication bias arises when statistically significant or 'positive' findings are more likely to be published, biasing systematic reviews. It can be detected with funnel plots (asymmetry suggests bias) and tested with Egger's regression or Begg's rank test. Trim-and-fill and PET-PEESE methods attempt adjustment.", ref: "Source: Egger M et al. BMJ 1997;315:629-34; Cochrane Handbook", term: "publication bias" },
+
+  { cat: "advanced", q: "What is the I² statistic in meta-analysis?", a: "I² quantifies the percentage of variability in effect estimates that is attributable to between-study heterogeneity rather than sampling error. Conventional benchmarks treat I² of 25%, 50%, and 75% as low, moderate, and high heterogeneity, prompting random-effects modeling and subgroup analyses.", ref: "Source: Higgins JPT, Thompson SG. Stat Med 2002;21:1539-58", term: "I-squared heterogeneity" },
+
+  { cat: "advanced", q: "What is Cohen's kappa?", a: "Cohen's kappa measures agreement between two raters on categorical data beyond what would be expected by chance. Values run from −1 to 1; benchmarks (Landis & Koch) call 0.21–0.40 fair, 0.41–0.60 moderate, 0.61–0.80 substantial, and 0.81–1.00 almost perfect.", ref: "Source: Cohen J. Educ Psychol Meas 1960;20:37-46; Landis JR, Koch GG. Biometrics 1977;33:159-74", term: "Cohen kappa" },
+
+  { cat: "advanced", q: "What is the difference between validity and reliability?", a: "Validity is the degree to which a measurement reflects the true value of what it intends to measure. Reliability is the degree to which a measurement is reproducible under the same conditions. A measure can be reliable (consistent) but invalid (consistently wrong).", ref: "Source: Gordis, Epidemiology 5th ed., Ch. 5", term: "validity vs reliability" },
+
+  { cat: "advanced", q: "What is the difference between syndromic and traditional surveillance?", a: "Syndromic surveillance monitors pre-diagnostic indicators (ED chief complaints, school absenteeism, pharmacy sales) for earlier outbreak detection. Traditional surveillance relies on confirmed clinical or laboratory diagnoses, providing higher specificity but later signal.", ref: "Source: CDC Principles of Epidemiology, 3rd ed., Lesson 5; Henning KJ. MMWR 2004;53:5-11", term: "syndromic surveillance" },
+
+  { cat: "advanced", q: "What is the epidemiologic transition?", a: "The epidemiologic transition (Omran, 1971) describes the shift in dominant causes of death from infectious and nutritional diseases of the young to chronic, degenerative, and behavioral diseases of older adulthood, accompanying demographic and economic development.", ref: "Source: Omran AR. Milbank Mem Fund Q 1971;49:509-38", term: "epidemiologic transition" },
+
+  { cat: "advanced", q: "What is precision medicine epidemiology?", a: "Precision medicine epidemiology integrates large-scale clinical, genomic, environmental, and lifestyle data to tailor prevention and treatment to subpopulations defined by their molecular and contextual characteristics, rather than to the 'average' patient.", ref: "Source: Khoury MJ et al. Am J Prev Med 2016;50:398-401; NIH All of Us program", term: "precision medicine epidemiology" },
+
+  { cat: "advanced", q: "What is a test-negative case-control design?", a: "The test-negative design selects subjects who present with a disease-like syndrome and are tested for the pathogen of interest; cases are test-positive and controls are test-negative for that pathogen. It is now the standard for estimating real-world influenza and COVID-19 vaccine effectiveness.", ref: "Source: Jackson ML, Nelson JC. Vaccine 2013;31:2165-8; Fukushima W, Hirota Y. Vaccine 2017;35:4796-9", term: "test-negative design" },
+
+  { cat: "advanced", q: "What is a 2×2 contingency table and what measures can be derived from it?", a: "A 2×2 table classifies subjects by exposure (yes/no) and outcome (yes/no). From the cell counts one can compute risk in exposed and unexposed, risk ratio, risk difference (attributable risk), odds ratio, attributable risk percent, sensitivity, specificity, PPV, NPV, and chi-square statistics.", ref: "Source: Gordis, Epidemiology 5th ed., Chs. 11–12; CDC Principles of Epidemiology, Lesson 3", term: "2x2 contingency table" },
+
+  { cat: "advanced", q: "What is the rare disease assumption?", a: "The rare disease assumption holds that when the disease being studied is uncommon (typically <10%) in both the exposed and unexposed groups, the odds ratio from a case-control study closely approximates the risk ratio that a cohort study would have produced.", ref: "Source: Cornfield J. JNCI 1951;11:1269-75; Gordis Ch. 12", term: "rare disease assumption" },
+
+  { cat: "advanced", q: "What is incidence density (incidence rate)?", a: "Incidence density (or incidence rate) is the number of new cases divided by total person-time at risk, with units of 1/time. Unlike cumulative incidence, it accommodates variable follow-up, late entry, and censoring — essential for open cohorts and survival analysis.", ref: "Source: Rothman, Greenland & Lash, Modern Epidemiology, 3rd ed.; Gordis Ch. 3", term: "incidence density" },
+
+  { cat: "advanced", q: "What is target trial emulation?", a: "Target trial emulation is a framework for designing observational studies that explicitly mimics the protocol of the (hypothetical) randomized trial one would conduct to answer a causal question. It clarifies eligibility, treatment strategies, follow-up, outcomes, and analysis — and reveals common biases such as immortal time and prevalent-user bias.", ref: "Source: Hernán MA, Robins JM. Am J Epidemiol 2016;183:758-64", term: "target trial emulation" },
+
+  { cat: "advanced", q: "What is immortal time bias?", a: "Immortal time bias arises when a period during which the outcome could not occur (e.g., time before treatment initiation) is misclassified as exposed person-time, spuriously favoring the exposed group. It commonly affects pharmacoepidemiologic studies and is mitigated by time-varying exposure analysis or target trial emulation.", ref: "Source: Suissa S. Am J Epidemiol 2008;167:492-9", term: "immortal time bias" },
+
+  { cat: "advanced", q: "What is a competing risk?", a: "A competing risk is an event whose occurrence either precludes or alters the probability of the event of interest — e.g., death from cardiovascular disease in a cancer-mortality study. Standard Kaplan-Meier methods overestimate the cumulative incidence of the event when competing risks are present; cumulative incidence functions or Fine-Gray models are preferred.", ref: "Source: Fine JP, Gray RJ. JASA 1999;94:496-509; Putter H et al. Stat Med 2007;26:2389-430", term: "competing risk" }
+
 ];
 
 // ===================================================================
 // APP STATE
 // ===================================================================
 const state = {
-  deck: [],           // active deck (indices into CARDS)
+  category: null,     // selected category: "public" | "student" | "advanced" | "all"
+  pool: [],           // CARDS indices currently in scope (filtered by category)
+  deck: [],           // shuffled/ordered indices for the current play
   position: 0,        // current index in deck
-  reviewed: new Set(), // which card indices have been seen (by CARDS index)
-  bookmarks: new Set(), // bookmarked CARDS indices
+  reviewed: new Set(),
+  bookmarks: new Set(),
   isFlipped: false,
-  timerMode: false,   // false = manual, true = timer
-  timerDuration: 10,  // seconds
+  timerMode: false,
+  timerDuration: 10,
   timerInterval: null,
   timerRemaining: 0,
   shuffle: true,
   running: false,
+  cookiesAccepted: null, // true | false | null (undecided)
+};
+
+const CATEGORY_LABELS = {
+  public:   "General Public",
+  student:  "Undergraduate / Graduate Students",
+  advanced: "Advanced / Doctoral Level",
+  all:      "All Categories",
 };
 
 // ===================================================================
 // DOM REFS
 // ===================================================================
 const dom = {
-  // Card
-  flashcard: () => document.getElementById('flashcard'),
-  cardQuestion: () => document.getElementById('card-question'),
-  cardAnswer: () => document.getElementById('card-answer'),
-  cardRef: () => document.getElementById('card-ref'),
-  cardScene: () => document.getElementById('card-scene'),
-  emptyState: () => document.getElementById('empty-state'),
+  flashcard:        () => document.getElementById('flashcard'),
+  cardQuestion:     () => document.getElementById('card-question'),
+  cardAnswer:       () => document.getElementById('card-answer'),
+  cardRef:          () => document.getElementById('card-ref'),
+  cardScene:        () => document.getElementById('card-scene'),
+  emptyState:       () => document.getElementById('empty-state'),
 
-  // Timer ring
-  timerWrap: () => document.getElementById('timer-ring-wrap'),
-  timerFill: () => document.getElementById('timer-ring-fill'),
-  timerText: () => document.getElementById('timer-ring-text'),
+  timerWrap:        () => document.getElementById('timer-ring-wrap'),
+  timerFill:        () => document.getElementById('timer-ring-fill'),
+  timerText:        () => document.getElementById('timer-ring-text'),
 
-  // Controls
-  btnManual: () => document.getElementById('btn-mode-manual'),
-  btnTimer: () => document.getElementById('btn-mode-timer'),
-  timerOptions: () => document.getElementById('timer-options'),
-  timerSelect: () => document.getElementById('timer-select'),
-  shuffleCheck: () => document.getElementById('shuffle-check'),
+  btnManual:        () => document.getElementById('btn-mode-manual'),
+  btnTimer:         () => document.getElementById('btn-mode-timer'),
+  timerOptions:     () => document.getElementById('timer-options'),
+  timerSelect:      () => document.getElementById('timer-select'),
+  shuffleCheck:     () => document.getElementById('shuffle-check'),
 
-  // Counter
-  counterNumber: () => document.getElementById('counter-number'),
-  counterTotal: () => document.getElementById('counter-total'),
-  progressFill: () => document.getElementById('progress-fill'),
+  counterNumber:    () => document.getElementById('counter-number'),
+  counterTotal:     () => document.getElementById('counter-total'),
+  progressFill:     () => document.getElementById('progress-fill'),
 
-  // Nav
-  btnPrev: () => document.getElementById('btn-prev'),
-  btnNext: () => document.getElementById('btn-next'),
-  btnFlip: () => document.getElementById('btn-flip'),
-  btnStart: () => document.getElementById('btn-start'),
-  btnRestart: () => document.getElementById('btn-restart'),
+  btnPrev:          () => document.getElementById('btn-prev'),
+  btnNext:          () => document.getElementById('btn-next'),
+  btnFlip:          () => document.getElementById('btn-flip'),
+  btnStart:         () => document.getElementById('btn-start'),
+  btnRestart:       () => document.getElementById('btn-restart'),
 
-  // Card back actions
-  btnLearnMore: () => document.getElementById('btn-learn-more'),
-  btnBookmark: () => document.getElementById('btn-bookmark'),
+  btnLearnMore:     () => document.getElementById('btn-learn-more'),
+  btnBookmark:      () => document.getElementById('btn-bookmark'),
 
-  // Bookmarks section
   bookmarksSection: () => document.getElementById('bookmarks-section'),
-  bookmarksTextarea: () => document.getElementById('bookmarks-textarea'),
-  bookmarkCountBadge: () => document.getElementById('bookmark-count-badge'),
-  btnCopy: () => document.getElementById('btn-copy'),
-  btnClearBookmarks: () => document.getElementById('btn-clear-bookmarks'),
-  copyFeedback: () => document.getElementById('copy-feedback'),
+  bookmarksTextarea:() => document.getElementById('bookmarks-textarea'),
+  bookmarkCountBadge:() => document.getElementById('bookmark-count-badge'),
+  btnCopy:          () => document.getElementById('btn-copy'),
+  btnDownloadRtf:   () => document.getElementById('btn-download-rtf'),
+  btnClearBookmarks:() => document.getElementById('btn-clear-bookmarks'),
+  copyFeedback:     () => document.getElementById('copy-feedback'),
 
-  // Theme toggle
-  themeToggle: () => document.getElementById('theme-toggle'),
+  themeToggle:      () => document.getElementById('theme-toggle'),
+  toastArea:        () => document.getElementById('toast-area'),
 
-  // Toast
-  toastArea: () => document.getElementById('toast-area'),
+  // Category picker
+  categoryPicker:   () => document.getElementById('category-picker'),
+  categoryCards:    () => document.querySelectorAll('.category-card'),
+  selectedCategoryBadge: () => document.getElementById('selected-category-badge'),
+  btnChangeCategory:() => document.getElementById('btn-change-category'),
+
+  // Cookie banner
+  cookieBanner:     () => document.getElementById('cookie-banner'),
+  cookieAccept:     () => document.getElementById('cookie-accept'),
+  cookieReject:     () => document.getElementById('cookie-reject'),
 };
 
 // ===================================================================
 // UTILITIES
 // ===================================================================
-function shuffle(arr) {
+function shuffleArr(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -340,9 +434,121 @@ function buildLearnMoreURL(term) {
 }
 
 // ===================================================================
+// COOKIE CONSENT (stored in localStorage only if accepted)
+// ===================================================================
+function initCookieBanner() {
+  let stored = null;
+  try { stored = localStorage.getItem('epi_cookie_consent'); } catch (e) {}
+
+  if (stored === 'accepted') {
+    state.cookiesAccepted = true;
+    hideCookieBanner();
+    return;
+  }
+  if (stored === 'rejected') {
+    state.cookiesAccepted = false;
+    hideCookieBanner();
+    return;
+  }
+  // Undecided — show banner
+  showCookieBanner();
+}
+
+function showCookieBanner() {
+  const b = dom.cookieBanner();
+  if (b) b.classList.add('is-visible');
+}
+function hideCookieBanner() {
+  const b = dom.cookieBanner();
+  if (b) b.classList.remove('is-visible');
+}
+
+function acceptCookies() {
+  state.cookiesAccepted = true;
+  try { localStorage.setItem('epi_cookie_consent', 'accepted'); } catch (e) {}
+  hideCookieBanner();
+  showToast('Cookies accepted.');
+}
+
+function rejectCookies() {
+  state.cookiesAccepted = false;
+  // Try to also clear any persisted preferences if user opts out
+  try {
+    // Use sessionStorage as fallback so consent decision lasts the tab session
+    sessionStorage.setItem('epi_cookie_consent', 'rejected');
+    // Remove non-essential persisted prefs
+    localStorage.removeItem('epi_theme');
+  } catch (e) {}
+  // Also persist the rejection itself (rejection record is essential to honor the choice)
+  try { localStorage.setItem('epi_cookie_consent', 'rejected'); } catch (e) {}
+  hideCookieBanner();
+  showToast('Optional cookies declined.');
+}
+
+function canPersist() {
+  return state.cookiesAccepted === true;
+}
+
+// ===================================================================
+// CATEGORY SELECTION
+// ===================================================================
+function selectCategory(cat) {
+  state.category = cat;
+  state.pool = (cat === 'all')
+    ? CARDS.map((_, i) => i)
+    : CARDS.map((c, i) => c.cat === cat ? i : -1).filter(i => i >= 0);
+
+  state.reviewed.clear();
+  state.deck = [];
+  state.position = 0;
+  state.running = false;
+
+  // Hide picker, show study UI
+  const picker = dom.categoryPicker();
+  if (picker) picker.style.display = 'none';
+
+  // Show main study UI
+  document.getElementById('study-area').style.display = '';
+
+  // Update counter total
+  dom.counterTotal().textContent = state.pool.length;
+  dom.counterNumber().textContent = '0';
+  dom.progressFill().style.width = '0%';
+
+  // Update badge
+  const badge = dom.selectedCategoryBadge();
+  if (badge) {
+    badge.querySelector('.badge-label').textContent = CATEGORY_LABELS[cat] || cat;
+    badge.querySelector('.badge-count').textContent = `${state.pool.length} cards`;
+    badge.style.display = '';
+  }
+
+  // Reset to start state
+  dom.emptyState().style.display = '';
+  dom.cardScene().style.display = 'none';
+  document.getElementById('nav-row').style.display = 'none';
+  document.getElementById('keyboard-hint').style.display = 'none';
+  document.getElementById('btn-start').style.display = '';
+  document.getElementById('btn-restart').style.display = 'none';
+
+  // Persist (only if cookies accepted)
+  if (canPersist()) {
+    try { localStorage.setItem('epi_category', cat); } catch (e) {}
+  }
+}
+
+function showCategoryPicker() {
+  // Hide study area, show picker
+  document.getElementById('study-area').style.display = 'none';
+  const picker = dom.categoryPicker();
+  if (picker) picker.style.display = '';
+  clearTimer();
+}
+
+// ===================================================================
 // TIMER LOGIC
 // ===================================================================
-const TIMER_CIRCUMFERENCE = 2 * Math.PI * 22; // r=22 in SVG
+const TIMER_CIRCUMFERENCE = 2 * Math.PI * 22;
 
 function startTimer() {
   clearTimer();
@@ -363,10 +569,9 @@ function startTimer() {
     if (state.timerRemaining <= 3 && state.timerRemaining > 0) {
       fill.classList.add('urgent');
     }
-
     if (state.timerRemaining <= 0) {
       clearTimer();
-      flipCard(); // auto-flip
+      flipCard();
     }
   }, 1000);
 }
@@ -384,7 +589,6 @@ function updateTimerRing(remaining, total) {
   const fill = dom.timerFill();
   const text = dom.timerText();
   if (!fill || !text) return;
-
   const pct = remaining / total;
   const offset = TIMER_CIRCUMFERENCE * (1 - pct);
   fill.style.strokeDashoffset = offset;
@@ -404,7 +608,6 @@ function renderCard() {
   if (!card) return;
 
   const el = dom.flashcard();
-  // Reset flip
   el.classList.remove('is-flipped');
   state.isFlipped = false;
 
@@ -412,11 +615,9 @@ function renderCard() {
   dom.cardAnswer().textContent = card.a;
   dom.cardRef().textContent = card.ref;
 
-  // Learn more link
   const learnBtn = dom.btnLearnMore();
   learnBtn.href = buildLearnMoreURL(card.term);
 
-  // Bookmark state
   const cardIdx = state.deck[state.position];
   const bBtn = dom.btnBookmark();
   if (state.bookmarks.has(cardIdx)) {
@@ -431,14 +632,11 @@ function renderCard() {
 
   updateCounter();
 
-  // Start timer if enabled
-  if (state.timerMode) {
-    startTimer();
-  }
+  if (state.timerMode) startTimer();
 }
 
 // ===================================================================
-// FLIP
+// FLIP / NAVIGATION
 // ===================================================================
 function flipCard() {
   if (!state.running) return;
@@ -448,7 +646,6 @@ function flipCard() {
   if (!state.isFlipped) {
     el.classList.add('is-flipped');
     state.isFlipped = true;
-    // Mark as reviewed
     const cardIdx = state.deck[state.position];
     if (!state.reviewed.has(cardIdx)) {
       state.reviewed.add(cardIdx);
@@ -461,9 +658,6 @@ function flipCard() {
   }
 }
 
-// ===================================================================
-// NAVIGATION
-// ===================================================================
 function goNext() {
   if (!state.running) return;
   clearTimer();
@@ -471,7 +665,6 @@ function goNext() {
     state.position++;
     renderCard();
   } else {
-    // End of deck
     showToast(`Deck complete! You reviewed all ${state.deck.length} cards.`);
   }
 }
@@ -490,36 +683,34 @@ function goPrev() {
 // ===================================================================
 function updateCounter() {
   const reviewed = state.reviewed.size;
-  const total = CARDS.length;
+  const total = state.pool.length;
   dom.counterNumber().textContent = reviewed;
   dom.counterTotal().textContent = total;
-  const pct = (reviewed / total) * 100;
+  const pct = total ? (reviewed / total) * 100 : 0;
   dom.progressFill().style.width = pct + '%';
 }
 
 // ===================================================================
 // START / RESTART
 // ===================================================================
+function buildDeck() {
+  const indices = [...state.pool];
+  return state.shuffle ? shuffleArr(indices) : indices;
+}
+
 function startDeck() {
-  state.deck = shuffle ? buildDeck() : buildDeck();
+  state.deck = buildDeck();
   state.position = 0;
   state.running = true;
 
-  // Show card scene, hide empty state
   dom.cardScene().style.display = '';
   dom.emptyState().style.display = 'none';
-
-  // Show nav buttons
   document.getElementById('nav-row').style.display = '';
+  document.getElementById('keyboard-hint').style.display = '';
   document.getElementById('btn-start').style.display = 'none';
   document.getElementById('btn-restart').style.display = '';
 
   renderCard();
-}
-
-function buildDeck() {
-  const indices = CARDS.map((_, i) => i);
-  return state.shuffle ? shuffle(indices) : indices;
 }
 
 function restartDeck() {
@@ -529,7 +720,7 @@ function restartDeck() {
   state.position = 0;
   state.isFlipped = false;
   renderCard();
-  showToast('Deck restarted!');
+  showToast('Deck restarted.');
   updateCounter();
 }
 
@@ -538,21 +729,19 @@ function restartDeck() {
 // ===================================================================
 function toggleBookmark() {
   const cardIdx = state.deck[state.position];
-  const card = CARDS[cardIdx];
   const bBtn = dom.btnBookmark();
 
   if (state.bookmarks.has(cardIdx)) {
     state.bookmarks.delete(cardIdx);
     bBtn.classList.remove('is-bookmarked');
     bBtn.querySelector('.btn-bookmark-label').textContent = 'Mark for review';
-    showToast('Bookmark removed');
+    showToast('Bookmark removed.');
   } else {
     state.bookmarks.add(cardIdx);
     bBtn.classList.add('is-bookmarked');
     bBtn.querySelector('.btn-bookmark-label').textContent = 'Bookmarked';
-    showToast('Term marked for review!');
+    showToast('Term marked for review.');
   }
-
   updateBookmarksPanel();
 }
 
@@ -570,7 +759,6 @@ function updateBookmarksPanel() {
     document.getElementById('bookmarks-empty-msg').style.display = 'none';
   }
 
-  // Build text content
   const lines = [];
   let i = 1;
   state.bookmarks.forEach(idx => {
@@ -592,23 +780,101 @@ function copyBookmarks() {
     fb.classList.add('visible');
     setTimeout(() => fb.classList.remove('visible'), 2000);
   }).catch(() => {
-    // Fallback
     dom.bookmarksTextarea().select();
     document.execCommand('copy');
-    showToast('Copied to clipboard!');
+    showToast('Copied to clipboard.');
   });
 }
 
 function clearBookmarks() {
   state.bookmarks.clear();
   updateBookmarksPanel();
-  // Reset all bookmark buttons
   const bBtn = dom.btnBookmark();
   if (bBtn) {
     bBtn.classList.remove('is-bookmarked');
-    bBtn.querySelector('.btn-bookmark-label').textContent = 'Mark for review';
+    const lbl = bBtn.querySelector('.btn-bookmark-label');
+    if (lbl) lbl.textContent = 'Mark for review';
   }
   showToast('All bookmarks cleared.');
+}
+
+// ===================================================================
+// RTF DOWNLOAD (notes)
+// ===================================================================
+function rtfEscape(s) {
+  // Escape backslash, braces, and convert non-ASCII to RTF unicode escapes.
+  if (!s) return '';
+  let out = '';
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+    const code = s.charCodeAt(i);
+    if (ch === '\\') { out += '\\\\'; }
+    else if (ch === '{') { out += '\\{'; }
+    else if (ch === '}') { out += '\\}'; }
+    else if (ch === '\n') { out += '\\line '; }
+    else if (code < 128) { out += ch; }
+    else {
+      // RTF \u uses signed 16-bit decimal; emit ? as replacement
+      let signed = code;
+      if (signed > 32767) signed -= 65536;
+      out += `\\u${signed}?`;
+    }
+  }
+  return out;
+}
+
+function buildRtf() {
+  const today = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+  const catLabel = CATEGORY_LABELS[state.category] || 'All Categories';
+
+  let body = '';
+  body += `{\\b\\fs36 Epidemiology Flashcards ${rtfEscape('—')} Terms to Follow Up}\\line\\line `;
+  body += `{\\b Category:} ${rtfEscape(catLabel)}\\line `;
+  body += `{\\b Date:} ${rtfEscape(today)}\\line `;
+  body += `{\\b Total terms marked:} ${state.bookmarks.size}\\line\\line `;
+
+  let i = 1;
+  state.bookmarks.forEach(idx => {
+    const c = CARDS[idx];
+    body += `{\\b\\fs26 ${i}. ${rtfEscape(c.q)}}\\line `;
+    body += `${rtfEscape(c.a)}\\line `;
+    if (c.ref) {
+      body += `{\\i ${rtfEscape(c.ref)}}\\line `;
+    }
+    body += `\\line `;
+    i++;
+  });
+
+  body += `\\line {\\i Generated by Epi Flashcards (https://epidemiological.net). `;
+  body += `Licensed CC BY-NC 4.0 ${rtfEscape('—')} Attribution-NonCommercial.}\\line `;
+
+  // Minimal RTF wrapper with Unicode + UTF support
+  const rtf =
+    '{\\rtf1\\ansi\\ansicpg1252\\deff0\\uc1' +
+    '{\\fonttbl{\\f0\\fnil\\fcharset0 Calibri;}{\\f1\\fnil\\fcharset0 Cambria;}}' +
+    '\\fs22 ' +
+    body +
+    '}';
+  return rtf;
+}
+
+function downloadRtf() {
+  if (state.bookmarks.size === 0) {
+    showToast('No terms marked yet.');
+    return;
+  }
+  const rtf = buildRtf();
+  const blob = new Blob([rtf], { type: 'application/rtf' });
+  const url = URL.createObjectURL(blob);
+  const stamp = new Date().toISOString().slice(0, 10);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `epi-flashcards-notes-${stamp}.rtf`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  showToast('Notes downloaded as RTF.');
 }
 
 // ===================================================================
@@ -616,15 +882,26 @@ function clearBookmarks() {
 // ===================================================================
 function initTheme() {
   const html = document.documentElement;
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  let theme = prefersDark ? 'dark' : 'light';
+  let theme;
+  try {
+    if (canPersist()) {
+      theme = localStorage.getItem('epi_theme');
+    }
+  } catch (e) {}
+  if (!theme) {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    theme = prefersDark ? 'dark' : 'light';
+  }
   html.setAttribute('data-theme', theme);
   updateThemeIcon(theme);
 
   dom.themeToggle().addEventListener('click', () => {
-    theme = theme === 'dark' ? 'light' : 'dark';
-    html.setAttribute('data-theme', theme);
-    updateThemeIcon(theme);
+    const cur = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', cur);
+    updateThemeIcon(cur);
+    if (canPersist()) {
+      try { localStorage.setItem('epi_theme', cur); } catch (e) {}
+    }
   });
 }
 
@@ -643,7 +920,6 @@ function updateThemeIcon(theme) {
 // EVENT LISTENERS
 // ===================================================================
 function initEvents() {
-  // Mode toggle
   dom.btnManual().addEventListener('click', () => {
     state.timerMode = false;
     dom.btnManual().classList.add('active');
@@ -660,36 +936,30 @@ function initEvents() {
     if (state.running && !state.isFlipped) startTimer();
   });
 
-  // Timer duration
   dom.timerSelect().addEventListener('change', (e) => {
     state.timerDuration = parseInt(e.target.value, 10);
-    if (state.timerMode && state.running && !state.isFlipped) {
-      startTimer();
-    }
+    if (state.timerMode && state.running && !state.isFlipped) startTimer();
   });
 
-  // Shuffle
   dom.shuffleCheck().addEventListener('change', (e) => {
     state.shuffle = e.target.checked;
   });
 
-  // Card click to flip
   dom.flashcard().addEventListener('click', () => {
     if (!state.isFlipped) flipCard();
   });
 
-  // Flip button
   dom.btnFlip().addEventListener('click', () => flipCard());
-
-  // Nav
   dom.btnNext().addEventListener('click', () => goNext());
   dom.btnPrev().addEventListener('click', () => goPrev());
 
-  // Keyboard navigation
   document.addEventListener('keydown', (e) => {
     if (!state.running) return;
     const tag = document.activeElement?.tagName;
-    if (tag === 'TEXTAREA' || tag === 'INPUT' || tag === 'SELECT') return;
+    if (tag === 'TEXTAREA' || tag === 'INPUT' || tag === 'SELECT' || tag === 'BUTTON') {
+      // Allow normal interaction with form controls
+      if (tag !== 'BUTTON') return;
+    }
     switch (e.key) {
       case 'ArrowRight':
       case 'ArrowDown':
@@ -703,6 +973,7 @@ function initEvents() {
         break;
       case ' ':
       case 'Enter':
+        if (tag === 'BUTTON') return;
         e.preventDefault();
         flipCard();
         break;
@@ -713,51 +984,87 @@ function initEvents() {
     }
   });
 
-  // Start
   dom.btnStart().addEventListener('click', () => startDeck());
-
-  // Restart
   dom.btnRestart().addEventListener('click', () => restartDeck());
 
-  // Bookmark
   dom.btnBookmark().addEventListener('click', (e) => {
     e.stopPropagation();
     toggleBookmark();
   });
 
-  // Bookmarks panel toggle
   document.getElementById('bookmarks-header').addEventListener('click', () => {
-    const section = dom.bookmarksSection();
-    section.classList.toggle('is-open');
+    dom.bookmarksSection().classList.toggle('is-open');
   });
 
-  // Copy
   dom.btnCopy().addEventListener('click', () => copyBookmarks());
-
-  // Clear bookmarks
+  dom.btnDownloadRtf().addEventListener('click', () => downloadRtf());
   dom.btnClearBookmarks().addEventListener('click', () => clearBookmarks());
+
+  // Category picker buttons
+  dom.categoryCards().forEach(el => {
+    el.addEventListener('click', () => selectCategory(el.dataset.category));
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        selectCategory(el.dataset.category);
+      }
+    });
+  });
+
+  // Change category button
+  const cc = dom.btnChangeCategory();
+  if (cc) cc.addEventListener('click', () => showCategoryPicker());
+
+  // Cookie banner
+  const ca = dom.cookieAccept();
+  const cr = dom.cookieReject();
+  if (ca) ca.addEventListener('click', () => acceptCookies());
+  if (cr) cr.addEventListener('click', () => rejectCookies());
 }
 
 // ===================================================================
 // INIT
 // ===================================================================
 document.addEventListener('DOMContentLoaded', () => {
+  initCookieBanner();
   initTheme();
   initEvents();
 
-  // Initial state
+  // Hide study area initially — user must pick a category first
+  document.getElementById('study-area').style.display = 'none';
   dom.cardScene().style.display = 'none';
   document.getElementById('nav-row').style.display = 'none';
   document.getElementById('btn-restart').style.display = 'none';
   dom.timerOptions().style.display = 'none';
-  dom.counterTotal().textContent = CARDS.length;
-  dom.counterNumber().textContent = '0';
 
-  // Set timer ring circumference
   const fill = dom.timerFill();
   if (fill) {
     fill.style.strokeDasharray = TIMER_CIRCUMFERENCE;
     fill.style.strokeDashoffset = 0;
+  }
+
+  // Populate category counts in the picker
+  const counts = { public: 0, student: 0, advanced: 0 };
+  CARDS.forEach(c => { if (counts[c.cat] !== undefined) counts[c.cat]++; });
+  document.querySelectorAll('.category-card').forEach(el => {
+    const cat = el.dataset.category;
+    const countEl = el.querySelector('.category-count');
+    if (countEl) {
+      if (cat === 'all') {
+        countEl.textContent = `${CARDS.length} cards`;
+      } else {
+        countEl.textContent = `${counts[cat] || 0} cards`;
+      }
+    }
+  });
+
+  // Restore last category only if user consented to cookies
+  let savedCat = null;
+  try {
+    if (canPersist()) savedCat = localStorage.getItem('epi_category');
+  } catch (e) {}
+  if (savedCat && (savedCat in CATEGORY_LABELS)) {
+    selectCategory(savedCat);
   }
 
   updateBookmarksPanel();
