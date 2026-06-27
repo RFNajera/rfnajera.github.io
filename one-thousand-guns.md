@@ -65,28 +65,35 @@ To answer the question, I used spatial analysis in R. The general workflow was s
 ### Libraries Used
 
 ```r
+library(tidyverse)   # Data manipulation and visualization (dplyr, readr, ggplot2, etc.)
 library(sf)          # Simple Features for spatial data
-library(dplyr)       # Data manipulation
-library(tmap)        # Thematic maps
-library(readr)       # Reading data files
+library(tmap)        # Thematic maps (static and interactive)
+library(tigris)      # Census geographies and boundary files
+library(raster)      # Raster and spatial helpers
 ```
 
 ### Data Import and Cleaning
 
 ```r
-# Import the data
-crimes <- read_csv("data/gun_crimes_2018.csv")
+# Load the boundary, water, and school shapefiles
+baltimore.shape  <- st_read("Total_Population", "Total_Population")
+water.shape      <- st_read("Water", "water")
+schools          <- st_read("BCPSS_Schools", "BCPSS_Schools")
 
-# Filter to retain rows with valid latitude and longitude
-crimes <- crimes %>%
-  filter(!is.na(Latitude) & !is.na(Longitude))
+# Import the firearm crime data, keep records with valid coordinates,
+# and convert to an sf object in one pipeline
+crimes_sf <- read_csv("data/gun_crimes_2018.csv") %>%
+  filter(!is.na(Latitude) & !is.na(Longitude)) %>%
+  dplyr::select(CrimeType, Longitude, Latitude) %>%
+  st_as_sf(
+    coords = c("Longitude", "Latitude"),
+    crs    = "+proj=longlat +datum=WGS84"
+  )
 
-# Load Community Statistical Areas (CSAs) and school shapefiles
-csas <- st_read("data/community_statistical_areas.shp")
-schools <- st_read("data/schools.shp")
-
-# Convert crimes data to spatial points
-crimes_sf <- st_as_sf(crimes, coords = c("Longitude", "Latitude"), crs = 4326)
+# Quick sanity check that the points read in correctly
+ggplot() +
+  geom_sf(data = crimes_sf) +
+  theme_minimal()
 ```
 
 ### Coordinate Reference System Alignment
@@ -94,9 +101,10 @@ crimes_sf <- st_as_sf(crimes, coords = c("Longitude", "Latitude"), crs = 4326)
 Before doing any spatial operations, all layers needed to use the same coordinate reference system.
 
 ```r
-# Ensure all spatial data layers use the same CRS
-csas <- st_transform(csas, crs = st_crs(crimes_sf))
-schools <- st_transform(schools, crs = st_crs(crimes_sf))
+# Ensure all spatial data layers use the same CRS as the crime points
+baltimore.shape <- st_transform(baltimore.shape, crs = st_crs(crimes_sf))
+water.shape     <- st_transform(water.shape,     crs = st_crs(crimes_sf))
+schools         <- st_transform(schools,         crs = st_crs(crimes_sf))
 ```
 
 ## Mapping
@@ -108,14 +116,24 @@ I created several maps to understand the geographic pattern of the data before m
 ```r
 tmap_mode("plot")
 
-map_crimes <- tm_shape(csas) +
+map_crimes <- tm_shape(baltimore.shape) +
   tm_borders() +
   tm_shape(crimes_sf) +
-  tm_dots("CrimeType", palette = "Set1", size = 0.1, title = "Crime Type") +
+  tm_dots("CrimeType", palette = "Set1", size = 0.05, title = "Crime Type") +
   tm_layout(
-    title = "Firearm Crimes in Baltimore, 2018",
-    legend.position = c("left", "bottom")
-  )
+    main.title      = "Firearm Crimes in Baltimore, 2018",
+    main.title.size = 1,
+    legend.outside  = TRUE
+  ) +
+  tm_compass(type = "4star", position = c("left", "bottom")) +
+  tm_scale_bar(
+    text.size   = 0.5,
+    color.dark  = "black",
+    color.light = "yellow",
+    lwd         = 1,
+    position    = c("left", "bottom")
+  ) +
+  tmap_options(unit = "mi")
 
 tmap_save(map_crimes, "output/firearm_crimes_map.png", dpi = 300)
 ```
@@ -123,14 +141,25 @@ tmap_save(map_crimes, "output/firearm_crimes_map.png", dpi = 300)
 ### Map of Schools
 
 ```r
-map_schools <- tm_shape(csas) +
+map_schools <- tm_shape(baltimore.shape) +
   tm_borders() +
   tm_shape(schools) +
-  tm_dots(col = "red", size = 0.2, title = "Schools") +
+  tm_symbols(col = "orange", shape = 24, size = 0.05) +
   tm_layout(
-    title = "School Locations in Baltimore, 2018",
-    legend.position = c("left", "bottom")
-  )
+    main.title      = "School Locations in Baltimore, 2018",
+    main.title.size = 1,
+    legend.outside  = TRUE
+  ) +
+  tm_add_legend("symbol", col = "orange", shape = 17, size = 0.5, labels = "School") +
+  tm_compass(type = "4star", position = c("left", "bottom")) +
+  tm_scale_bar(
+    text.size   = 0.5,
+    color.dark  = "black",
+    color.light = "yellow",
+    lwd         = 1,
+    position    = c("left", "bottom")
+  ) +
+  tmap_options(unit = "mi")
 
 tmap_save(map_schools, "output/schools_map.png", dpi = 300)
 ```
@@ -138,16 +167,30 @@ tmap_save(map_schools, "output/schools_map.png", dpi = 300)
 ### Combined Map of Crimes and Schools
 
 ```r
-map_combined <- tm_shape(csas) +
+map_combined <- tm_shape(baltimore.shape) +
   tm_borders() +
-  tm_shape(schools) +
-  tm_dots(col = "red", size = 0.2, title = "Schools") +
   tm_shape(crimes_sf) +
-  tm_dots("CrimeType", palette = "Set1", size = 0.1, title = "Crime Type") +
+  tm_dots("CrimeType", palette = "Set1", size = 0.05, title = "Crime Type") +
+  tm_shape(schools) +
+  tm_symbols(col = "orange", shape = 24, size = 0.05) +
+  tm_shape(water.shape) +
+  tm_polygons(col = "blue") +
   tm_layout(
-    title = "Firearm Crimes and Schools in Baltimore, 2018",
-    legend.position = c("left", "bottom")
-  )
+    main.title      = "Firearm Crimes and Schools in Baltimore, 2018",
+    main.title.size = 1,
+    legend.outside  = TRUE
+  ) +
+  tm_add_legend("symbol", col = "orange", shape = 17, size = 0.5, labels = "School") +
+  tm_add_legend("fill",   col = "blue",   size = 0.5, labels = "Body of Water") +
+  tm_compass(type = "4star", position = c("left", "bottom")) +
+  tm_scale_bar(
+    text.size   = 0.5,
+    color.dark  = "black",
+    color.light = "yellow",
+    lwd         = 1,
+    position    = c("left", "bottom")
+  ) +
+  tmap_options(unit = "mi")
 
 tmap_save(map_combined, "output/combined_map.png", dpi = 300)
 ```
@@ -163,20 +206,42 @@ The next step was to create a 1,000-foot zone around each school and identify wh
 Because the legal and policy standard often discussed is 1,000 feet, I used that distance for the analysis. In metric terms, that is about 304.8 meters.
 
 ```r
-# Create 1,000-foot buffers around schools
-buffers <- st_buffer(schools, dist = 304.8)
+# Create 1,000-foot (304.8 m) buffers around schools, then
+# return them to the lon/lat CRS used by the other layers
+buffers <- st_buffer(schools, dist = 304.8) %>%
+  st_transform(crs = "+proj=longlat +datum=WGS84")
 
-# Plot the buffers
-map_buffers <- tm_shape(csas) +
+# Quick check that the buffers were created correctly
+ggplot() +
+  geom_sf(data = buffers) +
+  theme_minimal()
+
+# Plot the buffers over the city, schools, and crimes
+map_buffers <- tm_shape(baltimore.shape) +
   tm_borders() +
+  tm_shape(crimes_sf) +
+  tm_dots(col = "black", size = 0.025) +
+  tm_shape(schools) +
+  tm_symbols(col = "orange", shape = 24, size = 0.05) +
   tm_shape(buffers) +
   tm_borders(col = "blue") +
-  tm_shape(schools) +
-  tm_dots(col = "red", size = 0.2, title = "Schools") +
   tm_layout(
-    title = "1,000-foot Buffers Around Schools in Baltimore, 2018",
-    legend.position = c("left", "bottom")
-  )
+    main.title      = "1,000-foot Buffers Around Schools in Baltimore, 2018",
+    main.title.size = 1,
+    legend.outside  = TRUE
+  ) +
+  tm_add_legend("symbol", col = "orange", shape = 17, size = 0.5, labels = "School") +
+  tm_add_legend("line",   col = "blue",   size = 0.5, labels = "1,000-ft Buffer") +
+  tm_add_legend("symbol", col = "black",  shape = 21, size = 0.5, labels = "Firearm Crime") +
+  tm_compass(type = "4star", position = c("left", "bottom")) +
+  tm_scale_bar(
+    text.size   = 0.5,
+    color.dark  = "black",
+    color.light = "yellow",
+    lwd         = 1,
+    position    = c("left", "bottom")
+  ) +
+  tmap_options(unit = "mi")
 
 tmap_save(map_buffers, "output/buffers_map.png", dpi = 300)
 ```
@@ -184,17 +249,32 @@ tmap_save(map_buffers, "output/buffers_map.png", dpi = 300)
 ### Joining Crimes to School Buffers
 
 ```r
-# Identify crimes within the buffers
-crimes_in_buffers <- st_join(crimes_sf, buffers, left = FALSE)
+# Spatially join the crime points to the school buffers.
+# Points that fall inside a buffer pick up that school's attributes;
+# points outside every buffer get NA for the school name.
+crime.points <- st_join(crimes_sf, buffers)
+
+# Keep only the crimes that landed inside a buffer (i.e., a named school)
+school.crimes <- crime.points %>%
+  filter(!is.na(name))
 
 # Count crimes per school
-crime_counts <- crimes_in_buffers %>%
-  group_by(SchoolName) %>%
+crime_counts <- school.crimes %>%
+  st_drop_geometry() %>%
+  group_by(name) %>%
   summarise(CrimeCount = n()) %>%
   arrange(desc(CrimeCount))
 
 # Save results
 write_csv(crime_counts, "output/crime_counts_by_school.csv")
+```
+
+Finally, switching `tmap` into interactive mode makes it possible to pan, zoom, and click individual schools and crime points to inspect each location in more detail.
+
+```r
+# Switch to an interactive (leaflet-backed) map and redraw the buffer map
+tmap_mode("view")
+map_buffers
 ```
 
 ## Findings
